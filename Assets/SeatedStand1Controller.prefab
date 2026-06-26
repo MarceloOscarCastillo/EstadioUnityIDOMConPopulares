@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7048192571770578554
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2895284823907029614}
+  - component: {fileID: 8975940616394135281}
+  m_Layer: 0
+  m_Name: SeatedStand1Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2895284823907029614
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7048192571770578554}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.31457, y: 4, z: -0.303}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8975940616394135281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7048192571770578554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SeatedStandGenerator
+  SeatersStandBlock: {fileID: 4332270529960839404, guid: e65004a58eb138940b3a151f55b93a0b, type: 3}
+  Escalera: {fileID: 8873341587627620800, guid: 39ad3e9865812ea42b6e87b5c6ef370e, type: 3}
+  AsientoPlatea: {fileID: 477451666037616570, guid: ec55f2b0bfd1b9d47a2e974f0899db60, type: 3}
+  anchoDeUnaPieza: 1
+  largoMaximoTribuna: 118
+  altoEscalon: 0.4
+  profundidadEscalon: 0.8
+  numFilas: 40
+  asientosEntrePasillos: 12
+  anchoPasilloEscalera: 2
+  invertir: 1
+  filaInicioBoca: 5
+  altoBoca: 4
+  margenSeguridadAsientos: 1
+  RedColour: {fileID: 2100000, guid: f876460aebf6637408eb2d440cd23ba2, type: 2}
+  BlueColour: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
+  GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+  anchoFranja: 20

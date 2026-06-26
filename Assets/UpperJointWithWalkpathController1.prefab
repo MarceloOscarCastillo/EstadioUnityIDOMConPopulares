@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9031667451433880803
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5450990870969726641}
+  - component: {fileID: 1752414187685110769}
+  m_Layer: 0
+  m_Name: UpperJointWithWalkpathController1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5450990870969726641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9031667451433880803}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -48.26284, y: -0, z: -73.86523}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1752414187685110769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9031667451433880803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d5ed90631a57e54f9a0da1745e96e46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpperCurveStandWithWalkpathScript
+  BlockPlateaCurva: {fileID: 8695439801501993238, guid: f62573a09b9167a44bc16f75528818a3, type: 3}
+  AsientoPlatea: {fileID: 477451666037616570, guid: ec55f2b0bfd1b9d47a2e974f0899db60, type: 3}
+  Escalera: {fileID: 8873341587627620800, guid: 39ad3e9865812ea42b6e87b5c6ef370e, type: 3}
+  cantidadPiezas: 90
+  radioInferior: 9
+  anchoEscalon: 0.8
+  altoEscalon: 0.4
+  invertirSentido: 0
+  filasMaximas: 48
+  filasMinimas: 17
+  tagContenedores: SectorEstadio
+  Material: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
+  GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+  esCodoPlatea: 1
+  exponente: 2
+  vomitosPorLinea: 1
+  tieneSegundaLinea: 0
+  anchoPasilloVomito: 2
+  altoBocaVomito: 4
+  filaInicioBocaVomito: 5
+  filaInicioBoca2: 25
+  metrosLibresAlrededor: 0.5

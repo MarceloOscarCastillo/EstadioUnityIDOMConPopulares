@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6995922983615106974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2597612028437407177}
+  - component: {fileID: -182046399266711782}
+  m_Layer: 0
+  m_Name: LowerSeatedStandController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2597612028437407177
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6995922983615106974}
+  serializedVersion: 2
+  m_LocalRotation: {x: 4.8110032e-18, y: 0.9965096, z: -1.4329422e-17, w: -0.083478734}
+  m_LocalPosition: {x: 341.04932, y: 66.5, z: -466.0466}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-182046399266711782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6995922983615106974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SeatedStandGenerator
+  SeatersStandBlock: {fileID: 4332270529960839404, guid: e65004a58eb138940b3a151f55b93a0b, type: 3}
+  Escalera: {fileID: 8873341587627620800, guid: 39ad3e9865812ea42b6e87b5c6ef370e, type: 3}
+  AsientoPlatea: {fileID: 477451666037616570, guid: ec55f2b0bfd1b9d47a2e974f0899db60, type: 3}
+  PrefabPalcoVIP: {fileID: 0}
+  anchoDeUnaPieza: 1
+  largoMaximoTribuna: 118
+  altoEscalonBase: 0.4
+  profundidadEscalon: 0.8
+  numFilas: 21
+  asientosEntrePasillos: 12
+  anchoPasilloEscalera: 2
+  invertir: 1
+  rangosDeAlzada: []
+  tienePalcoVIP: 1
+  largoPalcoVIP: 104
+  filasQueOcupaPalco: 6
+  profundidadTotalVIP: 9.1
+  BlackVIPMaterial: {fileID: 0}
+  filaInicioBoca: 5
+  altoBoca: 4
+  tieneSegundaFilaVomitos: 0
+  filaInicioBoca2: 25
+  generarMuroSuperior: 1
+  alturaMuroSuperior: 2
+  RedColour: {fileID: 0}
+  BlueColour: {fileID: 0}
+  GrisCemento: {fileID: 0}
+  Glass: {fileID: 0}
+  anchoFranja: 20

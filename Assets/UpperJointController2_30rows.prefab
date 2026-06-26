@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8960460593294744625
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3867466444663843682}
+  - component: {fileID: 3287400522916133197}
+  m_Layer: 0
+  m_Name: UpperJointController2_30rows
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3867466444663843682
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8960460593294744625}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 98.560295, y: 68.455124, z: -447.8234}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &3287400522916133197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8960460593294744625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cd16a1fcbd6a244793a8c9c505c8dd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpperSeatedStandScript
+  BlockPlateaCurva: {fileID: 8695439801501993238, guid: f62573a09b9167a44bc16f75528818a3, type: 3}
+  AsientoPlatea: {fileID: 477451666037616570, guid: ec55f2b0bfd1b9d47a2e974f0899db60, type: 3}
+  cantidadPiezas: 46
+  radioInferior: 8
+  anchoEscalon: 0.8
+  altoEscalon: 0.4
+  invertirSentido: 1
+  filasMaximas: 40
+  filasMinimas: 23
+  tagContenedores: SectorEstadio
+  Material: {fileID: 2100000, guid: f876460aebf6637408eb2d440cd23ba2, type: 2}
