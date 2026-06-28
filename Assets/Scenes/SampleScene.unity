@@ -4686,7 +4686,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 178.1
+      value: 177.8
       objectReference: {fileID: 0}
     - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5338,13 +5338,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 368899982}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 173.6, y: 69, z: -432.9}
+  m_LocalRotation: {x: 0, y: 0.99999535, z: -0, w: -0.0030542875}
+  m_LocalPosition: {x: 173.59, y: 69, z: -433.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 941235794}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180.35, z: 0}
 --- !u!114 &368899984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5361,7 +5361,7 @@ MonoBehaviour:
   altoEscalon: 0.25
   profundidadEscalon: 0.4
   anchoDeUnaPieza: 1
-  numFilas: 30
+  numFilas: 33
   piezasPorFila: 74
   inverter: 1
   piezasEntreBocas: 20
@@ -6537,7 +6537,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoEscalon
-      value: 0.2
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: anguloTotal
@@ -6549,7 +6549,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: anchoEscalon
-      value: 0.4
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: esCodoPlatea
@@ -6557,15 +6557,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filasMaximas
-      value: 60
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filasMinimas
-      value: 32
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
-      value: 14.4
+      value: 15.7
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
@@ -6609,11 +6609,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: usarFormaPersonalizada
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
-      value: 1710.5978
+      value: 923.94476
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: rangosDeAlzada.Array.size
@@ -6645,7 +6645,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 100.27
+      value: 99.65
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6653,7 +6653,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -561.81
+      value: -561.8
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12531,7 +12531,7 @@ Transform:
   m_GameObject: {fileID: 800150687}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 99.8, y: 58, z: -449.8}
+  m_LocalPosition: {x: 99.8, y: 58, z: -449.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12618,7 +12618,7 @@ MonoBehaviour:
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
   ground0Level: {fileID: 1730792205}
-  metrosLinealesCalculados: 379.3474
+  metrosLinealesCalculados: 379.348
 --- !u!1 &810869120
 GameObject:
   m_ObjectHideFlags: 0
@@ -12645,7 +12645,7 @@ Transform:
   m_GameObject: {fileID: 810869120}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 96.1, y: 58.1, z: -561.7}
+  m_LocalPosition: {x: 96.1, y: 58.1, z: -561.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16806,6 +16806,10 @@ PrefabInstance:
       value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: alturaMuroPlatea
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: anchoVigaDiagonal
       value: 0.4
       objectReference: {fileID: 0}
@@ -16841,9 +16845,13 @@ PrefabInstance:
       propertyPath: filaVigaVerticalInterior
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: generarMurosLateralesPlatea
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 100
+      value: 100.2
       objectReference: {fileID: 0}
     - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: m_LocalPosition.y
@@ -16851,7 +16859,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -445.3
+      value: -445.65
       objectReference: {fileID: 0}
     - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: m_LocalRotation.w
@@ -17505,7 +17513,7 @@ Transform:
   m_GameObject: {fileID: 1121324711}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0, w: -0.7071068}
-  m_LocalPosition: {x: 173.9, y: 58, z: -561.68}
+  m_LocalPosition: {x: 173.8, y: 58, z: -561.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17592,7 +17600,7 @@ MonoBehaviour:
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
   ground0Level: {fileID: 1730792205}
-  metrosLinealesCalculados: 379.34778
+  metrosLinealesCalculados: 379.34818
 --- !u!1001 &1128677459
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18833,7 +18841,7 @@ Transform:
   m_GameObject: {fileID: 1159801705}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0, w: -0.7071068}
-  m_LocalPosition: {x: 177.5, y: 58.1, z: -543.29}
+  m_LocalPosition: {x: 177.52, y: 58, z: -543.31}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19451,7 +19459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 173.94
+      value: 174.02
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -19704,7 +19712,7 @@ Transform:
   m_GameObject: {fileID: 1223926464}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0, w: -0.7071068}
-  m_LocalPosition: {x: 173.9, y: 58, z: -561.68}
+  m_LocalPosition: {x: 173.8, y: 58, z: -561.86}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19791,7 +19799,7 @@ MonoBehaviour:
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
   ground0Level: {fileID: 1730792205}
-  metrosLinealesCalculados: 771.89026
+  metrosLinealesCalculados: 771.8933
 --- !u!1 &1225563378
 GameObject:
   m_ObjectHideFlags: 0
@@ -20440,7 +20448,7 @@ Transform:
   m_GameObject: {fileID: 1247668221}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0, w: -1}
-  m_LocalPosition: {x: 173.8, y: 58, z: -449.52}
+  m_LocalPosition: {x: 173.8, y: 58, z: -449.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20527,7 +20535,7 @@ MonoBehaviour:
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
   ground0Level: {fileID: 1730792205}
-  metrosLinealesCalculados: 771.8903
+  metrosLinealesCalculados: 771.8912
 --- !u!1 &1250939224
 GameObject:
   m_ObjectHideFlags: 0
@@ -21171,7 +21179,7 @@ Transform:
   m_GameObject: {fileID: 1258516823}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0, w: -1}
-  m_LocalPosition: {x: 173.8, y: 58, z: -449.52}
+  m_LocalPosition: {x: 173.8, y: 58, z: -449.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21258,7 +21266,7 @@ MonoBehaviour:
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
   ground0Level: {fileID: 1730792205}
-  metrosLinealesCalculados: 379.34775
+  metrosLinealesCalculados: 379.34818
 --- !u!1 &1266635247
 GameObject:
   m_ObjectHideFlags: 0
@@ -22575,10 +22583,10 @@ MonoBehaviour:
   prefabPalco: {fileID: 4240674913055047226, guid: 0c9417bd3f3dd2944b37bc0320d90118, type: 3}
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  capacidadTotal: 71916
-  capacidadPopulares: 52500
-  capacidadPlateas: 18680
-  capacidadPalcos: 736
+  capacidadTotal: 43229
+  capacidadPopulares: 0
+  capacidadPlateas: 42797
+  capacidadPalcos: 432
 --- !u!4 &1369841858
 Transform:
   m_ObjectHideFlags: 0
@@ -28016,6 +28024,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: generarBarandillaEscalera
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: rangosDeAlzada.Array.size
       value: 4
       objectReference: {fileID: 0}
@@ -29981,11 +29993,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -432.86
+      value: -432.9
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.99999535
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.x
@@ -29993,7 +30005,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.0030542875
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.z
@@ -30005,7 +30017,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -30130,6 +30142,10 @@ PrefabInstance:
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: alturaVigaVerticalInterior
       value: 2.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: generarMurosLateralesPlatea
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: rangosDeAlzada.Array.data[1].filaInicio
@@ -30452,7 +30468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -542.8
+      value: -542.6
       objectReference: {fileID: 0}
     - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: m_LocalRotation.w
@@ -31207,7 +31223,7 @@ Transform:
   m_GameObject: {fileID: 1827543777}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 99.8, y: 58, z: -449.8}
+  m_LocalPosition: {x: 99.8, y: 58, z: -449.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -31294,7 +31310,7 @@ MonoBehaviour:
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
   ground0Level: {fileID: 1730792205}
-  metrosLinealesCalculados: 771.88947
+  metrosLinealesCalculados: 771.8908
 --- !u!1001 &1834420730
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32029,7 +32045,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoEscalon
-      value: 0.43
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: anguloTotal
@@ -32408,7 +32424,7 @@ Transform:
   m_GameObject: {fileID: 1885244543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 96.1, y: 58.1, z: -468.321}
+  m_LocalPosition: {x: 96.1, y: 58.1, z: -468.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -33475,7 +33491,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 173.4
+      value: 173.3
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -33483,7 +33499,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -565.76
+      value: -565.6
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -33950,6 +33966,10 @@ PrefabInstance:
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: anchoVigaTransversal
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: asientosEntrePasillos
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: filaVigaVerticalExterior
@@ -34456,7 +34476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45b3e5ed87db05348b206a087a2f9f52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EstadioConfigurator
-  varianteAActivar: 7
+  varianteAActivar: 10
   perfilesDeEstadio:
   - nombreVariante: 1
     sectoresActivos:
@@ -38303,7 +38323,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 173.4
+      value: 173.3
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -38827,6 +38847,10 @@ PrefabInstance:
       value: 112
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: materialBarandilla
+      value: 
+      objectReference: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: tieneVigaHorizontal
       value: 0
       objectReference: {fileID: 0}
@@ -38839,6 +38863,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: generarEscaleraVomito
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: materialEscaleraVomito
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: tieneSegundaFilaVomitos
       value: 0
       objectReference: {fileID: 0}
@@ -38849,6 +38881,10 @@ PrefabInstance:
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: filaVigaVerticalInterior
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: generarBarandillaEscalera
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: rangosDeAlzada.Array.size
