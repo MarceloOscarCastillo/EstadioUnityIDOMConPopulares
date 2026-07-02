@@ -1470,8 +1470,7 @@ public class SeatedStandGenerator : MonoBehaviour
         float factorY = altoEscalonVomito / altoEscalonBase;
 
         List<GameObject> escalonesGenerados = new List<GameObject>();
-
-        Debug.Log($"anchoPasillo={anchoPasillo}, anchoReal={anchoReal}, resultado={anchoPasillo / anchoReal}");
+        
 
         for (int e = 0; e < numEscalonesVomito; e++)
         {

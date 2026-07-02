@@ -142,14 +142,14 @@ public void AplicarConfiguracionEstadio()
 
     // 2. Juntamos una lista maestra de TODOS los controladores que existen en tu estadio
     HashSet<MonoBehaviour> todosLosSectoresDelEstadio = ObtenerTodosLosSectores();
-    Debug.Log($"Total sectores encontrados: {todosLosSectoresDelEstadio.Count}");
+    
 
     // 3. Prendemos o apagamos cada objeto de la escena según corresponda
     foreach (MonoBehaviour sector in todosLosSectoresDelEstadio)
     {
         if (sector == null) continue;
         bool debeActivarse = perfilElegido.sectoresActivos.Contains(sector);
-        Debug.Log($"Sector: {sector.gameObject.name}, debeActivarse: {debeActivarse}");
+        
         SetearEstadoSector(sector, debeActivarse);
     }
 
@@ -208,7 +208,7 @@ public void AplicarConfiguracionEstadio()
 
     void Start()
     {
-        Debug.Log("EstadioConfigurator Start ejecutado");
+       
         // Comentar todos los Start() de los generadores antes de usar esto
         //StartCoroutine(GenerarYConfigurar());
     }

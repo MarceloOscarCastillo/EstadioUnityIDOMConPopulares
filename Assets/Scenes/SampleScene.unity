@@ -3970,11 +3970,15 @@ MonoBehaviour:
   anchoVigaTransversal: 0.2
   altoVigaTransversal: 0.2
   generarEscaleraVomito: 0
-  numEscalonesVomito: 4
+  numPrefabsEscalera: 2
   altoEscalonVomito: 0.2
   profundidadEscalonVomito: 0.3
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
+  generarBocaLogistica: 0
+  anguloBocaLogistica: 45
+  anchoBocaLogistica: 5
+  altoBocaLogistica: 5
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 379.3495
 --- !u!43 &368161467
@@ -7979,11 +7983,15 @@ MonoBehaviour:
   anchoVigaTransversal: 0.2
   altoVigaTransversal: 0.2
   generarEscaleraVomito: 0
-  numEscalonesVomito: 4
+  numPrefabsEscalera: 2
   altoEscalonVomito: 0.2
   profundidadEscalonVomito: 0.3
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
+  generarBocaLogistica: 0
+  anguloBocaLogistica: 45
+  anchoBocaLogistica: 5
+  altoBocaLogistica: 5
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 771.89355
 --- !u!43 &686492158
@@ -10037,11 +10045,15 @@ MonoBehaviour:
   anchoVigaTransversal: 0.2
   altoVigaTransversal: 0.2
   generarEscaleraVomito: 0
-  numEscalonesVomito: 4
+  numPrefabsEscalera: 2
   altoEscalonVomito: 0.2
   profundidadEscalonVomito: 0.3
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
+  generarBocaLogistica: 0
+  anguloBocaLogistica: 45
+  anchoBocaLogistica: 5
+  altoBocaLogistica: 5
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 379.348
 --- !u!1 &810869120
@@ -10406,6 +10418,10 @@ PrefabInstance:
       value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: materialBarandilla
+      value: 
+      objectReference: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: separacionSoportes
       value: 2
       objectReference: {fileID: 0}
@@ -10434,6 +10450,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: generarEscaleraVomito
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarMurosLaterales
       value: 1
       objectReference: {fileID: 0}
@@ -10452,6 +10472,10 @@ PrefabInstance:
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
       value: 3800.6736
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: generarBarandillaEscalera
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: rangosDeAlzada.Array.size
@@ -15051,11 +15075,15 @@ MonoBehaviour:
   anchoVigaTransversal: 0.2
   altoVigaTransversal: 0.2
   generarEscaleraVomito: 0
-  numEscalonesVomito: 4
+  numPrefabsEscalera: 2
   altoEscalonVomito: 0.2
   profundidadEscalonVomito: 0.3
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
+  generarBocaLogistica: 0
+  anguloBocaLogistica: 45
+  anchoBocaLogistica: 5
+  altoBocaLogistica: 5
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 379.34818
 --- !u!1 &1131883126
@@ -16440,13 +16468,17 @@ MonoBehaviour:
   anchoVigaTransversal: 0.2
   altoVigaTransversal: 0.2
   generarEscaleraVomito: 0
-  numEscalonesVomito: 4
+  numPrefabsEscalera: 2
   altoEscalonVomito: 0.2
   profundidadEscalonVomito: 0.3
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
+  generarBocaLogistica: 1
+  anguloBocaLogistica: 45
+  anchoBocaLogistica: 5
+  altoBocaLogistica: 5
   ground0Level: {fileID: 1730792205}
-  metrosLinealesCalculados: 771.8933
+  metrosLinealesCalculados: 684.7084
 --- !u!1 &1225563378
 GameObject:
   m_ObjectHideFlags: 0
@@ -17176,11 +17208,15 @@ MonoBehaviour:
   anchoVigaTransversal: 0.2
   altoVigaTransversal: 0.2
   generarEscaleraVomito: 0
-  numEscalonesVomito: 4
+  numPrefabsEscalera: 2
   altoEscalonVomito: 0.2
   profundidadEscalonVomito: 0.3
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
+  generarBocaLogistica: 0
+  anguloBocaLogistica: 45
+  anchoBocaLogistica: 5
+  altoBocaLogistica: 5
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 771.8912
 --- !u!1 &1258191675
@@ -17402,11 +17438,15 @@ MonoBehaviour:
   anchoVigaTransversal: 0.2
   altoVigaTransversal: 0.2
   generarEscaleraVomito: 0
-  numEscalonesVomito: 4
+  numPrefabsEscalera: 2
   altoEscalonVomito: 0.2
   profundidadEscalonVomito: 0.3
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
+  generarBocaLogistica: 0
+  anguloBocaLogistica: 45
+  anchoBocaLogistica: 5
+  altoBocaLogistica: 5
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 379.34818
 --- !u!1 &1266635247
@@ -18917,8 +18957,8 @@ MonoBehaviour:
   prefabPalco: {fileID: 4240674913055047226, guid: 0c9417bd3f3dd2944b37bc0320d90118, type: 3}
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  capacidadTotal: 79644
-  capacidadPopulares: 65796
+  capacidadTotal: 79470
+  capacidadPopulares: 65622
   capacidadPlateas: 13112
   capacidadPalcos: 736
 --- !u!4 &1369841858
@@ -25234,11 +25274,15 @@ MonoBehaviour:
   anchoVigaTransversal: 0.2
   altoVigaTransversal: 0.2
   generarEscaleraVomito: 0
-  numEscalonesVomito: 4
+  numPrefabsEscalera: 2
   altoEscalonVomito: 0.2
   profundidadEscalonVomito: 0.3
   generarBarandillaEscalera: 0
   materialBarandilla: {fileID: 0}
+  generarBocaLogistica: 0
+  anguloBocaLogistica: 45
+  anchoBocaLogistica: 5
+  altoBocaLogistica: 5
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 771.8908
 --- !u!1001 &1834420730

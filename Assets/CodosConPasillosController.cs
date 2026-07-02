@@ -137,11 +137,18 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
     [Header("Escalera Vómito")]
     public bool generarEscaleraVomito = false;
-    public int numEscalonesVomito = 4;
-    public float altoEscalonVomito = 0.20f;
-    public float profundidadEscalonVomito = 0.30f;
+    public int numPrefabsEscalera = 2;
+    public float altoEscalonVomito = 0.40f;//ojo que 0,4 es la altura del prefab entero no de cada escalon
+    public float profundidadEscalonVomito = 0.8f;//es la profundidad del prefab
     public bool generarBarandillaEscalera = false;
     public Material materialBarandilla;
+
+
+    [Header("Boca Logística")]
+    public bool generarBocaLogistica = false;
+    public float anguloBocaLogistica = 45f;
+    public float anchoBocaLogistica = 5f; // en metros
+    public float altoBocaLogistica = 5f;  // en metros
 
 
     [Header("Nivel del Suelo")]
@@ -164,6 +171,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
     public void GenerarCodo()
     {
+        
+
         if (BlockPlateaCurva == null) return;
 
         Transform contenedorViejo = transform.Find("Contenedor_Codo_Superior");
@@ -227,6 +236,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             float radioExterno = radioInterno + anchoEscalon;
 
             if (celda.tipo == TipoCelda.Vacio) continue;
+
+            if (generarBocaLogistica && EsZonaBocaLogistica(celda.angStart, celda.angEnd, celda.fila)) continue;
 
             if (celda.tipo == TipoCelda.Escalera)
             {
@@ -329,14 +340,28 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                         float[] offsetsPar = { -anchoDelPar / 2f, anchoDelPar / 2f };
                         foreach (float off in offsetsPar)
                         {
+                            //float distPara = distanciaActual + off;
+                            //if (distPara < 0 || distPara > longitudTotal) continue;
+
+                            //float pasoPara = BuscarAngulo(longitudesAcumuladas, distPara, pasoMaximoFila);
+                            //float anguloPara = pasoPara * (anguloTotal / pasos);
+
+                            //Vector3 posPara = transform.TransformPoint(CalcularPunto(anguloPara, radioCentro, f));
+                            //posPara.y += altoEscalonFila;
+
                             float distPara = distanciaActual + off;
                             if (distPara < 0 || distPara > longitudTotal) continue;
 
                             float pasoPara = BuscarAngulo(longitudesAcumuladas, distPara, pasoMaximoFila);
                             float anguloPara = pasoPara * (anguloTotal / pasos);
 
+                            // Chequeo boca logistica
+                            if (generarBocaLogistica && EsZonaBocaLogistica(anguloPara - 0.1f, anguloPara + 0.1f, f)) continue;
+
                             Vector3 posPara = transform.TransformPoint(CalcularPunto(anguloPara, radioCentro, f));
                             posPara.y += altoEscalonFila;
+
+
 
                             // Orientacion perpendicular al arco (misma que el escalon)
                             Vector3 pInt = transform.TransformPoint(CalcularPunto(anguloPara, radioInferior, f));
@@ -356,9 +381,14 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                             Material matPara = (celdaPara != null && celdaPara.Value.tipo == TipoCelda.BloqueLibre)
                                 ? GrisCemento : Material;
 
+                            if (generarBocaLogistica && EsZonaBocaLogistica(anguloPara - 0.1f, anguloPara + 0.1f, f)) continue;
+
                             GameObject para = Instantiate(PrefabParaavalanchas, contenedor.transform);
+
                             para.transform.position = posPara;
+
                             para.transform.rotation = Quaternion.LookRotation(dirRadial, Vector3.up);
+
                             AplicarMaterialATodo(para, matPara);
                         }
                     }
@@ -398,6 +428,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                     Vector3 puntoB = transform.TransformPoint(CalcularPunto(anguloB, radioCentro, f));
                     Vector3 posicion = transform.TransformPoint(CalcularPunto(angulo, radioCentro, f));
                     Vector3 tangente = (puntoB - puntoA).normalized;
+
+                    if (generarBocaLogistica && EsZonaBocaLogistica(angulo - 0.1f, angulo + 0.1f, f)) continue;
 
                     UbicarAsiento(posicion, tangente, contenedor);
                 }
@@ -1040,6 +1072,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
         foreach (float anguloVomito in angulosVomitos)
         {
+                       
             float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
             float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
             float gradosPasillo = (anchoPasilloVomito / circunferenciaMedia) * 360f;
@@ -1057,6 +1090,13 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                 if (FilasEnAngulo(anguloVomito) > filaInicioBoca2)
                     GenerarMurosVomitoEnAngulos(contenedor, anguloIzq, anguloDer,
                         filaInicioBoca2, altoBocaVomito);
+            }
+
+            if (generarEscaleraVomito)
+            {
+                GenerarEscaleraDescendenteVomitoCodo(anguloIzq, anguloDer, filaInicioBocaVomito, contenedor);
+                if (tieneSegundaLinea && FilasEnAngulo(anguloVomito) > filaInicioBoca2)
+                    GenerarEscaleraDescendenteVomitoCodo(anguloIzq, anguloDer, filaInicioBoca2, contenedor);
             }
         }
     }
@@ -1152,11 +1192,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         muroSupGO.transform.SetParent(contenedor.transform);
         muroSupGO.AddComponent<MeshFilter>().mesh = meshSup;
         muroSupGO.AddComponent<MeshRenderer>().sharedMaterial =
-            MaterialMuroVomito != null ? MaterialMuroVomito : MaterialMuro;
-
-        if (generarEscaleraVomito)
-            GenerarEscaleraDescendenteVomitoCodo(anguloIzq, anguloDer, filaInicio, contenedor);
-
+            MaterialMuroVomito != null ? MaterialMuroVomito : MaterialMuro;        
     }
 
     public void CalcularMetrosLinealesInternos()
@@ -1181,6 +1217,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             longitudesAcumuladas[0] = 0f;
             int pasoMaximoFila = pasoInicioFila;
 
+
+
+
             for (int g = pasoInicioFila + 1; g <= pasos; g++)
             {
                 float anguloActual = g * (anguloTotal / pasos);
@@ -1201,6 +1240,26 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             if (pasoMaximoFila <= pasoInicioFila) continue;
             float longitudTotal = longitudesAcumuladas[pasoMaximoFila];
             if (longitudTotal < 0.5f) continue;
+
+            //esto se agrega para descontar los metros lineales afectados por la boca logistica
+            if (generarBocaLogistica)
+            {
+                float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
+                float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
+                float gradosBoca = (anchoBocaLogistica / circunferenciaMedia) * 360f;
+                float anguloIzqBoca = anguloBocaLogistica - gradosBoca / 2f;
+                float anguloDerBoca = anguloBocaLogistica + gradosBoca / 2f;
+                int filasAfectadas = Mathf.CeilToInt(altoBocaLogistica / altoEscalon);
+
+                if (f < filasAfectadas)
+                {
+                    // Calcular longitud de la boca en esta fila y restarla
+                    float radioBoca = radioInferior + f * anchoEscalon;
+                    float longBoca = (gradosBoca / 360f) * 2f * Mathf.PI * radioBoca;
+                    longitudTotal = Mathf.Max(0, longitudTotal - longBoca);
+                }
+            }
+
 
             metros += longitudTotal;
         }
@@ -1573,65 +1632,90 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     }
 
     void GenerarEscaleraDescendenteVomitoCodo(float anguloIzq, float anguloDer, int filaInicio, GameObject contenedor)
-    {
+    {        
         float anguloMedio = (anguloIzq + anguloDer) / 2f;
+
+        Debug.Log($"ESCALERA CODO - gameObject={gameObject.name}, anguloMedio={anguloMedio}");
+
         float rad = anguloMedio * Mathf.Deg2Rad;
 
-        Vector3 dirRadial = new Vector3(Mathf.Cos(rad), 0, Mathf.Sin(rad)).normalized;
-        Vector3 dirTangente = new Vector3(-Mathf.Sin(rad), 0, Mathf.Cos(rad)).normalized;
+        // Direcciones en coordenadas locales del transform
+        Vector3 dirRadialLocal = new Vector3(Mathf.Cos(rad), 0, Mathf.Sin(rad)).normalized;
+        Vector3 dirTangenteLocal = new Vector3(-Mathf.Sin(rad), 0, Mathf.Cos(rad)).normalized;
 
         float yBase = CalcularAlturaAcumulada(filaInicio);
 
-        // La escalera arranca en el radio interior, al angulo del vomito
-        Vector3 posBase = transform.TransformPoint(CalcularPunto(anguloMedio, radioInferior, filaInicio));
+        float factorY = altoEscalonVomito / altoEscalon;
 
-        // Direccion de descenso: tangente al arco (misma que el pasillo)
-        // Hacia afuera del estadio = dirTangente o -dirTangente segun orientacion
-        Vector3 dirDescenso = dirTangente;
+        // posBase en coordenadas locales
+        float radioVomito = radioInferior + filaInicio * anchoEscalon;
 
-        for (int e = 0; e < numEscalonesVomito; e++)
+        Vector3 posBaseLocal = CalcularPunto(anguloMedio, radioVomito, filaInicio);
+
+        //Vector3 posBaseLocal = CalcularPunto(anguloMedio, radioInferior, filaInicio);
+        posBaseLocal.y = yBase;
+
+        
+        for (int e = 0; e < numPrefabsEscalera; e++)
         {
             float yEscalon = yBase - (e + 1) * altoEscalonVomito;
-            float distDescenso = (e * profundidadEscalonVomito + profundidadEscalonVomito / 2f);
+            float distRadial = e * profundidadEscalonVomito + profundidadEscalonVomito / 2f;
 
-            Vector3 posEscalon = posBase + dirDescenso * distDescenso;
-            posEscalon.y = yEscalon + altoEscalonVomito / 2f;
+            // Posicion local: desplazar en direccion radial
+            Vector3 posEscalonLocal = posBaseLocal + dirRadialLocal * distRadial;
+            posEscalonLocal.y = yEscalon + altoEscalonVomito / 2f;
 
             GameObject escalonGO = Instantiate(Escalera, contenedor.transform);
-            escalonGO.transform.position = posEscalon;
-            escalonGO.transform.rotation = Quaternion.LookRotation(dirDescenso, Vector3.up);
-            escalonGO.transform.localScale = new Vector3(anchoPasilloVomito / 2f,
-                altoEscalonVomito / altoEscalon,
-                profundidadEscalonVomito / anchoEscalon);
+            escalonGO.transform.position = transform.TransformPoint(posEscalonLocal);
+
+            // Rotar para que el prefab quede orientado radialmente con 180° igual que SeatedStand
+            escalonGO.transform.rotation = transform.rotation *
+                Quaternion.LookRotation(dirRadialLocal, Vector3.up) *
+                Quaternion.Euler(0, 180, 0);
+
+            //escalonGO.transform.localScale = new Vector3(
+            //    anchoPasilloVomito / 2f,
+            //    factorY,
+            //    profundidadEscalonVomito / anchoEscalon);
+
+            escalonGO.transform.localScale = new Vector3(
+    anchoPasilloVomito / 2f,
+    altoEscalonVomito / 0.4f,
+    profundidadEscalonVomito / 0.8f);
+
 
             if (GrisCemento != null)
                 AplicarMaterialATodo(escalonGO, GrisCemento);
         }
 
         if (generarBarandillaEscalera)
-            GenerarBarandillaVomitoCodo(posBase, dirDescenso, dirRadial, filaInicio, contenedor);
+            GenerarBarandillaVomitoCodo(posBaseLocal, dirRadialLocal, dirTangenteLocal, filaInicio, contenedor);
     }
 
-    void GenerarBarandillaVomitoCodo(Vector3 posBase, Vector3 dirRadial, Vector3 dirTangente, int filaInicio, GameObject contenedor)
+    void GenerarBarandillaVomitoCodo(Vector3 posBaseLocal, Vector3 dirRadial, Vector3 dirTangente, int filaInicio, GameObject contenedor)
     {
         float diametro = 0.05f;
         float alturaBarandilla = 1.0f;
+        float yBase = CalcularAlturaAcumulada(filaInicio);
         float mitadAncho = anchoPasilloVomito / 4f;
 
-        float yBase = CalcularAlturaAcumulada(filaInicio);
-
+        // Las dos barandillas estan separadas en direccion TANGENTE
         Vector3[] posicionesLado = {
-        posBase - dirTangente * mitadAncho,
-        posBase + dirTangente * mitadAncho
+        posBaseLocal - dirTangente * mitadAncho,
+        posBaseLocal + dirTangente * mitadAncho
     };
 
         foreach (Vector3 posLado in posicionesLado)
         {
-            Vector3 pInicio = posLado + dirRadial * (profundidadEscalonVomito / 2f);
-            pInicio.y = yBase - altoEscalonVomito + alturaBarandilla;
+            // Caño principal sigue direccion RADIAL (la pendiente de descenso)
+            Vector3 pInicioLocal = posLado + dirRadial * (profundidadEscalonVomito / 2f);
+            pInicioLocal.y = yBase - altoEscalonVomito + alturaBarandilla;
 
-            Vector3 pFin = posLado + dirRadial * (numEscalonesVomito * profundidadEscalonVomito - profundidadEscalonVomito / 2f);
-            pFin.y = yBase - numEscalonesVomito * altoEscalonVomito + alturaBarandilla;
+            Vector3 pFinLocal = posLado + dirRadial * (numPrefabsEscalera * profundidadEscalonVomito - profundidadEscalonVomito / 2f);
+            pFinLocal.y = yBase - numPrefabsEscalera * altoEscalonVomito + alturaBarandilla;
+
+            Vector3 pInicio = transform.TransformPoint(pInicioLocal);
+            Vector3 pFin = transform.TransformPoint(pFinLocal);
 
             CrearCañoEntreDosPuntos(pInicio, pFin, diametro, contenedor.transform);
 
@@ -1662,6 +1746,24 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
         if (materialBarandilla != null)
             caño.GetComponent<Renderer>().sharedMaterial = materialBarandilla;
+    }
+
+    bool EsZonaBocaLogistica(float angStart, float angEnd, int fila)
+    {
+        float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
+        float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
+        float gradosBoca = (anchoBocaLogistica / circunferenciaMedia) * 360f;
+
+        float anguloIzqBoca = anguloBocaLogistica - gradosBoca / 2f;
+        float anguloDerBoca = anguloBocaLogistica + gradosBoca / 2f;
+
+        //int filasAfectadas = Mathf.CeilToInt(altoBocaLogistica / anchoEscalon);
+        int filasAfectadas = Mathf.CeilToInt(altoBocaLogistica / altoEscalon);
+
+        bool enAnguloAfectado = angEnd > anguloIzqBoca && angStart < anguloDerBoca;
+        bool enFilaAfectada = fila < filasAfectadas;
+
+        return enAnguloAfectado && enFilaAfectada;
     }
 
 }
