@@ -3979,6 +3979,9 @@ MonoBehaviour:
   anguloBocaLogistica: 45
   anchoBocaLogistica: 5
   altoBocaLogistica: 5
+  grosorParedBocaLogistica: 0.2
+  materialBocaLogistica: {fileID: 0}
+  materialMuroBocaLogistica: {fileID: 0}
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 379.3495
 --- !u!43 &368161467
@@ -7992,6 +7995,9 @@ MonoBehaviour:
   anguloBocaLogistica: 45
   anchoBocaLogistica: 5
   altoBocaLogistica: 5
+  grosorParedBocaLogistica: 0.2
+  materialBocaLogistica: {fileID: 0}
+  materialMuroBocaLogistica: {fileID: 0}
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 771.89355
 --- !u!43 &686492158
@@ -10054,6 +10060,9 @@ MonoBehaviour:
   anguloBocaLogistica: 45
   anchoBocaLogistica: 5
   altoBocaLogistica: 5
+  grosorParedBocaLogistica: 0.2
+  materialBocaLogistica: {fileID: 0}
+  materialMuroBocaLogistica: {fileID: 0}
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 379.348
 --- !u!1 &810869120
@@ -15084,6 +15093,9 @@ MonoBehaviour:
   anguloBocaLogistica: 45
   anchoBocaLogistica: 5
   altoBocaLogistica: 5
+  grosorParedBocaLogistica: 0.2
+  materialBocaLogistica: {fileID: 0}
+  materialMuroBocaLogistica: {fileID: 0}
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 379.34818
 --- !u!1 &1131883126
@@ -16477,8 +16489,11 @@ MonoBehaviour:
   anguloBocaLogistica: 45
   anchoBocaLogistica: 5
   altoBocaLogistica: 5
+  grosorParedBocaLogistica: 0.2
+  materialBocaLogistica: {fileID: 2100000, guid: 54c39b6dcf010a54c9424aec9c0e0e3e, type: 2}
+  materialMuroBocaLogistica: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
   ground0Level: {fileID: 1730792205}
-  metrosLinealesCalculados: 684.7084
+  metrosLinealesCalculados: 646.89325
 --- !u!1 &1225563378
 GameObject:
   m_ObjectHideFlags: 0
@@ -17217,6 +17232,9 @@ MonoBehaviour:
   anguloBocaLogistica: 45
   anchoBocaLogistica: 5
   altoBocaLogistica: 5
+  grosorParedBocaLogistica: 0.2
+  materialBocaLogistica: {fileID: 0}
+  materialMuroBocaLogistica: {fileID: 0}
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 771.8912
 --- !u!1 &1258191675
@@ -17447,6 +17465,9 @@ MonoBehaviour:
   anguloBocaLogistica: 45
   anchoBocaLogistica: 5
   altoBocaLogistica: 5
+  grosorParedBocaLogistica: 0.2
+  materialBocaLogistica: {fileID: 0}
+  materialMuroBocaLogistica: {fileID: 0}
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 379.34818
 --- !u!1 &1266635247
@@ -18957,8 +18978,8 @@ MonoBehaviour:
   prefabPalco: {fileID: 4240674913055047226, guid: 0c9417bd3f3dd2944b37bc0320d90118, type: 3}
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  capacidadTotal: 79470
-  capacidadPopulares: 65622
+  capacidadTotal: 79394
+  capacidadPopulares: 65546
   capacidadPlateas: 13112
   capacidadPalcos: 736
 --- !u!4 &1369841858
@@ -25283,6 +25304,9 @@ MonoBehaviour:
   anguloBocaLogistica: 45
   anchoBocaLogistica: 5
   altoBocaLogistica: 5
+  grosorParedBocaLogistica: 0.2
+  materialBocaLogistica: {fileID: 0}
+  materialMuroBocaLogistica: {fileID: 0}
   ground0Level: {fileID: 1730792205}
   metrosLinealesCalculados: 771.8908
 --- !u!1001 &1834420730

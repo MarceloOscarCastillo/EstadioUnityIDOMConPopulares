@@ -149,7 +149,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     public float anguloBocaLogistica = 45f;
     public float anchoBocaLogistica = 5f; // en metros
     public float altoBocaLogistica = 5f;  // en metros
-
+    public float grosorParedBocaLogistica = 0.2f;
+    public Material materialBocaLogistica;
+    public Material materialMuroBocaLogistica;
 
     [Header("Nivel del Suelo")]
     public Transform ground0Level;
@@ -443,6 +445,14 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
         if (generarMurosVomitos) GenerarMurosVomitos(contenedor, angulosVomitos);
 
+        if (generarBocaLogistica)
+        {
+            List<Vector3> puntosIzq, puntosDer;
+            CrearParedTriangularBocaLogistica(contenedor, out puntosIzq, out puntosDer);
+            CrearMuroBocaLogistica(contenedor, puntosIzq, puntosDer);
+        }
+
+
         if (generarSoportes)
         {
             GenerarSoportesCodo(contenedor);
@@ -633,9 +643,6 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         mesh.Refresh();
     }
 
-    
-
-
     void AplicarMaterialATodo(GameObject obj, Material mat)
     {
         foreach (var r in obj.GetComponentsInChildren<MeshRenderer>())
@@ -667,16 +674,36 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             sDirRadial[s] = dirRadial;
         }
 
+        // Precalcular zona de boca logistica
+        float anguloIzqBoca = 0f;
+        float anguloDerBoca = 0f;
+        if (generarBocaLogistica)
+        {
+            float circunferencia = 2f * Mathf.PI * radioInferior;
+            float gradosBoca = (anchoBocaLogistica / circunferencia) * 360f;
+            anguloIzqBoca = anguloBocaLogistica - gradosBoca / 2f;
+            anguloDerBoca = anguloBocaLogistica + gradosBoca / 2f;
+        }
+
         List<Vector3> vertices = new List<Vector3>();
         List<Vector3> normales = new List<Vector3>();
         List<int> triangulos = new List<int>();
 
         for (int s = 0; s < segmentos; s++)
         {
+            // Saltear segmentos en la zona de la boca logistica
+            if (generarBocaLogistica)
+            {
+                float anguloS0 = s * anguloPorSegmento;
+                float anguloS1 = (s + 1) * anguloPorSegmento;
+                if (anguloS0 >= anguloIzqBoca && anguloS1 <= anguloDerBoca)
+                    continue;
+            }
+
             Vector3 i0 = sInner[s], i1 = sInner[s + 1];
             Vector3 o0 = sOuter[s], o1 = sOuter[s + 1];
-            Vector3 nLi = sDirRadial[s], nRi = sDirRadial[s + 1];  // interior apunta hacia adentro
-            Vector3 nLo = -sDirRadial[s], nRo = -sDirRadial[s + 1]; // exterior apunta hacia afuera
+            Vector3 nLi = sDirRadial[s], nRi = sDirRadial[s + 1];
+            Vector3 nLo = -sDirRadial[s], nRo = -sDirRadial[s + 1];
             float h = alturaMuro;
             int base_i;
 
@@ -757,7 +784,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         muroGO.AddComponent<MeshFilter>().mesh = mesh;
         muroGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialMuro;
 
-        // Baranda (sin cambios)
+        // Baranda
         if (generarBaranda && PrefabBaranda != null)
         {
             int pasosMesh = 900;
@@ -778,6 +805,14 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             {
                 float paso = BuscarAngulo(longAcum, distancia, pasosMesh);
                 float angulo = paso * (anguloTotal / pasosMesh);
+
+                // Saltear barandas en zona de boca logistica
+                if (generarBocaLogistica && angulo >= anguloIzqBoca && angulo <= anguloDerBoca)
+                {
+                    distancia += espaciadoBaranda;
+                    continue;
+                }
+
                 Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radioInferior, 0));
                 pos += Vector3.up * alturaMuro;
                 float delta = 0.5f;
@@ -1244,22 +1279,12 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             //esto se agrega para descontar los metros lineales afectados por la boca logistica
             if (generarBocaLogistica)
             {
-                float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
-                float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
-                float gradosBoca = (anchoBocaLogistica / circunferenciaMedia) * 360f;
-                float anguloIzqBoca = anguloBocaLogistica - gradosBoca / 2f;
-                float anguloDerBoca = anguloBocaLogistica + gradosBoca / 2f;
                 int filasAfectadas = Mathf.CeilToInt(altoBocaLogistica / altoEscalon);
-
                 if (f < filasAfectadas)
                 {
-                    // Calcular longitud de la boca en esta fila y restarla
-                    float radioBoca = radioInferior + f * anchoEscalon;
-                    float longBoca = (gradosBoca / 360f) * 2f * Mathf.PI * radioBoca;
-                    longitudTotal = Mathf.Max(0, longitudTotal - longBoca);
+                    longitudTotal = Mathf.Max(0, longitudTotal - anchoBocaLogistica);
                 }
             }
-
 
             metros += longitudTotal;
         }
@@ -1747,17 +1772,17 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         if (materialBarandilla != null)
             caño.GetComponent<Renderer>().sharedMaterial = materialBarandilla;
     }
-
+    
     bool EsZonaBocaLogistica(float angStart, float angEnd, int fila)
     {
-        float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
-        float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
-        float gradosBoca = (anchoBocaLogistica / circunferenciaMedia) * 360f;
+        // Usar el radio de ESTA fila para calcular el ancho angular
+        float radioDeFila = radioInferior + fila * anchoEscalon;
+        float circunferenciaDeFila = 2f * Mathf.PI * radioDeFila;
+        float gradosBoca = (anchoBocaLogistica / circunferenciaDeFila) * 360f;
 
         float anguloIzqBoca = anguloBocaLogistica - gradosBoca / 2f;
         float anguloDerBoca = anguloBocaLogistica + gradosBoca / 2f;
 
-        //int filasAfectadas = Mathf.CeilToInt(altoBocaLogistica / anchoEscalon);
         int filasAfectadas = Mathf.CeilToInt(altoBocaLogistica / altoEscalon);
 
         bool enAnguloAfectado = angEnd > anguloIzqBoca && angStart < anguloDerBoca;
@@ -1765,5 +1790,307 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
         return enAnguloAfectado && enFilaAfectada;
     }
+
+    void CrearParedTriangularBocaLogistica(GameObject contenedor,
+    out List<Vector3> puntosIzqOut, out List<Vector3> puntosDerOut)
+    {
+        int filasAfectadas = Mathf.CeilToInt(altoBocaLogistica / altoEscalon);
+        int pasos = cantidadPiezas;
+        float anguloPorPaso = anguloTotal / pasos;
+
+        List<Vector3> puntosIzq = new List<Vector3>();
+        List<Vector3> puntosDer = new List<Vector3>();
+
+        for (int f = 0; f < filasAfectadas; f++)
+        {
+            float radio = radioInferior + f * anchoEscalon;
+            float yFila = CalcularAlturaAcumulada(f);
+
+            float anguloIzq = -1f;
+            float anguloDer = -1f;
+
+            for (int s = 0; s < pasos; s++)
+            {
+                float angA = s * anguloPorPaso;
+                float angB = (s + 1) * anguloPorPaso;
+                bool esA = EsZonaBocaLogistica(angA, angB, f);
+                bool esAnterior = s > 0 && EsZonaBocaLogistica((s - 1) * anguloPorPaso, angA, f);
+                bool esSiguiente = s < pasos - 1 && EsZonaBocaLogistica(angB, (s + 2) * anguloPorPaso, f);
+
+                if (esA && !esAnterior) anguloIzq = angA;
+                if (esA && !esSiguiente) anguloDer = angB;
+            }
+
+            if (anguloIzq < 0 || anguloDer < 0) continue;
+
+            Vector3 pIzqSuelo = contenedor.transform.InverseTransformPoint(
+                transform.TransformPoint(CalcularPunto(anguloIzq, radio, f)));
+            pIzqSuelo.y = 0f;
+
+            Vector3 pIzqBase = contenedor.transform.InverseTransformPoint(
+                transform.TransformPoint(CalcularPunto(anguloIzq, radio, f)));
+            pIzqBase.y = yFila;
+
+            puntosIzq.Add(pIzqSuelo);
+            puntosIzq.Add(pIzqBase);
+
+            Vector3 pDerSuelo = contenedor.transform.InverseTransformPoint(
+                transform.TransformPoint(CalcularPunto(anguloDer, radio, f)));
+            pDerSuelo.y = 0f;
+
+            Vector3 pDerBase = contenedor.transform.InverseTransformPoint(
+                transform.TransformPoint(CalcularPunto(anguloDer, radio, f)));
+            pDerBase.y = yFila;
+
+            puntosDer.Add(pDerSuelo);
+            puntosDer.Add(pDerBase);
+        }
+
+        List<Vector3> vertsIzq = new List<Vector3>();
+        List<int> trisIzq = new List<int>();
+        List<Vector3> vertsDer = new List<Vector3>();
+        List<int> trisDer = new List<int>();
+
+        for (int f = 0; f < puntosIzq.Count / 2 - 1; f++)
+        {
+            int i = f * 2;
+
+            vertsIzq.AddRange(new[] {
+            puntosIzq[i], puntosIzq[i + 1],
+            puntosIzq[i + 2], puntosIzq[i + 3]
+        });
+            int idxIzq = vertsIzq.Count - 4;
+            trisIzq.AddRange(new[] {
+            idxIzq, idxIzq + 1, idxIzq + 2,
+            idxIzq + 1, idxIzq + 3, idxIzq + 2
+        });
+            vertsIzq.AddRange(new[] {
+            puntosIzq[i], puntosIzq[i + 1],
+            puntosIzq[i + 2], puntosIzq[i + 3]
+        });
+            idxIzq = vertsIzq.Count - 4;
+            trisIzq.AddRange(new[] {
+            idxIzq, idxIzq + 2, idxIzq + 1,
+            idxIzq + 1, idxIzq + 2, idxIzq + 3
+        });
+
+            vertsDer.AddRange(new[] {
+            puntosDer[i], puntosDer[i + 1],
+            puntosDer[i + 2], puntosDer[i + 3]
+        });
+            int idxDer = vertsDer.Count - 4;
+            trisDer.AddRange(new[] {
+            idxDer, idxDer + 2, idxDer + 1,
+            idxDer + 1, idxDer + 2, idxDer + 3
+        });
+            vertsDer.AddRange(new[] {
+            puntosDer[i], puntosDer[i + 1],
+            puntosDer[i + 2], puntosDer[i + 3]
+        });
+            idxDer = vertsDer.Count - 4;
+            trisDer.AddRange(new[] {
+            idxDer, idxDer + 1, idxDer + 2,
+            idxDer + 1, idxDer + 3, idxDer + 2
+        });
+        }
+
+        CrearMeshPared(contenedor, vertsIzq, trisIzq, "Pared_Izq_Boca", false);
+        CrearMeshPared(contenedor, vertsDer, trisDer, "Pared_Der_Boca", true);
+
+        puntosIzqOut = puntosIzq;
+        puntosDerOut = puntosDer;
+    }
+
+    void CrearMeshPared(GameObject contenedor, List<Vector3> verts, List<int> tris, string nombre, bool invertirNormales = false)
+    {
+        if (verts.Count == 0) return;
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = verts.ToArray();
+        mesh.triangles = tris.ToArray();
+        mesh.RecalculateNormals();
+
+        if (invertirNormales)
+        {
+            Vector3[] normales = mesh.normals;
+            for (int i = 0; i < normales.Length; i++)
+                normales[i] = -normales[i];
+            mesh.normals = normales;
+        }
+
+        GameObject paredGO = new GameObject(nombre);
+        paredGO.transform.SetParent(contenedor.transform);
+        paredGO.transform.localPosition = Vector3.zero;
+        paredGO.transform.localRotation = Quaternion.identity;
+        paredGO.AddComponent<MeshFilter>().mesh = mesh;
+        paredGO.AddComponent<MeshRenderer>().sharedMaterial =
+            materialBocaLogistica != null ? materialBocaLogistica : MaterialMuro;
+    }
+
+    void CrearMuroBocaLogistica(GameObject contenedor, List<Vector3> puntosIzq, List<Vector3> puntosDer)
+    {
+        List<Vector3> vertsIzq = new List<Vector3>();
+        List<Vector3> normsIzq = new List<Vector3>();
+        List<int> trisIzq = new List<int>();
+        List<Vector3> vertsDer = new List<Vector3>();
+        List<Vector3> normsDer = new List<Vector3>();
+        List<int> trisDer = new List<int>();
+
+        for (int f = 0; f < puntosIzq.Count / 2 - 1; f++)
+        {
+            int i = f * 2;
+
+            Vector3 izqBaseF = puntosIzq[i + 1];
+            Vector3 izqTopF = new Vector3(izqBaseF.x, izqBaseF.y + alturaMuro, izqBaseF.z);
+            Vector3 izqBaseF1 = puntosIzq[i + 3];
+            Vector3 izqTopF1 = new Vector3(izqBaseF1.x, izqBaseF1.y + alturaMuro, izqBaseF1.z);
+
+            Vector3 tangenteIzq = (izqBaseF1 - izqBaseF).normalized;
+            Vector3 normalIzq = Vector3.Cross(Vector3.up, tangenteIzq).normalized;
+
+            vertsIzq.AddRange(new[] { izqBaseF, izqTopF, izqBaseF1, izqTopF1 });
+            normsIzq.AddRange(new[] { normalIzq, normalIzq, normalIzq, normalIzq });
+            int idx = vertsIzq.Count - 4;
+            trisIzq.AddRange(new[] { idx, idx + 1, idx + 2, idx + 1, idx + 3, idx + 2 });
+
+            Vector3 derBaseF = puntosDer[i + 1];
+            Vector3 derTopF = new Vector3(derBaseF.x, derBaseF.y + alturaMuro, derBaseF.z);
+            Vector3 derBaseF1 = puntosDer[i + 3];
+            Vector3 derTopF1 = new Vector3(derBaseF1.x, derBaseF1.y + alturaMuro, derBaseF1.z);
+
+            Vector3 tangenteDer = (derBaseF1 - derBaseF).normalized;
+            Vector3 normalDer = Vector3.Cross(tangenteDer, Vector3.up).normalized;
+
+            vertsDer.AddRange(new[] { derBaseF, derTopF, derBaseF1, derTopF1 });
+            normsDer.AddRange(new[] { normalDer, normalDer, normalDer, normalDer });
+            idx = vertsDer.Count - 4;
+            trisDer.AddRange(new[] { idx, idx + 2, idx + 1, idx + 1, idx + 2, idx + 3 });
+        }
+
+        CrearMeshParedConNormales(contenedor, vertsIzq, normsIzq, trisIzq, "Muro_Izq_Boca");
+        CrearMeshParedConNormales(contenedor, vertsDer, normsDer, trisDer, "Muro_Der_Boca");
+
+        CrearDintelBocaLogistica(contenedor, puntosIzq, puntosDer);
+    }
+
+    void CrearMeshParedConNormales(GameObject contenedor, List<Vector3> verts, List<Vector3> norms, List<int> tris, string nombre)
+    {
+        if (verts.Count == 0) return;
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = verts.ToArray();
+        mesh.normals = norms.ToArray();
+        mesh.triangles = tris.ToArray();
+
+        GameObject paredGO = new GameObject(nombre);
+        paredGO.transform.SetParent(contenedor.transform);
+        paredGO.transform.localPosition = Vector3.zero;
+        paredGO.transform.localRotation = Quaternion.identity;
+        paredGO.AddComponent<MeshFilter>().mesh = mesh;        
+        paredGO.AddComponent<MeshRenderer>().sharedMaterial =
+    materialMuroBocaLogistica != null ? materialMuroBocaLogistica : MaterialMuro;
+
+    }
+
+    void CrearDintelBocaLogistica(GameObject contenedor, List<Vector3> puntosIzq, List<Vector3> puntosDer)
+    {
+        int filasAfectadas = Mathf.CeilToInt(altoBocaLogistica / altoEscalon);
+        float yDintel = CalcularAlturaAcumulada(filasAfectadas);
+        int segmentos = 10;
+
+        // Encontrar angulos de inicio y fin del dintel
+        // Ultimo punto de puntosIzq y puntosDer tiene la posicion correcta
+        Vector3 pIzqUltimo = puntosIzq[puntosIzq.Count - 1]; // ultimo base izq
+        Vector3 pDerUltimo = puntosDer[puntosDer.Count - 1]; // ultimo base der
+
+        // Calcular angulos desde las posiciones locales
+        // Convertir a coordenadas locales del transform
+        Vector3 pIzqWorld = contenedor.transform.TransformPoint(pIzqUltimo);
+        Vector3 pDerWorld = contenedor.transform.TransformPoint(pDerUltimo);
+        Vector3 pIzqLocal = transform.InverseTransformPoint(pIzqWorld);
+        Vector3 pDerLocal = transform.InverseTransformPoint(pDerWorld);
+
+        float anguloIzq = Mathf.Atan2(pIzqLocal.z, pIzqLocal.x) * Mathf.Rad2Deg;
+        float anguloDer = Mathf.Atan2(pDerLocal.z, pDerLocal.x) * Mathf.Rad2Deg;
+
+        float radioInferiorDintel = radioInferior + (filasAfectadas - 1) * anchoEscalon;
+        float grosor = grosorParedBocaLogistica;
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<Vector3> normales = new List<Vector3>();
+        List<int> triangulos = new List<int>();
+
+        Vector3[] sInner = new Vector3[segmentos + 1];
+        Vector3[] sOuter = new Vector3[segmentos + 1];
+        Vector3[] sDirRadial = new Vector3[segmentos + 1];
+
+        for (int s = 0; s <= segmentos; s++)
+        {
+            float t = (float)s / segmentos;
+            float angulo = Mathf.Lerp(anguloIzq, anguloDer, t);
+            float rad = angulo * Mathf.Deg2Rad;
+
+            Vector3 dirRadial = new Vector3(Mathf.Cos(rad), 0f, Mathf.Sin(rad));
+            Vector3 pInner = new Vector3(radioInferiorDintel * Mathf.Cos(rad), yDintel, radioInferiorDintel * Mathf.Sin(rad));
+            Vector3 pOuter = new Vector3((radioInferiorDintel + grosor) * Mathf.Cos(rad), yDintel, (radioInferiorDintel + grosor) * Mathf.Sin(rad));
+
+            sInner[s] = contenedor.transform.InverseTransformPoint(transform.TransformPoint(pInner));
+            sOuter[s] = contenedor.transform.InverseTransformPoint(transform.TransformPoint(pOuter));
+            sDirRadial[s] = dirRadial;
+        }
+
+        for (int s = 0; s < segmentos; s++)
+        {
+            Vector3 i0 = sInner[s], i1 = sInner[s + 1];
+            Vector3 o0 = sOuter[s], o1 = sOuter[s + 1];
+            Vector3 nLi = sDirRadial[s], nRi = sDirRadial[s + 1];
+            Vector3 nLo = -sDirRadial[s], nRo = -sDirRadial[s + 1];
+            float h = alturaMuro;
+            int base_i;
+
+            // Cara interior
+            base_i = vertices.Count;
+            vertices.AddRange(new[] { i0, i0 + Vector3.up * h, i1, i1 + Vector3.up * h });
+            normales.AddRange(new[] { nLi, nLi, nRi, nRi });
+            triangulos.AddRange(new[] { base_i, base_i + 2, base_i + 1, base_i + 1, base_i + 2, base_i + 3 });
+
+            // Cara exterior
+            base_i = vertices.Count;
+            vertices.AddRange(new[] { o0, o0 + Vector3.up * h, o1, o1 + Vector3.up * h });
+            normales.AddRange(new[] { nLo, nLo, nRo, nRo });
+            triangulos.AddRange(new[] { base_i, base_i + 1, base_i + 2, base_i + 1, base_i + 3, base_i + 2 });
+
+            // Techo
+            base_i = vertices.Count;
+            vertices.AddRange(new[] { i0 + Vector3.up * h, o0 + Vector3.up * h, i1 + Vector3.up * h, o1 + Vector3.up * h });
+            normales.AddRange(new[] { Vector3.up, Vector3.up, Vector3.up, Vector3.up });
+            triangulos.AddRange(new[] { base_i, base_i + 2, base_i + 1, base_i + 1, base_i + 2, base_i + 3 });
+
+            // Piso
+            base_i = vertices.Count;
+            vertices.AddRange(new[] { i0, o0, i1, o1 });
+            normales.AddRange(new[] { Vector3.down, Vector3.down, Vector3.down, Vector3.down });
+            triangulos.AddRange(new[] { base_i, base_i + 1, base_i + 2, base_i + 1, base_i + 3, base_i + 2 });
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices.ToArray();
+        mesh.normals = normales.ToArray();
+        mesh.triangles = triangulos.ToArray();
+
+        GameObject dintelGO = new GameObject("Dintel_Boca");
+        dintelGO.transform.SetParent(contenedor.transform);
+        dintelGO.transform.localPosition = Vector3.zero;
+        dintelGO.transform.localRotation = Quaternion.identity;
+        dintelGO.AddComponent<MeshFilter>().mesh = mesh;
+        dintelGO.AddComponent<MeshRenderer>().sharedMaterial =
+            materialMuroBocaLogistica != null ? materialMuroBocaLogistica : MaterialMuro;
+    }
+
+
+
+
+
+
 
 }
