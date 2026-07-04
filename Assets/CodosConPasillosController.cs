@@ -1875,23 +1875,26 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         });
 
             vertsDer.AddRange(new[] {
-            puntosDer[i], puntosDer[i + 1],
-            puntosDer[i + 2], puntosDer[i + 3]
-        });
+    puntosDer[i],
+    puntosDer[i + 1],
+    puntosDer[i + 2],
+    puntosDer[i + 3]
+});
             int idxDer = vertsDer.Count - 4;
-            trisDer.AddRange(new[] {
-            idxDer, idxDer + 2, idxDer + 1,
-            idxDer + 1, idxDer + 2, idxDer + 3
-        });
+            // Cambiar de:
+            // trisDer.AddRange(new[] { idxDer, idxDer + 2, idxDer + 1, idxDer + 1, idxDer + 2, idxDer + 3 });
+            // A:
+            trisDer.AddRange(new[] { idxDer, idxDer + 1, idxDer + 2, idxDer + 1, idxDer + 3, idxDer + 2 });
+
+            // Cara trasera pared derecha (invertida)
             vertsDer.AddRange(new[] {
-            puntosDer[i], puntosDer[i + 1],
-            puntosDer[i + 2], puntosDer[i + 3]
-        });
+    puntosDer[i],
+    puntosDer[i + 1],
+    puntosDer[i + 2],
+    puntosDer[i + 3]
+});
             idxDer = vertsDer.Count - 4;
-            trisDer.AddRange(new[] {
-            idxDer, idxDer + 1, idxDer + 2,
-            idxDer + 1, idxDer + 3, idxDer + 2
-        });
+            trisDer.AddRange(new[] { idxDer, idxDer + 2, idxDer + 1, idxDer + 1, idxDer + 2, idxDer + 3 });
         }
 
         CrearMeshPared(contenedor, vertsIzq, trisIzq, "Pared_Izq_Boca", false);
