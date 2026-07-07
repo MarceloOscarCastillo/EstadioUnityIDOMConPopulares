@@ -1660,7 +1660,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     {        
         float anguloMedio = (anguloIzq + anguloDer) / 2f;
 
-        Debug.Log($"ESCALERA CODO - gameObject={gameObject.name}, anguloMedio={anguloMedio}");
+        //Debug.Log($"ESCALERA CODO - gameObject={gameObject.name}, anguloMedio={anguloMedio}");
 
         float rad = anguloMedio * Mathf.Deg2Rad;
 
@@ -1680,7 +1680,12 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         //Vector3 posBaseLocal = CalcularPunto(anguloMedio, radioInferior, filaInicio);
         posBaseLocal.y = yBase;
 
-        
+        float radioFila = radioInferior + filaInicio * anchoEscalon;
+        float circunferenciaFila = 2f * Mathf.PI * radioFila;
+        float gradosPasillo = (anchoPasilloVomito / circunferenciaFila) * 360f;
+        float anchoRealVomito = anchoPasilloVomito; // siempre 2 metros
+
+
         for (int e = 0; e < numPrefabsEscalera; e++)
         {
             float yEscalon = yBase - (e + 1) * altoEscalonVomito;
@@ -1691,6 +1696,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             posEscalonLocal.y = yEscalon + altoEscalonVomito / 2f;
 
             GameObject escalonGO = Instantiate(Escalera, contenedor.transform);
+
+            
             escalonGO.transform.position = transform.TransformPoint(posEscalonLocal);
 
             // Rotar para que el prefab quede orientado radialmente con 180° igual que SeatedStand
@@ -1698,16 +1705,16 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                 Quaternion.LookRotation(dirRadialLocal, Vector3.up) *
                 Quaternion.Euler(0, 180, 0);
 
-            //escalonGO.transform.localScale = new Vector3(
-            //    anchoPasilloVomito / 2f,
-            //    factorY,
-            //    profundidadEscalonVomito / anchoEscalon);
+            float anguloEntrePrefabYTangente = Vector3.Angle(escalonGO.transform.right,
+    transform.TransformDirection(dirTangenteLocal));
+            float factorCompensacion = 1f / Mathf.Cos(anguloEntrePrefabYTangente * Mathf.Deg2Rad);            
 
             escalonGO.transform.localScale = new Vector3(
-    anchoPasilloVomito / 2f,
+    anchoRealVomito / 2f * factorCompensacion,
     altoEscalonVomito / 0.4f,
     profundidadEscalonVomito / 0.8f);
 
+          
 
             if (GrisCemento != null)
                 AplicarMaterialATodo(escalonGO, GrisCemento);
@@ -1722,7 +1729,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         float diametro = 0.05f;
         float alturaBarandilla = 1.0f;
         float yBase = CalcularAlturaAcumulada(filaInicio);
-        float mitadAncho = anchoPasilloVomito / 4f;
+        float mitadAncho = anchoPasilloVomito / 2f;
 
         // Las dos barandillas estan separadas en direccion TANGENTE
         Vector3[] posicionesLado = {

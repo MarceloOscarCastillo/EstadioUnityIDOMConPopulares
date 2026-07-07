@@ -20537,9 +20537,9 @@ MonoBehaviour:
   prefabPalco: {fileID: 4240674913055047226, guid: 0c9417bd3f3dd2944b37bc0320d90118, type: 3}
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  capacidadTotal: 79402
-  capacidadPopulares: 65546
-  capacidadPlateas: 13112
+  capacidadTotal: 67571
+  capacidadPopulares: 43498
+  capacidadPlateas: 23329
   capacidadPalcos: 744
 --- !u!4 &1369841858
 Transform:
@@ -30152,7 +30152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45b3e5ed87db05348b206a087a2f9f52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EstadioConfigurator
-  varianteAActivar: 8
+  varianteAActivar: 6
   perfilesDeEstadio:
   - nombreVariante: 1
     sectoresActivos:
