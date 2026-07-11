@@ -125,6 +125,18 @@ public class SeatedStandGenerator : MonoBehaviour
     public Material materialBarandilla;
     public bool generarBarandillaEscalera = false;
 
+    [Header("Circulación")]
+    public bool generarCirculacion = false;
+    public float largoCirculacion = 75f;
+    public float profundidadCirculacion = 11f;
+    public float yCirculacion = 1f;
+    public float offsetXCirculacion = 0f;
+    public float offsetZCirculacion = 0f;
+    public Material materialCirculacion;
+    public bool generarMuroCirculacion = false;
+    public float alturaMuroCirculacion = 1.4f;
+    public Material materialMuroCirculacion;
+
 
     private float zMuroFrontalCalculado = 0f;
 
@@ -286,6 +298,8 @@ public class SeatedStandGenerator : MonoBehaviour
 
             GenerarVigasTransversales(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
         }
+
+        if (generarCirculacion) GenerarCirculacion(multZ, contenedor.transform);
 
         foreach (Transform hijo in contenedor.GetComponentsInChildren<Transform>())
         {
@@ -1569,5 +1583,41 @@ public class SeatedStandGenerator : MonoBehaviour
 
         if (materialBarandilla != null)
             caño.GetComponent<Renderer>().sharedMaterial = materialBarandilla;
+    }
+
+    void GenerarCirculacion(float mZ, Transform padre)
+    {
+        if (!generarCirculacion) return;
+
+        GameObject circulacionGO = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        circulacionGO.name = "Circulacion";
+        circulacionGO.transform.SetParent(padre);
+        circulacionGO.transform.localScale = new Vector3(largoCirculacion, 0.1f, profundidadCirculacion);
+        circulacionGO.transform.position = transform.TransformPoint(
+            new Vector3(offsetXCirculacion, yCirculacion, offsetZCirculacion * mZ));
+        circulacionGO.transform.rotation = transform.rotation;
+
+        if (materialCirculacion != null)
+            circulacionGO.GetComponent<Renderer>().sharedMaterial = materialCirculacion;
+
+        DestroyImmediate(circulacionGO.GetComponent<BoxCollider>());
+
+        if (generarMuroCirculacion)
+        {
+            GameObject muroGO = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            muroGO.name = "Muro_Circulacion";
+            muroGO.transform.SetParent(padre);
+            muroGO.transform.localScale = new Vector3(largoCirculacion, alturaMuroCirculacion, 0.1f);
+            muroGO.transform.position = transform.TransformPoint(
+                new Vector3(offsetXCirculacion,
+                            yCirculacion + alturaMuroCirculacion / 2f,
+                            (offsetZCirculacion + profundidadCirculacion / 2f) * mZ));
+            muroGO.transform.rotation = transform.rotation;
+
+            if (materialMuroCirculacion != null)
+                muroGO.GetComponent<Renderer>().sharedMaterial = materialMuroCirculacion;
+
+            DestroyImmediate(muroGO.GetComponent<BoxCollider>());
+        }
     }
 }
