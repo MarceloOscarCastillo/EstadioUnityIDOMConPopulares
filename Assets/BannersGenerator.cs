@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class CampoDeJuego : MonoBehaviour
 {
+    [Header("Filtros de Contenedores")]
+    public string tagContenedores = "SectorEstadio";
+
     [Header("Referencias")]
     public Transform futbolField;
     public GameObject prefabCartel;
@@ -33,6 +36,7 @@ public class CampoDeJuego : MonoBehaviour
 
         GameObject contenedor = new GameObject(NOMBRE_CONTENEDOR);
         contenedor.transform.SetParent(this.transform);
+        contenedor.tag = tagContenedores;
 
         Vector3 dirX = futbolField.right;
         Vector3 dirZ = futbolField.forward;

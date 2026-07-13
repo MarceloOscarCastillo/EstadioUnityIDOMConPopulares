@@ -4,6 +4,9 @@ using UnityEditor;
 
 public class GeneradorEscaleraGiratoria : MonoBehaviour
 {
+    [Header("Filtros de Contenedores")]
+    public string tagContenedores = "SectorEstadio";
+
     [Header("Prefab del Escalón")]
     public GameObject prefabEscalon;
 
@@ -39,7 +42,7 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
     public int cantidadRepeticiones = 1; // 1 = una sola U, 2 = dos U apiladas, etc.
 
     private Material materialEscalera;
-    private const string NOMBRE_CONTENEDOR = "Escalinata_Externa";
+    private const string NOMBRE_CONTENEDOR = "Escalinata_Interna";
 
     // Tracking de direccion actual
     private bool subiendo_en_Z_positivo = true; // true = avanza en Z+, false = avanza en Z-
@@ -55,6 +58,7 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
 
         GameObject contenedorPadre = new GameObject(NOMBRE_CONTENEDOR);
         contenedorPadre.transform.SetParent(this.transform, false);
+        contenedorPadre.tag = tagContenedores;
         Undo.RegisterCreatedObjectUndo(contenedorPadre, "Generar Escalera");
 
         // Resetear estado

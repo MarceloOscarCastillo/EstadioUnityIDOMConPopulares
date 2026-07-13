@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class StandsDoorsAndWallsScript : MonoBehaviour
 {
-    
-    
+    [Header("Filtros de Contenedores")]
+    public string tagContenedores = "SectorEstadio";
+
     [Header("Prefab")]
     public GameObject prefabGateway;
 
@@ -30,6 +31,7 @@ public class StandsDoorsAndWallsScript : MonoBehaviour
 
         GameObject contenedor = new GameObject(NOMBRE_CONTENEDOR);
         contenedor.transform.SetParent(this.transform, false);
+        contenedor.tag = tagContenedores;
 
         float mitadAltoGateway = altoGateway / 2f;
         float xActual = 0f;

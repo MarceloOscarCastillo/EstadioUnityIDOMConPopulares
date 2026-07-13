@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class PielEstadio : MonoBehaviour
 {
+    [Header("Filtros de Contenedores")]
+    public string tagContenedores = "SectorEstadio";
+
     [Header("Prefab")]
     public GameObject prefabPiel;
 
@@ -24,6 +27,7 @@ public class PielEstadio : MonoBehaviour
 
         GameObject contenedor = new GameObject(NOMBRE_CONTENEDOR);
         contenedor.transform.SetParent(this.transform);
+        contenedor.tag = tagContenedores;
 
         // Usar el transform del controller como referencia
         Vector3 dirX = transform.right;

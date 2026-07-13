@@ -133,11 +133,13 @@ public void AplicarConfiguracionEstadio()
     {
         foreach (MonoBehaviour sector in perfilElegido.sectoresActivos)
         {
-            if (sector is StandGenerator sg) sg.GenerarSector();
+                Debug.Log($"Sector en perfil: {sector?.gameObject.name}, tipo: {sector?.GetType().Name}");
+                if (sector is StandGenerator sg) sg.GenerarSector();
             else if (sector is SeatedStandGenerator ssg) ssg.GenerarSector();
             else if (sector is UpperCurveStandWithWalkpathScript uc) uc.GenerarCodo();
             else if (sector is PalcosBuilderScript pb) pb.GenerarPalcos();
-        }
+                else if (sector is SharedComponentsController sc) sc.GenerarComponentesCompartidos();
+            }
     }
 
     // 2. Juntamos una lista maestra de TODOS los controladores que existen en tu estadio
@@ -170,6 +172,8 @@ public void AplicarConfiguracionEstadio()
         foreach (var s in Object.FindObjectsByType<SeatedStandGenerator>(FindObjectsSortMode.None)) listaMaestra.Add(s);
         foreach (var s in Object.FindObjectsByType<UpperCurveStandWithWalkpathScript>(FindObjectsSortMode.None)) listaMaestra.Add(s);
         foreach (var s in Object.FindObjectsByType<PalcosBuilderScript>(FindObjectsSortMode.None)) listaMaestra.Add(s);
+        foreach (var s in Object.FindObjectsByType<SharedComponentsController>(FindObjectsSortMode.None))
+            listaMaestra.Add(s);
 
         return listaMaestra;
     }
@@ -200,6 +204,24 @@ public void AplicarConfiguracionEstadio()
                         Destroy(hijo.gameObject);
                     else
                         DestroyImmediate(hijo.gameObject);
+                }
+            }
+        }
+
+        if (controller is SharedComponentsController sc)
+        {
+            foreach (MonoBehaviour componente in sc.componentesCompartidos)
+            {
+                if (componente == null) continue;
+                foreach (Transform hijo in componente.transform)
+                {
+                    if (hijo.CompareTag("SectorEstadio"))
+                    {
+                        if (activar)
+                            hijo.gameObject.SetActive(true);
+                        else
+                            DestroyImmediate(hijo.gameObject);
+                    }
                 }
             }
         }
@@ -286,10 +308,12 @@ public void AplicarConfiguracionEstadio()
 
     private void GenerarSector(MonoBehaviour sector)
     {
+        Debug.Log($"GenerarSector llamado para: {sector?.gameObject.name}, tipo: {sector?.GetType().Name}");
         if (sector is StandGenerator sg) sg.GenerarSector();
         else if (sector is SeatedStandGenerator ssg) ssg.GenerarSector();
         else if (sector is UpperCurveStandWithWalkpathScript uc) uc.GenerarCodo();
         else if (sector is PalcosBuilderScript pb) pb.GenerarPalcos();
+        else if (sector is SharedComponentsController sc) sc.GenerarComponentesCompartidos();
     }
 
     [ContextMenu("Limpiar Escena")]
@@ -303,7 +327,21 @@ public void AplicarConfiguracionEstadio()
                 if (hijo.CompareTag("SectorEstadio"))
                     DestroyImmediate(hijo.gameObject);
             }
+
+            if (sector is SharedComponentsController sc)
+            {
+                foreach (MonoBehaviour componente in sc.componentesCompartidos)
+                {
+                    if (componente == null) continue;
+                    foreach (Transform hijo in componente.transform)
+                    {
+                        if (hijo.CompareTag("SectorEstadio"))
+                            DestroyImmediate(hijo.gameObject);
+                    }
+                }
+            }
         }
+        
         Debug.Log("[EstadioConfigurator] Escena limpiada.");
     }
 

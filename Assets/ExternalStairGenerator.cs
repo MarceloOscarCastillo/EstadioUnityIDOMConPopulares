@@ -4,6 +4,9 @@ using UnityEditor;
 
 public class GeneradorEscaleraArquitectonica : MonoBehaviour
 {
+    [Header("Filtros de Contenedores")]
+    public string tagContenedores = "SectorEstadio";
+
     [Header("Prefab del Escalón")]
     public GameObject prefabEscalon;
 
@@ -52,6 +55,8 @@ public class GeneradorEscaleraArquitectonica : MonoBehaviour
         GameObject contenedorPadre = new GameObject(NOMBRE_CONTENEDOR);
 
         contenedorPadre.transform.SetParent(this.transform, false);
+
+        contenedorPadre.tag = tagContenedores;
 
         Undo.RegisterCreatedObjectUndo(contenedorPadre, "Generar Escalera");
 
