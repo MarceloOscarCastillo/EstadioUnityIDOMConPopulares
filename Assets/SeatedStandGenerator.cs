@@ -148,8 +148,8 @@ public class SeatedStandGenerator : MonoBehaviour
 
     void Start()
     {
-        if (Application.isPlaying)
-            GenerarSector();
+        //if (Application.isPlaying)
+        //    GenerarSector();
     }
 
     public void GenerarSector()

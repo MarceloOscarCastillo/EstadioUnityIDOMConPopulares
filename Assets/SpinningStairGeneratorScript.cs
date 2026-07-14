@@ -89,7 +89,13 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
                 bool esPrevioAlDescanso2 = usarSegundoDescanso && (filaActual == filaPreviaADescanso2);
 
                 // Instanciar escalon
-                GameObject escalonObj = PrefabUtility.InstantiatePrefab(prefabEscalon, contenedorPadre.transform) as GameObject;
+                //GameObject escalonObj = PrefabUtility.InstantiatePrefab(prefabEscalon, contenedorPadre.transform) as GameObject;
+
+                GameObject escalonObj = Application.isPlaying
+                ? Instantiate(prefabEscalon, contenedorPadre.transform)
+                : PrefabUtility.InstantiatePrefab(prefabEscalon, contenedorPadre.transform) as GameObject;
+
+
                 escalonObj.name = $"Escalon_Rep{rep}_Fila_{filaActual}";
 
                 float dirZ = subiendo_en_Z_positivo ? 1f : -1f;
@@ -145,8 +151,10 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
             GenerarMurallaRampaContinua(nodosExt, "Muralla_Externa", contenedorPadre);
             GenerarMurallaRampaContinua(nodosInt, "Muralla_Interna", contenedorPadre);
         }
-
-        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(this.gameObject.scene);
+        
+        if (!Application.isPlaying)
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(this.gameObject.scene);
+        //UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(this.gameObject.scene);
     }
 
     void ProcesarDescanso(ref Vector3 posPuntero, float profDescanso, bool girar, bool girarDerecha,
@@ -345,6 +353,10 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
     private void LimpiarEscaleraAntigua()
     {
         Transform t = this.transform.Find(NOMBRE_CONTENEDOR);
-        if (t != null) Undo.DestroyObjectImmediate(t.gameObject);
+
+        if (t == null) return;
+
+        if (Application.isPlaying) Destroy(t.gameObject);
+        else Undo.DestroyObjectImmediate(t.gameObject);        
     }
 }

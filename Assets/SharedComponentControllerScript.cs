@@ -8,8 +8,8 @@ public class SharedComponentsController : MonoBehaviour
 
     void Start()
     {
-        if (Application.isPlaying)
-            GenerarComponentesCompartidos();
+        //if (Application.isPlaying)
+        //    GenerarComponentesCompartidos();
     }
 
     [ContextMenu("Generar Componentes")]

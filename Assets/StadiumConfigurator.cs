@@ -178,18 +178,6 @@ public void AplicarConfiguracionEstadio()
         return listaMaestra;
     }
 
-    //version para modo juego, comentada
-    //private void SetearEstadoSector(MonoBehaviour controller, bool activar)
-    //{
-    //    foreach (Transform hijo in controller.transform)
-    //    {
-    //        if (hijo.CompareTag("SectorEstadio"))
-    //        {
-    //            hijo.gameObject.SetActive(activar);
-    //        }
-    //    }
-    //}
-
     private void SetearEstadoSector(MonoBehaviour controller, bool activar)
     {
         foreach (Transform hijo in controller.transform)
@@ -230,9 +218,9 @@ public void AplicarConfiguracionEstadio()
 
     void Start()
     {
-       
-        // Comentar todos los Start() de los generadores antes de usar esto
-        //StartCoroutine(GenerarYConfigurar());
+
+        //Comentar todos los Start() de los generadores antes de usar esto
+        StartCoroutine(GenerarYConfigurar());
     }
 
     public System.Collections.IEnumerator GenerarYConfigurar()

@@ -58,7 +58,11 @@ public class GeneradorEscaleraArquitectonica : MonoBehaviour
 
         contenedorPadre.tag = tagContenedores;
 
-        Undo.RegisterCreatedObjectUndo(contenedorPadre, "Generar Escalera");
+        if (!Application.isPlaying) 
+        {
+            Undo.RegisterCreatedObjectUndo(contenedorPadre, "Generar Escalera");
+        }
+            
 
         // Lista de nodos limpia para la rampa recta de la muralla (solo esquinas)
         List<Vector3> nodosPendiente = new List<Vector3>();
@@ -76,7 +80,12 @@ public class GeneradorEscaleraArquitectonica : MonoBehaviour
             int filaActual = escalonesColocados + 1;
 
             // Instanciar el escalón
-            GameObject escalonObj = PrefabUtility.InstantiatePrefab(prefabEscalon, contenedorPadre.transform) as GameObject;
+            //GameObject escalonObj = PrefabUtility.InstantiatePrefab(prefabEscalon, contenedorPadre.transform) as GameObject;
+
+            GameObject escalonObj = Application.isPlaying
+    ? Instantiate(prefabEscalon, contenedorPadre.transform)
+    : PrefabUtility.InstantiatePrefab(prefabEscalon, contenedorPadre.transform) as GameObject;
+
 
             escalonObj.name = $"Escalon_Fila_{filaActual}";
 
@@ -162,7 +171,10 @@ public class GeneradorEscaleraArquitectonica : MonoBehaviour
             GenerarMurallaRampaContinua(nodosPendiente, xDerecha, anchoMuralla, "Muralla_Derecha", contenedorPadre);
         }
 
-        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(this.gameObject.scene);
+        //UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(this.gameObject.scene);
+
+        if (!Application.isPlaying)
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(this.gameObject.scene);
     }
     private void GenerarDescansoSolido(Vector3 inicio, Vector3 fin, GameObject padre, string nombre)
     {
@@ -296,6 +308,13 @@ new Vector3(xDer, inicio.y - espesorBajo, fin.z) };
     private void LimpiarEscaleraAntigua()
     {
         Transform t = this.transform.Find(NOMBRE_CONTENEDOR);
-        if (t != null) Undo.DestroyObjectImmediate(t.gameObject);
+
+        //if (t != null) Undo.DestroyObjectImmediate(t.gameObject);
+
+        if (t != null)
+        {
+            if (Application.isPlaying) Destroy(t.gameObject);
+            else Undo.DestroyObjectImmediate(t.gameObject);
+        }
     }
 }
