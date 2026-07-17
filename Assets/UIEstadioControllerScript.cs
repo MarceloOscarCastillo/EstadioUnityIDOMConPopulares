@@ -13,6 +13,7 @@ public class UIEstadioController : MonoBehaviour
     public TextMeshProUGUI textPopulares;
     public TextMeshProUGUI textPlateas;
     public TextMeshProUGUI textPalcos;
+    public TextMeshProUGUI textNombreVariante;
     public Button buttonHome;
 
     [Header("Referencias de Sistema")]
@@ -24,6 +25,9 @@ public class UIEstadioController : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"UIEstadioController Start - instanceID: {this.GetInstanceID()}");
+        Debug.Log($"textNombreVariante en Start: {textNombreVariante}");
+
         // Estado inicial: mostrando carga
         panelCarga.SetActive(false);
         panelStats.SetActive(false);
@@ -37,10 +41,17 @@ public class UIEstadioController : MonoBehaviour
         panelStats.SetActive(false);
     }
 
-    public void MostrarStats()
+    public void MostrarStats(string nombreVariante = "")
     {
         panelCarga.SetActive(false);
         panelStats.SetActive(true);
+
+        
+        if (textNombreVariante != null) 
+        {
+            textNombreVariante.text = $"Variante: {nombreVariante}";            
+        }
+            
 
         ActualizarTextos();
     }

@@ -220,7 +220,7 @@ public void AplicarConfiguracionEstadio()
     {
 
         //Comentar todos los Start() de los generadores antes de usar esto
-        StartCoroutine(GenerarYConfigurar());
+        //StartCoroutine(GenerarYConfigurar());
     }
 
     public System.Collections.IEnumerator GenerarYConfigurar()
@@ -291,7 +291,8 @@ public void AplicarConfiguracionEstadio()
         perfilAnterior = perfilNuevo;
 
         AplicarConfiguracionEstadio();
-        if (ui != null) ui.MostrarStats();
+        //if (ui != null) ui.MostrarStats();
+        if (ui != null) ui.MostrarStats(varianteAActivar.ToString());
     }
 
     private void GenerarSector(MonoBehaviour sector)
