@@ -20,6 +20,20 @@ public class EstadioConfigurator : MonoBehaviour
     }
 
     [System.Serializable]
+    public struct DatosVariante
+    {
+        public string nombre;
+        public int capacidadTotal;
+        public int capacidadPopulares;
+        public int capacidadPlateas;
+        public int capacidadPalcos;
+    }
+
+    // Como variable de instancia:
+    [HideInInspector]
+    public List<DatosVariante> variantesConsultadas = new List<DatosVariante>();
+
+    [System.Serializable]
     public struct PerfilEstadio
     {
         [Tooltip("Nombre de la variante que estás configurando (Ej: Estadio Grande)")]
@@ -41,64 +55,6 @@ public class EstadioConfigurator : MonoBehaviour
 
     private TipoConfiguracion? varianteAnterior = null;
     private PerfilEstadio perfilAnterior;
-
-
-    //PARA MODO JUEGO
-    //[ContextMenu("Aplicar Configuración Seleccionada")]
-    //public void AplicarConfiguracionEstadio()
-    //{
-    //    if (perfilesDeEstadio == null || perfilesDeEstadio.Count == 0)
-    //    {
-    //        Debug.LogWarning("No hay perfiles configurados en el Inspector.");
-    //        return;
-    //    }
-
-    //    // 1. Buscamos el perfil que elegiste en el menú desplegable
-    //    PerfilEstadio perfilElegido = default;
-    //    bool encontrado = false;
-
-    //    foreach (PerfilEstadio perfil in perfilesDeEstadio)
-    //    {
-    //        if (perfil.nombreVariante == varianteAActivar)
-    //        {
-    //            perfilElegido = perfil;
-    //            encontrado = true;
-    //            break;
-    //        }
-    //    }
-
-    //    if (!encontrado)
-    //    {
-    //        Debug.LogError($"No creaste ningún perfil en la lista para la variante: {varianteAActivar}");
-    //        return;
-    //    }
-
-    //    // 2. Juntamos una lista maestra de TODOS los controladores que existen en tu estadio
-    //    // para saber a quiénes tenemos que apagar.
-    //    HashSet<MonoBehaviour> todosLosSectoresDelEstadio = ObtenerTodosLosSectores();
-    //    Debug.Log($"Total sectores encontrados: {todosLosSectoresDelEstadio.Count}");
-
-
-    //    // 3. Prendemos o apagamos cada objeto de la escena según corresponda
-    //    foreach (MonoBehaviour sector in todosLosSectoresDelEstadio)
-    //    {
-    //        if (sector == null) continue;
-
-    //        // Si este sector específico está en la lista de la variante elegida, se prende. Si no, se apaga.
-    //        bool debeActivarse = perfilElegido.sectoresActivos.Contains(sector);
-    //        Debug.Log($"Sector: {sector.gameObject.name}, debeActivarse: {debeActivarse}");
-
-    //        Debug.Log($"Sector: {sector.gameObject.name}, en lista: {perfilElegido.sectoresActivos.Contains(sector)}, cantidad en lista: {perfilElegido.sectoresActivos.Count}");
-
-    //        SetearEstadoSector(sector, debeActivarse);
-    //    }
-
-    //    // Recalcular la capacidad global automáticamente
-    //    ContadorDeCapacidad contador = Object.FindFirstObjectByType<ContadorDeCapacidad>();
-    //    if (contador != null) contador.CalcularCapacidad();
-
-    //    Debug.Log($"[EstadioConfigurator] Se aplicó la variante '{varianteAActivar}'. Se encendieron {perfilElegido.sectoresActivos.Count} controladores.");
-    //}
 
     [ContextMenu("Aplicar Configuración Seleccionada")]
 public void AplicarConfiguracionEstadio()
@@ -157,7 +113,25 @@ public void AplicarConfiguracionEstadio()
 
     // Recalcular la capacidad global automáticamente
     ContadorDeCapacidad contador = Object.FindFirstObjectByType<ContadorDeCapacidad>();
-    if (contador != null) contador.CalcularCapacidad();
+        if (contador != null) 
+        {  
+            contador.CalcularCapacidad();
+
+            DatosVariante datos = new DatosVariante
+            {
+                nombre = varianteAActivar.ToString(),
+                capacidadTotal = contador.capacidadTotal,
+                capacidadPopulares = contador.capacidadPopulares,
+                capacidadPlateas = contador.capacidadPlateas,
+                capacidadPalcos = contador.capacidadPalcos
+            };
+
+            int idx = variantesConsultadas.FindIndex(v => v.nombre == datos.nombre);
+            if (idx >= 0) variantesConsultadas[idx] = datos;
+            else variantesConsultadas.Add(datos);
+
+            Debug.Log($"Variante guardada: {datos.nombre}, Total: {datos.capacidadTotal}, Populares: {datos.capacidadPopulares}, Plateas: {datos.capacidadPlateas}, Palcos: {datos.capacidadPalcos}");
+        }
 
     Debug.Log($"[EstadioConfigurator] Se aplicó la variante '{varianteAActivar}'. Se encendieron {perfilElegido.sectoresActivos.Count} controladores.");
 }

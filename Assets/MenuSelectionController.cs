@@ -18,6 +18,10 @@ public class MenuSeleccionController : MonoBehaviour
     public EstadioConfigurator configurator;
     public UIEstadioController uiEstadio;
 
+    [Header("Referencias Recaudaciones")]
+    public Button buttonRecaudaciones;
+    public RecaudacionesController recaudacionesController;
+
     // Diccionario de nombres cortos
     private Dictionary<EstadioConfigurator.TipoConfiguracion, string> nombresCortos =
         new Dictionary<EstadioConfigurator.TipoConfiguracion, string>()
@@ -67,6 +71,8 @@ public class MenuSeleccionController : MonoBehaviour
     {
         panelTooltip.SetActive(false);
         GenerarCards();
+
+        buttonRecaudaciones.onClick.AddListener(OnRecaudacionesClick);
     }
 
     void GenerarCards()
@@ -115,5 +121,12 @@ public class MenuSeleccionController : MonoBehaviour
         configurator.varianteAActivar = variante;
         canvasMenu.SetActive(false);
         StartCoroutine(configurator.GenerarYConfigurar());
+    }
+
+    void OnRecaudacionesClick()
+    {
+        Debug.Log($"OnRecaudacionesClick, recaudacionesController={recaudacionesController}");
+        canvasMenu.SetActive(false);
+        recaudacionesController.MostrarPantalla();
     }
 }
