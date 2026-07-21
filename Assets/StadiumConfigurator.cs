@@ -8,7 +8,7 @@ public class EstadioConfigurator : MonoBehaviour
     {
         Inauguracion,
         EstadioPopularesSoloCabecerasYCodosInferiores,
-        EstadioPopularesCabecerasYCodosInferioresY2CodosSuperiores,
+        EstadioPopularesEn2CodosSuperiores,
         EstadioConPopularLateralBaja,
         EstadioTodosLosCodosPopulares,
         EstadioConPopularLateralAlta,
@@ -22,6 +22,7 @@ public class EstadioConfigurator : MonoBehaviour
     [System.Serializable]
     public struct DatosVariante
     {
+        public TipoConfiguracion variante;
         public string nombre;
         public int capacidadTotal;
         public int capacidadPopulares;
@@ -119,6 +120,7 @@ public void AplicarConfiguracionEstadio()
 
             DatosVariante datos = new DatosVariante
             {
+                variante = varianteAActivar,
                 nombre = varianteAActivar.ToString(),
                 capacidadTotal = contador.capacidadTotal,
                 capacidadPopulares = contador.capacidadPopulares,
@@ -266,7 +268,7 @@ public void AplicarConfiguracionEstadio()
 
         AplicarConfiguracionEstadio();
         //if (ui != null) ui.MostrarStats();
-        if (ui != null) ui.MostrarStats(varianteAActivar.ToString());
+        if (ui != null) ui.MostrarStats(NombresVariantes.ObtenerNombre(varianteAActivar));
     }
 
     private void GenerarSector(MonoBehaviour sector)

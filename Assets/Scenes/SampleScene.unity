@@ -1858,8 +1858,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3154,6 +3154,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Populares
       objectReference: {fileID: 0}
+    - target: {fileID: 1799514747771516363, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 280
+      objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3164,7 +3168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3172,7 +3176,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_AnchorMin.y
@@ -3180,7 +3184,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1720
+      value: 1920
       objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_SizeDelta.y
@@ -3234,6 +3238,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3042233207510590929, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 3043254035746407784, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: textNombre
       value: 
@@ -3242,17 +3250,53 @@ PrefabInstance:
       propertyPath: m_text
       value: Palcos
       objectReference: {fileID: 0}
+    - target: {fileID: 5486093138383551358, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_ChildControlWidth
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5865682234370825490, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_text
       value: Plateas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6519569747674446580, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 280
       objectReference: {fileID: 0}
     - target: {fileID: 6749837905139394009, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_text
       value: Nombre
       objectReference: {fileID: 0}
+    - target: {fileID: 6749837905139394009, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_fontSize
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 6749837905139394009, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 7185392316559859126, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 280
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475796767403731349, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 280
+      objectReference: {fileID: 0}
     - target: {fileID: 8721266155366200670, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_text
       value: "Recaudaci\xF3n"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721266155366200670, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_fontSize
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721266155366200670, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 8801144135176073602, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 280
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3043254035746407784, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
@@ -4301,7 +4345,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -7399,8 +7443,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -9789,8 +9833,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -11568,8 +11612,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -20136,7 +20180,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 400, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1092249809
 MonoBehaviour:
@@ -20195,7 +20239,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 3
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 20
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -21653,8 +21697,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -22294,8 +22338,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -27199,7 +27243,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 400, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1376730746
 MonoBehaviour:
@@ -27258,7 +27302,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 3
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 20
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -31492,7 +31536,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -500}
-  m_SizeDelta: {x: 200, y: 400}
+  m_SizeDelta: {x: 0, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1635910571
 MonoBehaviour:
@@ -31537,7 +31581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9716981, g: 0.0779192, b: 0.0779192, a: 0.392}
+  m_Color: {r: 0.7924528, g: 0.056069765, b: 0.056069765, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -39021,7 +39065,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 400, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2038118647
 MonoBehaviour:
@@ -39080,7 +39124,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 3
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 20
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:

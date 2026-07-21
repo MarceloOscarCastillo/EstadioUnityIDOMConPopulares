@@ -73,7 +73,7 @@ public class RecaudacionesController : MonoBehaviour
             GameObject fila = Instantiate(prefabFilaTabla, contenedorTabla);
             FilaTablaRecaudaciones filaScript = fila.GetComponent<FilaTablaRecaudaciones>();
             if (filaScript != null)
-                filaScript.Configurar(datos.nombre, datos.capacidadTotal,
+                filaScript.Configurar(NombresVariantes.ObtenerNombre((EstadioConfigurator.TipoConfiguracion)System.Enum.Parse(typeof(EstadioConfigurator.TipoConfiguracion), datos.nombre)), datos.capacidadTotal,
                     datos.capacidadPopulares, datos.capacidadPlateas,
                     datos.capacidadPalcos, recaudacion);
         }

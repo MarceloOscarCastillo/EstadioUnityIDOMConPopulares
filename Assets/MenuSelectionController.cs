@@ -28,7 +28,7 @@ public class MenuSeleccionController : MonoBehaviour
     {
         { EstadioConfigurator.TipoConfiguracion.Inauguracion, "Inauguración" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores, "Populares Solo Cabeceras" },
-        { EstadioConfigurator.TipoConfiguracion.EstadioPopularesCabecerasYCodosInferioresY2CodosSuperiores, "Populares Cabeceras y 2 Codos Sup." },
+        { EstadioConfigurator.TipoConfiguracion.EstadioPopularesEn2CodosSuperiores, "Populares Cabeceras y 2 Codos Sup." },
         { EstadioConfigurator.TipoConfiguracion.EstadioConPopularLateralBaja, "Popular Lateral Baja" },
         { EstadioConfigurator.TipoConfiguracion.EstadioTodosLosCodosPopulares, "Todos los Codos Populares" },
         { EstadioConfigurator.TipoConfiguracion.EstadioConPopularLateralAlta, "Popular Lateral Alta" },
@@ -47,7 +47,7 @@ public class MenuSeleccionController : MonoBehaviour
             "Configuración que permite alcanzar los 60.000 espectadores sin haber construido los codos superiores.\n\nConsiste en 2 cabeceras de populares, los 4 codos inferiores también son populares, así como los dos sectores sobre José Mármol.\n\nLas plateas están todas sobre Avenida La Plata.\n\nEl estadio podría inaugurarse así." },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores,
             "Esta versión tiene populares sólo en las cabeceras y en los codos inferiores. Los 4 codos superiores son plateas.\n\nTodas las tribunas laterales tienen asientos." },
-        { EstadioConfigurator.TipoConfiguracion.EstadioPopularesCabecerasYCodosInferioresY2CodosSuperiores,
+        { EstadioConfigurator.TipoConfiguracion.EstadioPopularesEn2CodosSuperiores,
             "Esta versión tiene populares en las cabeceras, en los codos inferiores y en 2 de los codos superiores, del lado de la calle Inclán.\n\nTodas las tribunas laterales tienen asientos." },
         { EstadioConfigurator.TipoConfiguracion.EstadioConPopularLateralBaja,
             "Esta versión tiene populares en las cabeceras, en los codos inferiores y en 2 de los codos superiores, del lado de la calle Inclán.\n\nTodas las tribunas laterales tienen asientos con la excepción de la tribuna baja sobre Mármol." },
