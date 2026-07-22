@@ -3188,7 +3188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 40
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1915445625168928403, guid: 5174d07df4363ab43b31319313988bb0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7537,12 +7537,24 @@ PrefabInstance:
       value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: ground0Level
+      value: 
+      objectReference: {fileID: 1730792205}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: MaterialVigas
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
       value: 15.7
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: generarSoportes
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: invertirSentido
@@ -9399,12 +9411,24 @@ PrefabInstance:
       value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: ground0Level
+      value: 
+      objectReference: {fileID: 1730792205}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: MaterialVigas
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
       value: 15.7
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: generarSoportes
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: invertirSentido
@@ -11585,7 +11609,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Precio Popular
+  m_text: Introduzca Precio Popular
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -19807,7 +19831,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_fontColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -22311,7 +22335,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Precio tribuna popular\u200B"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -32161,7 +32185,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.0627451, g: 0.101960786, b: 0.92941177, a: 1}
+    m_NormalColor: {r: 0.745283, g: 0.18632075, b: 0.39497742, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -33350,12 +33374,24 @@ PrefabInstance:
       value: 32
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: ground0Level
+      value: 
+      objectReference: {fileID: 1730792205}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: MaterialVigas
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
       value: 15.7
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: generarSoportes
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: invertirSentido
@@ -33396,6 +33432,10 @@ PrefabInstance:
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarMurosLaterales
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: generarParaavalanchas
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLibresAlrededor
@@ -36025,12 +36065,24 @@ PrefabInstance:
       value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: ground0Level
+      value: 
+      objectReference: {fileID: 1730792205}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: MaterialVigas
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
       value: 15.7
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: generarSoportes
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: invertirSentido
