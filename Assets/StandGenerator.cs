@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class StandGenerator : MonoBehaviour
 {
     public GameObject prefabEscalon;
-    
+
 
     [Header("Dimensiones del Escalón")]
     public float altoEscalon = 0.20f;
@@ -19,10 +20,16 @@ public class StandGenerator : MonoBehaviour
     public bool inverter = false;
 
     [Header("Configuración de Bocas de Salida")]
+    public bool distribuirVomitosHomogeneamente = false;
+    public float offsetInicioVomitos = 0f;
     public int piezasEntreBocas = 20;
     public int anchoBoca = 3;
     public int filaInicioBoca = 5;
     public int altoBoca = 4;
+    public bool tieneSegundaFilaVomitos = false;
+    public int filaInicioBoca2 = 25;
+    public int vomitosPrimeraFila = 3;
+    public int vomitosSegundaFila = 3;
 
     [Header("Muro Superior (Cabeceras)")]
     public bool generarMuroSuperior = false;
@@ -144,7 +151,7 @@ public class StandGenerator : MonoBehaviour
     [ContextMenu("Generar Sector")]
     public void GenerarSector()
     {
-        
+
         // 1. LIMPIEZA USANDO EL CONTENEDOR
         Transform contenedorViejo = transform.Find("Contenedor_Cabecera");
         if (contenedorViejo != null)
@@ -160,10 +167,25 @@ public class StandGenerator : MonoBehaviour
 
         float multiplicadorZ = inverter ? -1f : 1f;
 
+
+        List<float> posicionesVomitos1 = new List<float>();
+        List<float> posicionesVomitos2 = new List<float>();
+        float anchoTotalTribuna = piezasPorFila * anchoDeUnaPieza;
+
+        if (distribuirVomitosHomogeneamente)
+        {
+            for (int v = 1; v <= vomitosPrimeraFila; v++)
+                posicionesVomitos1.Add(anchoTotalTribuna * v / (vomitosPrimeraFila + 1));
+            if (tieneSegundaFilaVomitos)
+                for (int v = 1; v <= vomitosSegundaFila; v++)
+                    posicionesVomitos2.Add(anchoTotalTribuna * v / (vomitosSegundaFila + 1));
+        }
+
         // 3. GENERACIÓN DE ESCALONES
         for (int f = 0; f < numFilas; f++)
         {
-            bool esEspacioDeBocaVertical = (f >= filaInicioBoca && f < filaInicioBoca + altoBoca);
+            bool esEspacioDeBocaVertical = (f >= filaInicioBoca && f < filaInicioBoca + altoBoca) ||
+            (tieneSegundaFilaVomitos && f >= filaInicioBoca2 && f < filaInicioBoca2 + altoBoca);
 
             bool correspondeParaEnEstaFila = generarParaavalanchas &&
                                             f >= filaInicioPara &&
@@ -182,7 +204,10 @@ public class StandGenerator : MonoBehaviour
             {
                 float posicionXMetros = e * anchoDeUnaPieza;
                 bool esFranjaAzul = (Mathf.FloorToInt(posicionXMetros / anchoFranja) % 2 == 0);
-                bool esEspacioDeBocaHorizontal = (e % piezasEntreBocas) < anchoBoca;
+
+                bool esEspacioDeBocaHorizontal = distribuirVomitosHomogeneamente
+    ? EsHuecoVomito(posicionXMetros, posicionesVomitos1)
+    : EsHuecoVomitoTradicional(posicionXMetros);
 
                 if (esEspacioDeBocaHorizontal && esEspacioDeBocaVertical) continue;
 
@@ -196,7 +221,7 @@ public class StandGenerator : MonoBehaviour
                 Quaternion rotacionPieza = transform.rotation;
                 if (inverter) rotacionPieza *= Quaternion.Euler(0, 180, 0);
 
-               
+
                 // Instanciamos directamente dentro del contenedor
                 GameObject pieza = Instantiate(prefabEscalon, posicionFinal, rotacionPieza, contenedor);
                 pieza.name = "Escalon_Cabecera"; // Nombre clave para el Calculador de Aforo
@@ -209,7 +234,7 @@ public class StandGenerator : MonoBehaviour
 
                 if (correspondeParaEnEstaFila)
                 {
-                    
+
                     float restoX = (posicionXMetros - desplazamientoZigZag) % (distanciaEntrePares * 2);
 
                     if (restoX < 0) restoX += distanciaEntrePares * 2;
@@ -238,7 +263,9 @@ public class StandGenerator : MonoBehaviour
                         e * anchoDeUnaPieza + off,
                         alturaAcumulada + (altoEscalon * ObtenerFactorParaFila(f)),          // altura del escalón en espacio local
                         f * profundidadEscalon * multiplicadorZ  // misma Z que el escalón
-            );                            
+            );
+                            if (distribuirVomitosHomogeneamente && EsHuecoVomito(posicionXMetros, posicionesVomitos1)) continue;
+
                             GameObject para = Instantiate(prefabParaavalanchas, transform.TransformPoint(posParaLocal), rotacionPieza, contenedor);
                             para.name = "Paraavalanchas_Popular";
 
@@ -270,7 +297,7 @@ public class StandGenerator : MonoBehaviour
 
         if (!generarAlambrado) CrearMuroCierreFrontal(multiplicadorZ, contenedor);
 
-        if (generarSoportes) 
+        if (generarSoportes)
         {
             GenerarSoportes(multiplicadorZ, contenedor);
             //cambio para prueba
@@ -290,54 +317,120 @@ public class StandGenerator : MonoBehaviour
 
     }
 
-    
     void GenerarEstructurasVomitos(float mZ, Transform padre)
     {
         float grosorMuroVomito = 0.15f;
-        for (int e = 0; e < piezasPorFila; e++)
+
+        List<float> centrosVomitos1 = new List<float>();
+        List<float> centrosVomitos2 = new List<float>();
+
+        if (distribuirVomitosHomogeneamente)
         {
-            if (e % piezasEntreBocas == 0)
+            float anchoTotalTribuna = piezasPorFila * anchoDeUnaPieza;
+            for (int v = 1; v <= vomitosPrimeraFila; v++)
+                centrosVomitos1.Add(anchoTotalTribuna * v / (vomitosPrimeraFila + 1));
+            if (tieneSegundaFilaVomitos)
+                for (int v = 1; v <= vomitosSegundaFila; v++)
+                    centrosVomitos2.Add(anchoTotalTribuna * v / (vomitosSegundaFila + 1));
+        }
+        else
+        {
+            bool dentroDeVomito = false;
+            for (int e = 0; e < piezasPorFila; e++)
             {
-                
-                float yFin = CalcularAlturaAcumuladaCabecera(filaInicioBoca + altoBoca);
+                float posX = e * anchoDeUnaPieza;
+                bool esVomito = EsHuecoVomitoTradicional(posX);
 
-                float zFin = (filaInicioBoca + altoBoca) * profundidadEscalon * mZ;
-
-                Vector3 posTraseroLocal = new Vector3((e + (anchoBoca / 2f) - 0.5f) * anchoDeUnaPieza, yFin, zFin);
-
-                // Usamos el helper pasando el padre
-                CrearBloqueMuro(transform.TransformPoint(posTraseroLocal),
-                               new Vector3(anchoBoca * anchoDeUnaPieza, 1.0f, 0.1f),
-                               padre, BlueColour);
-
-                float offsetPieza = (anchoDeUnaPieza / 2f);
-                float[] columnasX = { (e * anchoDeUnaPieza) - offsetPieza, ((e + anchoBoca - 1) * anchoDeUnaPieza) + offsetPieza };
-
-                foreach (float x in columnasX)
+                if (esVomito && !dentroDeVomito)
                 {
-                    GameObject muroVomitoGO = new GameObject("Muro_Lateral_Vomito");
-                    muroVomitoGO.transform.SetParent(padre); // ASIGNAR AL CONTENEDOR
-                    muroVomitoGO.transform.localPosition = Vector3.zero;
-                    muroVomitoGO.transform.localRotation = Quaternion.identity;
-
-                    MeshFilter mf = muroVomitoGO.AddComponent<MeshFilter>();
-                    MeshRenderer mr = muroVomitoGO.AddComponent<MeshRenderer>();
-                    mr.sharedMaterial = BlueColour;
-
-                    // ... (Lógica de mesh igual, pero el objeto ya está en el contenedor)
-                    Mesh mesh = GenerarMeshMuroVomito(x, filaInicioBoca, altoBoca, mZ, grosorMuroVomito);
-                    mf.mesh = mesh;
-                    muroVomitoGO.AddComponent<MeshCollider>();
+                    // Inicio de un nuevo vomito
+                    //float centro = posX + (anchoBoca * anchoDeUnaPieza / 2f);
+                    float centro = posX + (anchoBoca * anchoDeUnaPieza / 2f) - (anchoDeUnaPieza / 2f);
+                    centrosVomitos1.Add(centro);
+                    dentroDeVomito = true;
                 }
-
-                if (generarEscaleraVomito)
+                else if (!esVomito)
                 {
-                    float xCentroVomito = (e + anchoBoca / 2f - 0.5f) * anchoDeUnaPieza;
-                    GenerarEscaleraDescendenteVomito(xCentroVomito, anchoBoca * anchoDeUnaPieza, filaInicioBoca, mZ, padre);
+                    dentroDeVomito = false;
+                }
+            }
+
+            if (tieneSegundaFilaVomitos)
+            {
+                dentroDeVomito = false;
+                for (int e = 0; e < piezasPorFila; e++)
+                {
+                    float posX = e * anchoDeUnaPieza;
+                    bool esVomito = EsHuecoVomitoTradicional(posX);
+
+                    if (esVomito && !dentroDeVomito)
+                    {
+                        //float centro = posX + (anchoBoca * anchoDeUnaPieza / 2f);
+                        float centro = posX + (anchoBoca * anchoDeUnaPieza / 2f) - (anchoDeUnaPieza / 2f);
+
+                        centrosVomitos2.Add(centro);
+                        dentroDeVomito = true;
+                    }
+                    else if (!esVomito)
+                    {
+                        dentroDeVomito = false;
+                    }
                 }
             }
         }
+
+        // Generar muros para primera fila
+        foreach (float centro in centrosVomitos1)
+        {
+            GenerarMurosVomito(centro, filaInicioBoca, altoBoca, mZ, padre, grosorMuroVomito);
+            if (generarEscaleraVomito)
+                GenerarEscaleraDescendenteVomito(centro, anchoBoca * anchoDeUnaPieza, filaInicioBoca, mZ, padre);
+        }
+
+        // Generar muros para segunda fila
+        if (tieneSegundaFilaVomitos)
+        {
+            foreach (float centro in centrosVomitos2)
+            {
+                GenerarMurosVomito(centro, filaInicioBoca2, altoBoca, mZ, padre, grosorMuroVomito);
+                if (generarEscaleraVomito)
+                    GenerarEscaleraDescendenteVomito(centro, anchoBoca * anchoDeUnaPieza, filaInicioBoca2, mZ, padre);
+            }
+        }
     }
+
+    void GenerarMurosVomito(float centro, int filaInicio, int alto, float mZ, Transform padre, float grosor)
+    {
+        float yFin = CalcularAlturaAcumuladaCabecera(filaInicio + alto);
+        float zFin = (filaInicio + alto) * profundidadEscalon * mZ;
+
+        Vector3 posTraseroLocal = new Vector3(centro, yFin, zFin);
+        CrearBloqueMuro(transform.TransformPoint(posTraseroLocal),
+                       new Vector3(anchoBoca * anchoDeUnaPieza, 1.0f, 0.1f),
+                       padre, BlueColour);
+
+        float[] columnasX = {
+        centro - (anchoBoca * anchoDeUnaPieza / 2f),
+        centro + (anchoBoca * anchoDeUnaPieza / 2f)
+        };
+
+        foreach (float x in columnasX)
+        {
+            GameObject muroVomitoGO = new GameObject("Muro_Lateral_Vomito");
+            muroVomitoGO.transform.SetParent(padre);
+            muroVomitoGO.transform.localPosition = Vector3.zero;
+            muroVomitoGO.transform.localRotation = Quaternion.identity;
+
+            MeshFilter mf = muroVomitoGO.AddComponent<MeshFilter>();
+            MeshRenderer mr = muroVomitoGO.AddComponent<MeshRenderer>();
+            mr.sharedMaterial = BlueColour;
+
+            Mesh mesh = GenerarMeshMuroVomito(x, filaInicio, alto, mZ, grosor);
+            mf.mesh = mesh;
+            muroVomitoGO.AddComponent<MeshCollider>();
+        }
+    }
+
 
     // Helper para no repetir código de vértices
     Mesh GenerarMeshMuroVomito(float x, int fInicio, int aBoca, float mZ, float grosor)
@@ -438,7 +531,7 @@ public class StandGenerator : MonoBehaviour
         if (!generarAlambrado || prefabAlambrado == null) return;
 
         float yBase = 0f; // altura del primer escalon
-        
+
         float zAlambrado = (-profundidadEscalon / 2f - grosorMuroAlambrado) * mZ;
 
         float xActual = anchoSeccionAlambrado / 2f;
@@ -457,7 +550,7 @@ public class StandGenerator : MonoBehaviour
         }
     }
 
-    
+
     void GenerarSoportes(float mZ, Transform padre)
     {
         if (!generarSoportes || MaterialVigas == null) return;
@@ -951,6 +1044,26 @@ public class StandGenerator : MonoBehaviour
 
             DestroyImmediate(muroGO.GetComponent<BoxCollider>());
         }
+    }
+
+    bool EsHuecoVomito(float posicionXMetros, List<float> posicionesVomitos)
+    {
+        foreach (float pos in posicionesVomitos)
+        {
+            if (posicionXMetros >= pos - (anchoBoca * anchoDeUnaPieza / 2f) &&
+                posicionXMetros < pos + (anchoBoca * anchoDeUnaPieza / 2f))
+                return true;
+        }
+        return false;
+    }
+
+    bool EsHuecoVomitoTradicional(float posicionXMetros)
+    {
+        float posRelativa = posicionXMetros - offsetInicioVomitos;
+        if (posRelativa < 0) return false;
+        int indice = Mathf.FloorToInt(posRelativa / (piezasEntreBocas * anchoDeUnaPieza));
+        float restoEnCiclo = posRelativa - indice * piezasEntreBocas * anchoDeUnaPieza;
+        return restoEnCiclo < anchoBoca * anchoDeUnaPieza;
     }
 
 }
