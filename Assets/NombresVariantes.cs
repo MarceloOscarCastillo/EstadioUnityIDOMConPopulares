@@ -15,7 +15,8 @@ public static class NombresVariantes
         { EstadioConfigurator.TipoConfiguracion.CabecerasProlongadas, "Cabeceras Prolongadas" },
         { EstadioConfigurator.TipoConfiguracion.MaximaCapacidad, "Máxima Capacidad" },
         { EstadioConfigurator.TipoConfiguracion.Asimetrico, "Asimétrico" },
-        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" }
+        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
+        { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" }
     };
 
     public static string ObtenerNombre(EstadioConfigurator.TipoConfiguracion variante)

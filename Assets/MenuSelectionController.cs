@@ -36,7 +36,8 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.CabecerasProlongadas, "Cabeceras Prolongadas" },
         { EstadioConfigurator.TipoConfiguracion.MaximaCapacidad, "Máxima Capacidad" },
         { EstadioConfigurator.TipoConfiguracion.Asimetrico, "Cabeceras asimetricas" },
-        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" }
+        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
+        { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" }
     };
 
     // Diccionario de descripciones (tooltips)
@@ -64,7 +65,9 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.Asimetrico,
             "En esta versión una cabecera tiene una bandeja y la otra dos" },
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal,
-            "Es la versión original del proyecto IDOM. Es all seater, no hay tribunas sin asientos.\n\nLas cabeceras tienen dos bandejas." }
+            "Es la versión original del proyecto IDOM. Es all seater, no hay tribunas sin asientos.\n\nLas cabeceras tienen dos bandejas." },
+        { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol,
+            "Esta versión tiene como rasgo distintivo una tercera bandeja de plateas sobre la calle José Mármol. Sería una posibla ampliación del estadio" }
     };
 
     void Start()

@@ -16,7 +16,8 @@ public class EstadioConfigurator : MonoBehaviour
         CabecerasProlongadas,
         MaximaCapacidad,
         Asimetrico,
-        IDOMOriginal                
+        IDOMOriginal,
+        TerceraBandejaMarmol
     }
 
     [System.Serializable]

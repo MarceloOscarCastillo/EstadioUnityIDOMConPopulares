@@ -18268,6 +18268,7 @@ Transform:
   - {fileID: 333435192}
   - {fileID: 1790468700}
   - {fileID: 1812248807}
+  - {fileID: 1742530667}
   - {fileID: 7187938332773566504}
   - {fileID: 4976407024102095054}
   - {fileID: 1772243455}
@@ -26684,9 +26685,9 @@ MonoBehaviour:
   prefabPalco: {fileID: 4240674913055047226, guid: 0c9417bd3f3dd2944b37bc0320d90118, type: 3}
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  capacidadTotal: 67484
-  capacidadPopulares: 45120
-  capacidadPlateas: 21772
+  capacidadTotal: 84294
+  capacidadPopulares: 66750
+  capacidadPlateas: 16952
   capacidadPalcos: 592
 --- !u!4 &1369841858
 Transform:
@@ -34106,6 +34107,231 @@ Transform:
   - {fileID: 2056405791}
   m_Father: {fileID: 586056881}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1742530666
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 941235794}
+    m_Modifications:
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: Glass
+      value: 
+      objectReference: {fileID: 2100000, guid: e4b6dcb1a2e039e4dad99db8ad1d36a9, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: altoBoca
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: altoViga
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: invertir
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: numFilas
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: RedColour
+      value: 
+      objectReference: {fileID: 2100000, guid: f876460aebf6637408eb2d440cd23ba2, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: anchoViga
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: BlueColour
+      value: 
+      objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: GrisCemento
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: anchoFranja
+      value: 18.6
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: ground0Level
+      value: 
+      objectReference: {fileID: 1730792205}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: MaterialVigas
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: tienePalcoVIP
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: filaInicioBoca
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: anchoDeUnaPieza
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: generarSoportes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: altoVigaDiagonal
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: largoCirculacion
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: anchoVigaDiagonal
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: MaterialMuroPlatea
+      value: 
+      objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: alturaMuroSuperior
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: generarCirculacion
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: largoMaximoTribuna
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: materialBarandilla
+      value: 
+      objectReference: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetXCirculacion
+      value: 56
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetZCirculacion
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: altoVigaTransversal
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: generarMuroSuperior
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: materialCirculacion
+      value: 
+      objectReference: {fileID: 2100000, guid: fa13982c276245e40840de922a15beb4, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: anchoVigaTransversal
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: generarEscaleraVomito
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: generarMuroCirculacion
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: materialEscaleraVomito
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: materialMuroCirculacion
+      value: 
+      objectReference: {fileID: 2100000, guid: fa13982c276245e40840de922a15beb4, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: filaVigaVerticalExterior
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: filaVigaVerticalInterior
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: generarBarandillaEscalera
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 64.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 83.87
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -561.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_Name
+      value: ThirdLevelSeatedStandJoseMarmol
+      objectReference: {fileID: 0}
+    - target: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+--- !u!4 &1742530667 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2597612028437407177, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+  m_PrefabInstance: {fileID: 1742530666}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1742530668 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+  m_PrefabInstance: {fileID: 1742530666}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SeatedStandGenerator
 --- !u!1 &1750532137 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4386549038508386738, guid: 8d171bb273e044140827f218174170b0, type: 3}
@@ -38672,7 +38898,13 @@ MonoBehaviour:
     capacidadPopulares: 45120
     capacidadPlateas: 21772
     capacidadPalcos: 592
-  varianteAActivar: 3
+  - variante: 11
+    nombre: TerceraBandejaMarmol
+    capacidadTotal: 84294
+    capacidadPopulares: 66750
+    capacidadPlateas: 16952
+    capacidadPalcos: 592
+  varianteAActivar: 11
   perfilesDeEstadio:
   - nombreVariante: 1
     sectoresActivos:
@@ -38902,6 +39134,31 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 368899984}
     - {fileID: 122323991}
+  - nombreVariante: 11
+    sectoresActivos:
+    - {fileID: 2136861135}
+    - {fileID: 1934296944}
+    - {fileID: 1247668223}
+    - {fileID: 1827543779}
+    - {fileID: 676101160}
+    - {fileID: 1223926466}
+    - {fileID: 1370166327}
+    - {fileID: 1773288978}
+    - {fileID: 3915447271960441972}
+    - {fileID: 333435193}
+    - {fileID: 1790468701}
+    - {fileID: 1493460644}
+    - {fileID: 1885244545}
+    - {fileID: 1154753703}
+    - {fileID: 775588749}
+    - {fileID: 1706160141}
+    - {fileID: 1778285680}
+    - {fileID: 810869122}
+    - {fileID: 1159801707}
+    - {fileID: 1772243456}
+    - {fileID: 368899984}
+    - {fileID: 122323991}
+    - {fileID: 1742530668}
 --- !u!1 &2014812531
 GameObject:
   m_ObjectHideFlags: 0
