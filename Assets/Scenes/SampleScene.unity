@@ -410,7 +410,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 100.3
+      value: 173.8
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.y
@@ -418,11 +418,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -577.6
+      value: -577.9
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.x
@@ -430,7 +430,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.z
@@ -442,7 +442,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -462,7 +462,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: invertir
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: numFilas
@@ -26685,10 +26685,10 @@ MonoBehaviour:
   prefabPalco: {fileID: 4240674913055047226, guid: 0c9417bd3f3dd2944b37bc0320d90118, type: 3}
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  capacidadTotal: 84294
-  capacidadPopulares: 66750
-  capacidadPlateas: 16952
-  capacidadPalcos: 592
+  capacidadTotal: 43409
+  capacidadPopulares: 0
+  capacidadPlateas: 42969
+  capacidadPalcos: 440
 --- !u!4 &1369841858
 Transform:
   m_ObjectHideFlags: 0
@@ -38904,7 +38904,13 @@ MonoBehaviour:
     capacidadPopulares: 66750
     capacidadPlateas: 16952
     capacidadPalcos: 592
-  varianteAActivar: 11
+  - variante: 10
+    nombre: IDOMOriginal
+    capacidadTotal: 43409
+    capacidadPopulares: 0
+    capacidadPlateas: 42969
+    capacidadPalcos: 440
+  varianteAActivar: 10
   perfilesDeEstadio:
   - nombreVariante: 1
     sectoresActivos:
