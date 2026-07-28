@@ -168,7 +168,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     void Start()
     {
         //if (Application.isPlaying)
-        //    GenerarCodo();
+        //GenerarCodo();
     }
 
     public void GenerarCodo()

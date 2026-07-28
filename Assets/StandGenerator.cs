@@ -145,7 +145,7 @@ public class StandGenerator : MonoBehaviour
     void Start()
     {
         //if (Application.isPlaying)
-        //    GenerarSector();
+        //GenerarSector();
     }
 
     [ContextMenu("Generar Sector")]
