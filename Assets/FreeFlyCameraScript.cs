@@ -10,6 +10,8 @@ public class FreeFlyCamera : MonoBehaviour
     private float rotX = 0f;
     private float rotY = 0f;
 
+    public bool soloRotacion = false;
+
     void Start()
     {
         Vector3 angulos = transform.eulerAngles;
@@ -33,15 +35,19 @@ public class FreeFlyCamera : MonoBehaviour
         }
 
         // Movimiento con WASD
-        float vel = Keyboard.current.leftShiftKey.isPressed ? velocidadRapida : velocidad;
-        Vector3 dir = Vector3.zero;
-        if (Keyboard.current.wKey.isPressed) dir += transform.forward;
-        if (Keyboard.current.sKey.isPressed) dir -= transform.forward;
-        if (Keyboard.current.aKey.isPressed) dir -= transform.right;
-        if (Keyboard.current.dKey.isPressed) dir += transform.right;
-        if (Keyboard.current.eKey.isPressed) dir += Vector3.up;
-        if (Keyboard.current.qKey.isPressed) dir -= Vector3.up;
 
-        transform.position += dir * vel * Time.deltaTime;
+        if (!soloRotacion) 
+        {
+            float vel = Keyboard.current.leftShiftKey.isPressed ? velocidadRapida : velocidad;
+            Vector3 dir = Vector3.zero;
+            if (Keyboard.current.wKey.isPressed) dir += transform.forward;
+            if (Keyboard.current.sKey.isPressed) dir -= transform.forward;
+            if (Keyboard.current.aKey.isPressed) dir -= transform.right;
+            if (Keyboard.current.dKey.isPressed) dir += transform.right;
+            if (Keyboard.current.eKey.isPressed) dir += Vector3.up;
+            if (Keyboard.current.qKey.isPressed) dir -= Vector3.up;
+
+            transform.position += dir * vel * Time.deltaTime;
+        }            
     }
 }
