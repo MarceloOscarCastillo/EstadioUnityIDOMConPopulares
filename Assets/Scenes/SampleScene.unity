@@ -28690,6 +28690,10 @@ MonoBehaviour:
   textoBoton: {fileID: 718385547}
   camaraFreeFly: {fileID: 330585545}
   scriptFreeFly: {fileID: 330585548}
+  prefabEspectadorParado: {fileID: 2668377106051522010, guid: 8e7e898daa2f14b4ea9233747660fd11, type: 3}
+  prefabEspectadorSentado: {fileID: 3620757313538915946, guid: b616571496e9fa848bc3e417f30b1d99, type: 3}
+  prefabUsuarioParado: {fileID: 2668377106051522010, guid: 8e7e898daa2f14b4ea9233747660fd11, type: 3}
+  prefabUsuarioSentado: {fileID: 3620757313538915946, guid: b616571496e9fa848bc3e417f30b1d99, type: 3}
 --- !u!1 &1444708772
 GameObject:
   m_ObjectHideFlags: 0
