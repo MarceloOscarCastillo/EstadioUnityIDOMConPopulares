@@ -148,84 +148,169 @@ public class ModoVisibilidadController : MonoBehaviour
         LimpiarCilindros();
         enPuntoDeVista = true;
 
-        Vector3 puntoBase = hit.collider.bounds.max; // tope del objeto
-        puntoBase.x = hit.collider.bounds.center.x;
-        puntoBase.z = hit.collider.bounds.center.z;
+        // Calcular direccion hacia el campo PRIMERO
+        Vector3 dirHaciaElCampo;
+        if (esPopular)
+        {
+            dirHaciaElCampo = -hit.collider.transform.forward;
+            dirHaciaElCampo.y = 0;
+            dirHaciaElCampo.Normalize();
+        }
+        else
+        {
+            Transform t = hit.collider.transform;
+            while (t != null && t.name != "SeatersStandBlock(Clone)")
+                t = t.parent;
+            dirHaciaElCampo = t != null ? -t.forward : -hit.collider.transform.forward;
+            dirHaciaElCampo.y = 0;
+            dirHaciaElCampo.Normalize();
+        }
 
-        // Calcular posicion del cilindro usuario
-        float hundirOffset = esPopular ? 0f : (alturaCilindro / 2f - 0.05f);
-        Vector3 posCilindro = puntoBase + Vector3.up * (alturaCilindro / 2f - hundirOffset);
+        // Obtener Y del asiento (cara superior del Seat)
+        Collider colRef = hit.collider;
+        float yAsiento = colRef.bounds.max.y;
+        Transform tAsiento = colRef.transform.parent;
+        if (tAsiento != null)
+        {
+            Transform seat = tAsiento.Find("Seat");
+            if (seat != null)
+            {
+                Collider seatCol = seat.GetComponent<Collider>();
+                if (seatCol != null) yAsiento = seatCol.bounds.max.y;
+            }
+        }
 
-        // Instanciar cilindro usuario
-        cilindroUsuario = CrearCilindro(posCilindro, materialCilindroUsuario);
+        // Punto base: cara superior del asiento + offset hacia el campo
+        Vector3 puntoBase = new Vector3(
+            hit.collider.bounds.center.x,
+            yAsiento,
+            hit.collider.bounds.center.z) + dirHaciaElCampo * 0.25f;
 
-        // Posicion camara: 13cm debajo de la cima
-        Vector3 posCamera = puntoBase + Vector3.up * (alturaCilindro - hundirOffset - 0.13f);
+        // Hundimiento para platea (sentado): dejar 0.9m visible
+        float hundirOffset = esPopular ? 0f : (alturaCilindro - 0.9f);
 
-        // Orientar camara hacia el campo (direccion -Z del objeto hit)
-        Vector3 dirHaciaElCampo = -hit.collider.transform.forward;
-        dirHaciaElCampo.y = 0;
+        // Posicion base del cilindro usuario
+        Vector3 posCilindroBase = puntoBase - Vector3.up * hundirOffset;
+
+        // Instanciar espectador usuario
+        cilindroUsuario = CrearEspectador(posCilindroBase, materialCilindroUsuario, dirHaciaElCampo);
+
+        // Camara: altura de ojos = 0.78m sobre el asiento
+        float yOjos;
+
+        if (esPopular)
+        {
+            // Popular: parado, ojos a alturaCilindro - 0.13f desde la base
+            yOjos = puntoBase.y + alturaCilindro - 0.13f;
+        }
+        else
+        {
+            // Platea: sentado, ojos a 0.78m sobre el seat
+            yOjos = yAsiento + 0.78f;
+        }
+
+        Vector3 posCamera = new Vector3(puntoBase.x, yOjos, puntoBase.z);
 
         camaraFreeFly.transform.position = posCamera;
+
         camaraFreeFly.transform.rotation = Quaternion.LookRotation(dirHaciaElCampo, Vector3.up);
 
-        // Desactivar movimiento pero mantener rotacion en FreeFly
+        // Desactivar movimiento en FreeFly
         scriptFreeFly.soloRotacion = true;
 
-        // Instanciar cilindros espectadores en fila de adelante
+        // Instanciar espectadores en fila de adelante
         InstanciarEspectadores(hit, esPopular, hundirOffset, dirHaciaElCampo);
     }
 
     void InstanciarEspectadores(RaycastHit hit, bool esPopular, float hundirOffset, Vector3 dirHaciaElCampo)
     {
         
-        // La fila de adelante esta en direccion hacia el campo
-        float separacion = 0.5f; // separacion lateral entre espectadores
-        float distanciaFila = esPopular ? 0.4f : 0.8f; // profundidad del escalon
-
+        float separacion = 0.5f;
+        float distanciaFila = esPopular ? 0.4f : 0.85f;
         Vector3 centroFilaAdelante = hit.collider.bounds.center + dirHaciaElCampo * distanciaFila;
         Vector3 dirLateral = Vector3.Cross(dirHaciaElCampo, Vector3.up).normalized;
-
         float[] offsetsLaterales = { 0f, separacion, -separacion, separacion * 2f, -separacion * 2f };
 
         foreach (float offset in offsetsLaterales)
         {
             Vector3 pos = centroFilaAdelante + dirLateral * offset;
 
-            
-            // Raycast hacia abajo para encontrar el escalon de adelante
             if (Physics.Raycast(pos + Vector3.up * 2f, Vector3.down, out RaycastHit hitEscalon, 5f))
             {
-                Debug.Log($"Buscando espectador en pos={pos}, hit={hitEscalon.collider?.gameObject.name}");
+                GameObject objEsp = hitEscalon.collider.gameObject;
+                string nombreEsp = objEsp.name;
 
-                string nombre = hitEscalon.collider.gameObject.name;
+                for (int i = 0; i < 3; i++)
+                {
+                    if (nombreEsp == "Escalon_Cabecera" ||
+                        nombreEsp == "AsientoPlatea(Clone)" ||
+                        nombreEsp == "SeatersStandBlock(Clone)")
+                        break;
+                    if (objEsp.transform.parent == null) break;
+                    objEsp = objEsp.transform.parent.gameObject;
+                    nombreEsp = objEsp.name;
+                }
 
-                bool esValido = nombre == "Escalon_Cabecera" ||
-                    nombre == "AsientoPlatea(Clone)" ||
-                    nombre == "SeatersStandBlock(Clone)" ||
-                    nombre == "Seat" ||
-                    nombre == "Respaldo";
+                bool esValido = nombreEsp == "Escalon_Cabecera" ||
+                                nombreEsp == "AsientoPlatea(Clone)" ||
+                                nombreEsp == "SeatersStandBlock(Clone)";
 
                 if (esValido)
                 {
-                    Vector3 base_esp = new Vector3(pos.x, hitEscalon.collider.bounds.max.y, pos.z);
-                    float hundirOffsetEsp = esPopular ? 0f : (alturaCilindro / 2f - 0.05f);
-                    Vector3 posEsp = base_esp + Vector3.up * (alturaCilindro / 2f - hundirOffsetEsp);
-                    cilindrosEspectadores.Add(CrearCilindro(posEsp, materialCilindro));
+                    // Obtener Y del Seat correctamente
+                    float yAsientoEsp = hitEscalon.collider.bounds.max.y;
+                    Transform tAsientoEsp = objEsp.transform;
+                    Transform seatEsp = tAsientoEsp.Find("Seat");
+                    if (seatEsp != null)
+                    {
+                        Collider seatCol = seatEsp.GetComponent<Collider>();
+                        if (seatCol != null) yAsientoEsp = seatCol.bounds.max.y;
+                    }
+
+                    // Aplicar offset hacia el campo y hundimiento
+                    Vector3 puntoBaseEsp = new Vector3(pos.x, yAsientoEsp, pos.z)
+                                         + dirHaciaElCampo * 0.25f;
+                    Vector3 posEsp = puntoBaseEsp - Vector3.up * hundirOffset;
+
+                    cilindrosEspectadores.Add(CrearEspectador(posEsp, materialCilindro, dirHaciaElCampo));
+
+                    Debug.Log($"yAsientoEsp={yAsientoEsp}, hundirOffset={hundirOffset}, posEsp.y={posEsp.y}");
                 }
             }
         }
     }
 
-    GameObject CrearCilindro(Vector3 posicion, Material mat)
+    GameObject CrearEspectador(Vector3 posicionBase, Material mat, Vector3 dirMirada)
     {
-        GameObject c = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        c.transform.position = posicion;
-        c.transform.localScale = new Vector3(diametroCilindro, alturaCilindro / 2f, diametroCilindro);
-        
-        if (mat != null) c.GetComponent<Renderer>().sharedMaterial = mat;
-        DestroyImmediate(c.GetComponent<CapsuleCollider>());
-        return c;
+        GameObject contenedor = new GameObject("Espectador");
+        contenedor.transform.position = posicionBase;
+
+        // Cuerpo: cilindro achatado (50cm ancho, 20cm profundidad)
+        GameObject cuerpo = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+
+        cuerpo.transform.SetParent(contenedor.transform);
+
+        //cuerpo.transform.localPosition = new Vector3(0, alturaCilindro / 2f, 0);
+        cuerpo.transform.localPosition = new Vector3(0, 0, 0);
+        cuerpo.transform.localScale = new Vector3(0.5f, alturaCilindro / 2f, 0.2f);
+
+        if (dirMirada != Vector3.zero)
+            contenedor.transform.rotation = Quaternion.LookRotation(dirMirada, Vector3.up);
+
+        if (mat != null) cuerpo.GetComponent<Renderer>().sharedMaterial = mat;
+        DestroyImmediate(cuerpo.GetComponent<CapsuleCollider>());
+
+        // Cabeza: esfera de 25cm
+        GameObject cabeza = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        cabeza.transform.SetParent(contenedor.transform);
+        //cabeza.transform.localPosition = new Vector3(0, alturaCilindro + 0.125f, 0);
+        cabeza.transform.localPosition = new Vector3(0, alturaCilindro + 0.125f, 0);
+
+        cabeza.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+        if (mat != null) cabeza.GetComponent<Renderer>().sharedMaterial = mat;
+        DestroyImmediate(cabeza.GetComponent<SphereCollider>());
+
+        return contenedor;
     }
 
     void SalirDePuntoDeVista()
