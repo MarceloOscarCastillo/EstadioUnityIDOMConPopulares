@@ -137,6 +137,12 @@ public class SeatedStandGenerator : MonoBehaviour
     public float alturaMuroCirculacion = 1.4f;
     public Material materialMuroCirculacion;
 
+    [Header("Muro y Baranda Frontal")]
+    public float alturaMuroFrontal = 0.20f;
+    public bool generarBarandaFrontal = false;
+    public GameObject prefabBaranda;
+    public float alturaBaranda = 0.90f;
+    public float offsetMuroHaciaElCampo = 0f;
 
     private float zMuroFrontalCalculado = 0f;
 
@@ -300,7 +306,7 @@ public class SeatedStandGenerator : MonoBehaviour
         }
 
         if (generarCirculacion) GenerarCirculacion(multZ, contenedor.transform);
-
+        
         foreach (Transform hijo in contenedor.GetComponentsInChildren<Transform>())
         {
             if (hijo.gameObject != contenedor && Application.isPlaying)
@@ -565,7 +571,11 @@ public class SeatedStandGenerator : MonoBehaviour
         float grosor = 0.1f;
         float g = grosor / 2f;
         float signo = (mZ >= 0) ? -1f : 1f;
+
+        zEscalon = zEscalon + offsetMuroHaciaElCampo * signo;
+
         float zPiso = zEscalon + profundidadPisoFrontal * signo;
+        zEscalon = zEscalon - offsetMuroHaciaElCampo * signo;
         float zMuro = zPiso + grosor * signo;
 
         Vector3 posMuroMundo = transform.TransformPoint(new Vector3(0, 0, zMuro));
@@ -622,6 +632,27 @@ public class SeatedStandGenerator : MonoBehaviour
         meshMuro.RecalculateNormals();
         muroGO.AddComponent<MeshFilter>().mesh = meshMuro;
         muroGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialMuroPlatea;
+
+        Debug.Log($"mZ={mZ}, posLocal muro={transform.TransformPoint(new Vector3(0, 0, 0))}");
+
+        if (generarBarandaFrontal && prefabBaranda != null)
+        {
+            float anchoPrefab = 1f;
+            int cantidad = Mathf.FloorToInt((xFin - xInicio) / anchoPrefab);
+            for (int i = 0; i < cantidad; i++)
+            {
+                float xPos = xInicio + i * anchoPrefab;
+               
+                //Vector3 posLocal = new Vector3(xPos, yBase + alturaMuroPlatea, zMuro);
+                Vector3 posLocal = new Vector3(xPos, yBase + alturaMuroPlatea + alturaBaranda / 2f, zMuro);
+
+
+                GameObject baranda = Instantiate(prefabBaranda, padre);
+                baranda.transform.position = transform.TransformPoint(posLocal);
+                baranda.transform.rotation = transform.rotation * Quaternion.Euler(0, -90f, 0);
+            }
+        }
+
     }
    
     void CrearTrianguloTransicion(Transform padre, float x, float yBajo, float yAlto, float zBajo, float mZ, bool esIzquierdo)
@@ -1620,4 +1651,5 @@ public class SeatedStandGenerator : MonoBehaviour
             DestroyImmediate(muroGO.GetComponent<BoxCollider>());
         }
     }
+    
 }
