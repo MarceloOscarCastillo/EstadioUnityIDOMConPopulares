@@ -142,7 +142,8 @@ public class ModoVisibilidadController : MonoBehaviour
             hit.collider.bounds.center.z) + dirHaciaElCampo * 0.25f;
 
         // Instanciar usuario (prefab ya tiene proporciones correctas)
-        cilindroUsuario = CrearEspectador(puntoBase, esPopular, true, dirHaciaElCampo);
+        Vector3 posUsuario = puntoBase - dirHaciaElCampo * 0.1f;
+        cilindroUsuario = CrearEspectador(posUsuario, esPopular, true, dirHaciaElCampo);
 
         // Camara: altura de ojos
         float alturaOjos = esPopular ? alturaCilindro - 0.13f : alturaCilindro / 2f + 0.05f - 0.13f;
@@ -169,7 +170,7 @@ public class ModoVisibilidadController : MonoBehaviour
         {
             Vector3 pos = centroFilaAdelante + dirLateral * offset;
 
-            if (Physics.Raycast(pos + Vector3.up * 2f, Vector3.down, out RaycastHit hitEscalon, 5f))
+            if (Physics.Raycast(pos + Vector3.up * 2f, Vector3.down, out RaycastHit hitEscalon, 10f))
             {
                 GameObject objEsp = hitEscalon.collider.gameObject;
                 string nombreEsp = objEsp.name;
