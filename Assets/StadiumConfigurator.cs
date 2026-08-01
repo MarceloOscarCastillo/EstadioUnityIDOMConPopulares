@@ -31,8 +31,7 @@ public class EstadioConfigurator : MonoBehaviour
         public int capacidadPalcos;
     }
 
-    // Como variable de instancia:
-    [HideInInspector]
+    [System.NonSerialized]
     public List<DatosVariante> variantesConsultadas = new List<DatosVariante>();
 
     [System.Serializable]

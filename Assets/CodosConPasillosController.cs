@@ -98,9 +98,19 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     public bool generarMuroSuperior = true;
     public float alturaMuro = 1.0f;
     public float alturaMuroSuperior = 2.0f;
+    public float alturaMuroFrontal = 0.20f;
     public bool generarBaranda = true;
     public GameObject PrefabBaranda;
     public Material MaterialMuro;
+    public bool generarPisoFrontal = false;
+    public float profundidadPisoFrontal = 0.8f;
+    public Material materialPisoFrontal;
+    
+    [Header("Baranda Frontal")]
+    public bool generarBarandaFrontal = false;
+    public GameObject prefabBaranda;
+    public float alturaBaranda = 0.9f;
+
 
     [Header("Soportes Estructurales")]
     public bool generarSoportes = false;
@@ -342,14 +352,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                         float[] offsetsPar = { -anchoDelPar / 2f, anchoDelPar / 2f };
                         foreach (float off in offsetsPar)
                         {
-                            //float distPara = distanciaActual + off;
-                            //if (distPara < 0 || distPara > longitudTotal) continue;
-
-                            //float pasoPara = BuscarAngulo(longitudesAcumuladas, distPara, pasoMaximoFila);
-                            //float anguloPara = pasoPara * (anguloTotal / pasos);
-
-                            //Vector3 posPara = transform.TransformPoint(CalcularPunto(anguloPara, radioCentro, f));
-                            //posPara.y += altoEscalonFila;
+                            
 
                             float distPara = distanciaActual + off;
                             if (distPara < 0 || distPara > longitudTotal) continue;
@@ -439,6 +442,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         }
 
         if (generarMuroDelantero) GenerarMuroDelantero(contenedor, pasos);
+
+        GenerarPisoFrontal(contenedor);
+
         if (generarMurosLaterales) GenerarMurosLaterales(contenedor);
 
         if (generarMuroSuperior) GenerarMuroSuperior(contenedor, mapa);
@@ -666,8 +672,13 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             float rad = angulo * Mathf.Deg2Rad;
             Vector3 dirRadial = new Vector3(Mathf.Cos(rad), 0f, Mathf.Sin(rad));
 
-            Vector3 pOuter = new Vector3(radioInferior * Mathf.Cos(rad), 0f, radioInferior * Mathf.Sin(rad));
-            Vector3 pInner = new Vector3((radioInferior + grosor) * Mathf.Cos(rad), 0f, (radioInferior + grosor) * Mathf.Sin(rad));
+            //Vector3 pOuter = new Vector3(radioInferior * Mathf.Cos(rad), 0f, radioInferior * Mathf.Sin(rad));
+            //Vector3 pInner = new Vector3((radioInferior + grosor) * Mathf.Cos(rad), 0f, (radioInferior + grosor) * Mathf.Sin(rad));
+
+
+            Vector3 pOuter = new Vector3((radioInferior - profundidadPisoFrontal) * Mathf.Cos(rad), 0f, (radioInferior - profundidadPisoFrontal) * Mathf.Sin(rad));
+            Vector3 pInner = new Vector3((radioInferior - profundidadPisoFrontal + grosor) * Mathf.Cos(rad), 0f, (radioInferior - profundidadPisoFrontal + grosor) * Mathf.Sin(rad));
+
 
             sOuter[s] = contenedor.transform.InverseTransformPoint(transform.TransformPoint(pOuter));
             sInner[s] = contenedor.transform.InverseTransformPoint(transform.TransformPoint(pInner));
@@ -704,7 +715,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             Vector3 o0 = sOuter[s], o1 = sOuter[s + 1];
             Vector3 nLi = sDirRadial[s], nRi = sDirRadial[s + 1];
             Vector3 nLo = -sDirRadial[s], nRo = -sDirRadial[s + 1];
-            float h = alturaMuro;
+            float h = alturaMuroFrontal;
             int base_i;
 
             // --- Cara interior ---
@@ -813,13 +824,23 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                     continue;
                 }
 
-                Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radioInferior, 0));
-                pos += Vector3.up * alturaMuro;
+                //Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radioInferior, 0));
+
+                //Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radioInferior + grosor / 2f, 0));
+
+                Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radioInferior - profundidadPisoFrontal, 0));
+
+                //pos += Vector3.up * alturaMuroFrontal;
+                pos += Vector3.up * (alturaMuroFrontal + alturaBaranda / 2f);
+
                 float delta = 0.5f;
                 float anguloA = Mathf.Max(0, angulo - delta);
                 float anguloB = Mathf.Min(anguloTotal, angulo + delta);
-                Vector3 pA = transform.TransformPoint(CalcularPunto(anguloA, radioInferior, 0));
-                Vector3 pB = transform.TransformPoint(CalcularPunto(anguloB, radioInferior, 0));
+                
+                Vector3 pA = transform.TransformPoint(CalcularPunto(anguloA, radioInferior - profundidadPisoFrontal, 0));
+                Vector3 pB = transform.TransformPoint(CalcularPunto(anguloB, radioInferior - profundidadPisoFrontal, 0));
+
+
                 Vector3 tangente = (pB - pA).normalized;
                 GameObject baranda = Instantiate(PrefabBaranda, contenedor.transform);
                 baranda.transform.position = pos;
@@ -2097,7 +2118,56 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             materialMuroBocaLogistica != null ? materialMuroBocaLogistica : MaterialMuro;
     }
 
+    void GenerarPisoFrontal(GameObject contenedor)
+    {
+        if (!generarPisoFrontal) return;
 
+        int segmentos = cantidadPiezas;
+        float anguloPorSegmento = anguloTotal / segmentos;
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangulos = new List<int>();
+
+        for (int s = 0; s < segmentos; s++)
+        {
+            float anguloA = s * anguloPorSegmento;
+            float anguloB = (s + 1) * anguloPorSegmento;
+
+            // Borde donde esta el muro (lado campo)
+            Vector3 innerA = contenedor.transform.InverseTransformPoint(
+                transform.TransformPoint(CalcularPunto(anguloA, radioInferior - profundidadPisoFrontal, 0)));
+            Vector3 innerB = contenedor.transform.InverseTransformPoint(
+                transform.TransformPoint(CalcularPunto(anguloB, radioInferior - profundidadPisoFrontal, 0)));
+
+            // Borde lado butacas (primera fila)
+            Vector3 outerA = contenedor.transform.InverseTransformPoint(
+                transform.TransformPoint(CalcularPunto(anguloA, radioInferior, 0)));
+            Vector3 outerB = contenedor.transform.InverseTransformPoint(
+                transform.TransformPoint(CalcularPunto(anguloB, radioInferior, 0)));
+
+            // Ajustar Y al nivel del piso (base del muro)
+            float yPiso = CalcularAlturaAcumulada(0);
+            innerA.y = yPiso; innerB.y = yPiso;
+            outerA.y = yPiso; outerB.y = yPiso;
+
+            int idx = vertices.Count;
+            vertices.AddRange(new[] { outerA, outerB, innerA, innerB });
+            triangulos.AddRange(new[] { idx, idx + 2, idx + 1, idx + 1, idx + 2, idx + 3 });
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = triangulos.ToArray();
+        mesh.RecalculateNormals();
+
+        GameObject pisoGO = new GameObject("Piso_Frontal");
+        pisoGO.transform.SetParent(contenedor.transform);
+        pisoGO.transform.localPosition = Vector3.zero;
+        pisoGO.transform.localRotation = Quaternion.identity;
+        pisoGO.AddComponent<MeshFilter>().mesh = mesh;
+        pisoGO.AddComponent<MeshRenderer>().sharedMaterial =
+            materialPisoFrontal != null ? materialPisoFrontal : MaterialMuro;
+    }
 
 
 

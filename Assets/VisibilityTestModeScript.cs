@@ -30,6 +30,8 @@ public class ModoVisibilidadController : MonoBehaviour
     private GameObject cilindroUsuario;
     private List<GameObject> cilindrosEspectadores = new List<GameObject>();
     private bool enPuntoDeVista = false;
+    private Vector3 posicionOjos;
+    private Quaternion rotacionOjos;
 
     void Start()
     {
@@ -46,6 +48,20 @@ public class ModoVisibilidadController : MonoBehaviour
 
         if (enPuntoDeVista && Keyboard.current.escapeKey.wasPressedThisFrame)
             SalirDePuntoDeVista();
+
+        if (enPuntoDeVista && Keyboard.current.vKey.wasPressedThisFrame)
+        {
+            if (scriptFreeFly.soloRotacion)
+            {
+                scriptFreeFly.soloRotacion = false;
+            }
+            else
+            {
+                scriptFreeFly.soloRotacion = true;
+                camaraFreeFly.transform.position = posicionOjos;
+                camaraFreeFly.transform.rotation = rotacionOjos;
+            }
+        }
     }
 
     void ToggleModoVisibilidad()
@@ -150,6 +166,9 @@ public class ModoVisibilidadController : MonoBehaviour
         Vector3 posCamera = new Vector3(puntoBase.x, yAsiento + alturaOjos, puntoBase.z);
         camaraFreeFly.transform.position = posCamera;
         camaraFreeFly.transform.rotation = Quaternion.LookRotation(dirHaciaElCampo, Vector3.up);
+        
+        posicionOjos = posCamera;
+        rotacionOjos = Quaternion.LookRotation(dirHaciaElCampo, Vector3.up);
 
         // Desactivar movimiento en FreeFly
         scriptFreeFly.soloRotacion = true;
@@ -161,7 +180,7 @@ public class ModoVisibilidadController : MonoBehaviour
     void InstanciarEspectadores(RaycastHit hit, bool esPopular, Vector3 dirHaciaElCampo)
     {
         float separacion = 0.5f;
-        float distanciaFila = esPopular ? 0.4f : 0.85f;
+        float distanciaFila = esPopular ? 0.42f : 0.85f;
         Vector3 centroFilaAdelante = hit.collider.bounds.center + dirHaciaElCampo * distanciaFila;
         Vector3 dirLateral = Vector3.Cross(dirHaciaElCampo, Vector3.up).normalized;
         float[] offsetsLaterales = { 0f, separacion, -separacion, separacion * 2f, -separacion * 2f };
@@ -172,8 +191,14 @@ public class ModoVisibilidadController : MonoBehaviour
 
             if (Physics.Raycast(pos + Vector3.up * 2f, Vector3.down, out RaycastHit hitEscalon, 10f))
             {
+                Debug.Log($"offset={offset}, hit={hitEscalon.collider.gameObject.name}");
+
                 GameObject objEsp = hitEscalon.collider.gameObject;
                 string nombreEsp = objEsp.name;
+
+                if (nombreEsp == "Cuerpo" || nombreEsp == "Cabeza" ||
+    nombreEsp == "Cuello" || objEsp.transform.root.name == "Espectador")
+                    continue;
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -190,6 +215,8 @@ public class ModoVisibilidadController : MonoBehaviour
                                 nombreEsp == "AsientoPlatea(Clone)" ||
                                 nombreEsp == "SeatersStandBlock(Clone)";
 
+                Debug.Log($"offset={offset}, pos={pos}, hit={hitEscalon.collider?.gameObject.name}, esValido={esValido}");
+
                 if (esValido)
                 {
                     // Obtener Y del Seat
@@ -202,9 +229,19 @@ public class ModoVisibilidadController : MonoBehaviour
                         if (seatCol != null) yAsientoEsp = seatCol.bounds.max.y;
                     }
 
-                    Vector3 posEsp = new Vector3(pos.x, yAsientoEsp, pos.z) + dirHaciaElCampo * 0.25f;
+                    
+
+                    Vector3 posEsp = new Vector3(pos.x, yAsientoEsp, pos.z) +
+    (esPopular ? Vector3.zero : dirHaciaElCampo * 0.10f);
+
+
                     cilindrosEspectadores.Add(CrearEspectador(posEsp, esPopular, false, dirHaciaElCampo));
                 }
+            }
+
+            else
+            {
+                Debug.Log($"offset={offset}, NO encontro nada");
             }
         }
     }
