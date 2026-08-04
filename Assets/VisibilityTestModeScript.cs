@@ -87,6 +87,8 @@ public class ModoVisibilidadController : MonoBehaviour
         GameObject objetoImpactado = hit.collider.gameObject;
         string nombre = objetoImpactado.name;
 
+        Debug.Log($"Objeto impactado: {nombre}");
+
         for (int i = 0; i < 3; i++)
         {
             if (nombre == "Escalon_Cabecera" ||
@@ -119,9 +121,23 @@ public class ModoVisibilidadController : MonoBehaviour
         LimpiarCilindros();
         enPuntoDeVista = true;
 
+        UpperCurveStandWithWalkpathScript codoScript =
+   hit.collider.GetComponentInParent<UpperCurveStandWithWalkpathScript>();
+        Debug.Log($"esCodo: {codoScript != null}");
+
         // Calcular direccion hacia el campo PRIMERO
         Vector3 dirHaciaElCampo;
-        if (esPopular)
+
+        if (codoScript != null)
+        {
+            // Para codos: direccion radial hacia el centro del codo
+            Vector3 centroCodo = codoScript.transform.position;
+            dirHaciaElCampo = centroCodo - hit.point;
+            dirHaciaElCampo.y = 0;
+            dirHaciaElCampo.Normalize();
+        }
+
+        else if (esPopular)
         {
             dirHaciaElCampo = -hit.collider.transform.forward;
             dirHaciaElCampo.y = 0;
@@ -174,7 +190,12 @@ public class ModoVisibilidadController : MonoBehaviour
         scriptFreeFly.soloRotacion = true;
 
         // Instanciar espectadores en fila de adelante
-        InstanciarEspectadores(hit, esPopular, dirHaciaElCampo);
+               
+        if (codoScript != null)
+            InstanciarEspectadoresCodo(hit, esPopular, dirHaciaElCampo, codoScript);
+        else
+            InstanciarEspectadores(hit, esPopular, dirHaciaElCampo);
+
     }
 
     void InstanciarEspectadores(RaycastHit hit, bool esPopular, Vector3 dirHaciaElCampo)
@@ -246,6 +267,85 @@ public class ModoVisibilidadController : MonoBehaviour
         }
     }
 
+    void InstanciarEspectadoresCodo(RaycastHit hit, bool esPopular, Vector3 dirHaciaElCampo, UpperCurveStandWithWalkpathScript codoScript)
+    {
+        // Encontrar la celda del asiento impactado
+        // Subir en jerarquia para encontrar el AsientoPlatea o bloque
+        GameObject objImpactado = hit.collider.gameObject;
+        string nombre = objImpactado.name;
+        for (int i = 0; i < 3; i++)
+        {
+            if (nombre == "AsientoPlatea(Clone)" || nombre == "BlockPlateaCurva(Clone)") break;
+            if (objImpactado.transform.parent == null) break;
+            objImpactado = objImpactado.transform.parent.gameObject;
+            nombre = objImpactado.name;
+        }
+
+        // Buscar en el diccionario la clave de este objeto
+        (int fila, int columna, int asiento) claveUsuario = (-1, -1, -1);
+        foreach (var kvp in codoScript.mapaObjetos)
+        {
+            if (kvp.Value == objImpactado)
+            {
+                claveUsuario = kvp.Key;
+                break;
+            }
+        }
+
+        if (claveUsuario.fila == -1)
+        {
+            Debug.Log("No encontré el objeto en el diccionario");
+            return;
+        }
+
+        Debug.Log($"Usuario en fila={claveUsuario.fila}, columna={claveUsuario.columna}, asiento={claveUsuario.asiento}");
+
+        // Buscar asientos en fila+1 (la fila de adelante, mas cerca del campo)
+        int filaAdelante = claveUsuario.fila - 1;
+        int[] offsetsAsiento = { 0, 1, -1, 2, -2 };
+
+        foreach (int offsetA in offsetsAsiento)
+        {
+            int asientoObjetivo = claveUsuario.asiento + offsetA;
+
+            // Buscar en la misma columna o columnas adyacentes
+            for (int deltaColumna = 0; deltaColumna <= 1; deltaColumna++)
+            {
+                int[] columnas = deltaColumna == 0
+                    ? new[] { claveUsuario.columna }
+                    : new[] { claveUsuario.columna - 1, claveUsuario.columna + 1 };
+
+                foreach (int col in columnas)
+                {
+                    if (codoScript.mapaObjetos.TryGetValue((filaAdelante, col, asientoObjetivo), out GameObject objAdelante))
+                    {
+                        
+                        float yEsp = objAdelante.transform.position.y - 0.6f; // restar el offset de UbicarAsiento
+
+                        Transform seatEsp = objAdelante.transform.Find("Seat");
+                        if (seatEsp != null)
+                        {
+                            Collider seatCol = seatEsp.GetComponent<Collider>();
+                            if (seatCol != null) yEsp = seatCol.bounds.max.y;
+                        }
+
+                        Vector3 posEsp = new Vector3(objAdelante.transform.position.x, yEsp, objAdelante.transform.position.z)
+    + dirHaciaElCampo * 0.10f;
+                        
+                        cilindrosEspectadores.Add(CrearEspectador(posEsp, esPopular, false, dirHaciaElCampo));
+                        goto siguiente;
+                    }
+                }
+            siguiente:;
+            }
+        }
+
+        Debug.Log($"Usuario en fila={claveUsuario.fila}, columna={claveUsuario.columna}, asiento={claveUsuario.asiento}");
+        Debug.Log($"Buscando filaAdelante={claveUsuario.fila - 1}");
+        Debug.Log($"Total objetos en diccionario: {codoScript.mapaObjetos.Count}");
+    }
+
+
     GameObject CrearEspectador(Vector3 posicionBase, bool esPopular, bool esUsuario, Vector3 dirMirada)
     {
         GameObject prefab = esUsuario
@@ -259,10 +359,6 @@ public class ModoVisibilidadController : MonoBehaviour
 
         return espectador;
     }
-
-
-
-
 
     void SalirDePuntoDeVista()
     {
@@ -278,4 +374,7 @@ public class ModoVisibilidadController : MonoBehaviour
         foreach (var c in cilindrosEspectadores) if (c != null) Destroy(c);
         cilindrosEspectadores.Clear();
     }
+
+
+
 }

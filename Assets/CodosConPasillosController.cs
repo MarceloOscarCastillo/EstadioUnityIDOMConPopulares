@@ -172,7 +172,12 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     private float[] _longAcumInterior;
     private float _longitudTotalInterior;
 
-    
+    // Variable de instancia
+    [System.NonSerialized]
+    public Dictionary<(int fila, int columna, int asiento), GameObject> mapaObjetos =
+    new Dictionary<(int, int, int), GameObject>();
+
+
     [ContextMenu("Generar Codo")]
 
     void Start()
@@ -183,7 +188,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
     public void GenerarCodo()
     {
-        
+        mapaObjetos.Clear();
 
         if (BlockPlateaCurva == null) return;
 
@@ -275,7 +280,17 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                 Vector3 w4 = transform.TransformPoint(CalcularPunto(celda.angEnd, radioExterno, celda.fila));
 
                 GameObject bloqueObj = Instantiate(BlockPlateaCurva, contenedor.transform);
+
+                Collider col = bloqueObj.GetComponent<Collider>();
+
+                if (col != null) col.enabled = true;
+
+                mapaObjetos[(celda.fila, celda.columna, 0)] = bloqueObj;
+
+                Debug.Log($"Guardando en diccionario: fila={celda.fila}, col={celda.columna}, obj={bloqueObj.name}");
+
                 ConfigurarEscalon(bloqueObj, w1, w2, w3, w4);
+
                 Material matAUsar = celda.tipo == TipoCelda.BloqueLibre ? GrisCemento : Material;
                 AplicarMaterialATodo(bloqueObj, matAUsar);
             }
@@ -436,7 +451,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
                     if (generarBocaLogistica && EsZonaBocaLogistica(angulo - 0.1f, angulo + 0.1f, f)) continue;
 
-                    UbicarAsiento(posicion, tangente, contenedor);
+                    UbicarAsiento(posicion, tangente, contenedor, celdaEncontrada.Value.fila, celdaEncontrada.Value.columna, a);
+                    
                 }
             }
         }
@@ -587,16 +603,16 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         return Mathf.RoundToInt(Mathf.Lerp(filasMaximas, filasMinimas, tCurvado));
     }
 
-
-    void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor)
+    void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor, int fila, int columna, int asiento)
     {
-        GameObject asiento = Instantiate(AsientoPlatea);
-        asiento.transform.localScale = Vector3.one;
-        asiento.transform.position = posicion + (Vector3.up * 0.6f);
-        asiento.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up);
-        asiento.transform.Rotate(0, 180, 0);
-        asiento.transform.SetParent(contenedor.transform, true);
-        AplicarMaterialATodo(asiento, Material);
+        GameObject asientoObj = Instantiate(AsientoPlatea);
+        asientoObj.transform.localScale = Vector3.one;
+        asientoObj.transform.position = posicion + (Vector3.up * 0.6f);
+        asientoObj.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up);
+        asientoObj.transform.Rotate(0, 180, 0);
+        asientoObj.transform.SetParent(contenedor.transform, true);
+        AplicarMaterialATodo(asientoObj, Material);
+        mapaObjetos[(fila, columna, asiento)] = asientoObj;
     }
 
     float BuscarAngulo(float[] longitudesAcumuladas, float distanciaObjetivo, int anguloMaximo)
