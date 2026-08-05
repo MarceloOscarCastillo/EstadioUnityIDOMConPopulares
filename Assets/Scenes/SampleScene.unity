@@ -5931,8 +5931,8 @@ MonoBehaviour:
   BlueColour: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
   anchoFranja: 19.25
   tagContenedores: SectorEstadio
-  prefabParaavalanchas: {fileID: 0}
-  generarParaavalanchas: 0
+  prefabParaavalanchas: {fileID: 7271585269424130416, guid: 93c276b57e6878e4a9fe0490b110614d, type: 3}
+  generarParaavalanchas: 1
   filaInicioPara: 10
   frecuenciaFilasPara: 10
   distanciaEntrePares: 4
@@ -17345,6 +17345,7 @@ Transform:
   - {fileID: 6750404414539606034}
   - {fileID: 2136861134}
   - {fileID: 368899983}
+  - {fileID: 1687611605}
   - {fileID: 1758782316}
   - {fileID: 1094168574}
   - {fileID: 1493460643}
@@ -26489,9 +26490,9 @@ MonoBehaviour:
   prefabPalco: {fileID: 4240674913055047226, guid: 0c9417bd3f3dd2944b37bc0320d90118, type: 3}
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  capacidadTotal: 55937
-  capacidadPopulares: 24682
-  capacidadPlateas: 30663
+  capacidadTotal: 68841
+  capacidadPopulares: 43569
+  capacidadPlateas: 24680
   capacidadPalcos: 592
 --- !u!4 &1369841858
 Transform:
@@ -33074,6 +33075,132 @@ MonoBehaviour:
   offsetZ: 0
   largoFrente: 84
   anchoPrefab: 6
+--- !u!1 &1687611604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1687611605}
+  - component: {fileID: 1687611606}
+  m_Layer: 0
+  m_Name: SegundaBandejaCabecera2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1687611605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687611604}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
+  m_LocalPosition: {x: 173.5, y: 72.7, z: -585.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 941235794}
+  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
+--- !u!114 &1687611606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687611604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca9a100b782a32942bf84470a7f7d7eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StandGenerator
+  prefabEscalon: {fileID: 8726906690476736078, guid: 6b152c4135651f546ad69b04cfc63865, type: 3}
+  altoEscalon: 0.25
+  profundidadEscalon: 0.4
+  anchoDeUnaPieza: 1
+  numFilas: 15
+  piezasPorFila: 75
+  inverter: 0
+  distribuirVomitosHomogeneamente: 1
+  offsetInicioVomitos: 0
+  piezasEntreBocas: 20
+  anchoBoca: 3
+  filaInicioBoca: 1
+  altoBoca: 4
+  tieneSegundaFilaVomitos: 0
+  filaInicioBoca2: 25
+  vomitosPrimeraFila: 0
+  vomitosSegundaFila: 0
+  generarMuroSuperior: 1
+  alturaMuroSuperior: 2
+  generarMuroFrontal: 1
+  alturaMuroFrontal: 1
+  generarMurosLaterales: 0
+  filaInicioMuroLateral: 35
+  alturaMuroSobreEscalon: 1
+  RedColour: {fileID: 2100000, guid: f876460aebf6637408eb2d440cd23ba2, type: 2}
+  BlueColour: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
+  anchoFranja: 19.25
+  tagContenedores: SectorEstadio
+  prefabParaavalanchas: {fileID: 7271585269424130416, guid: 93c276b57e6878e4a9fe0490b110614d, type: 3}
+  generarParaavalanchas: 1
+  filaInicioPara: 10
+  frecuenciaFilasPara: 11
+  distanciaEntrePares: 4
+  anchoDelPar: 4
+  generarAlambrado: 0
+  prefabAlambrado: {fileID: 0}
+  anchoSeccionAlambrado: 2
+  grosorMuroAlambrado: 0.1
+  rangosDeAlzada: []
+  generarSoportes: 0
+  separacionSoportes: 5
+  alturaTramoVertical: 2
+  MaterialVigas: {fileID: 0}
+  filaVigaVerticalInterior: 5
+  alturaVigaVerticalInterior: 2
+  filaVigaVerticalExterior: 20
+  alturaVigaVerticalExterior: 4
+  filaArranqueDiagonal: 3
+  mordidaViga: 0.05
+  tieneVigaHorizontal: 1
+  anchoViga: 0.2
+  altoViga: 0.2
+  anchoVigaDiagonal: 0.2
+  altoVigaDiagonal: 0.3
+  vigaDiagonalTerminaConSoportesDeTecho: 0
+  metrajeExtraDiagonal: 1
+  alturasSoporteTecho: 0.5
+  grosorSoporteTecho: 0.2
+  profundidadSoporteTecho: 1
+  tieneVigasTransversales: 0
+  alturaUnionVigasInteriores: 1.5
+  alturaUnionVigasExteriores: 3.5
+  anchoVigaTransversal: 0.2
+  altoVigaTransversal: 0.2
+  generarEscaleraVomito: 1
+  numEscalonesVomito: 4
+  altoEscalonVomito: 0.2
+  profundidadEscalonVomito: 0.3
+  generarBarandillaEscalera: 1
+  materialBarandilla: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+  materialEscaleraVomito: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+  generarCirculacion: 0
+  largoCirculacion: 75
+  profundidadCirculacion: 11
+  yCirculacion: 1
+  offsetXCirculacion: 36
+  offsetZCirculacion: 7
+  materialCirculacion: {fileID: 2100000, guid: fa13982c276245e40840de922a15beb4, type: 2}
+  generarMuroCirculacion: 1
+  alturaMuroCirculacion: 1.4
+  materialMuroCirculacion: {fileID: 2100000, guid: fa13982c276245e40840de922a15beb4, type: 2}
+  ground0Level: {fileID: 1730792205}
 --- !u!43 &1696207875
 Mesh:
   m_ObjectHideFlags: 0
@@ -38842,7 +38969,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45b3e5ed87db05348b206a087a2f9f52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EstadioConfigurator
-  varianteAActivar: 1
+  varianteAActivar: 12
   perfilesDeEstadio:
   - nombreVariante: 1
     sectoresActivos:
@@ -39072,7 +39199,7 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 368899984}
     - {fileID: 122323991}
-  - nombreVariante: 11
+  - nombreVariante: 13
     sectoresActivos:
     - {fileID: 2136861135}
     - {fileID: 1934296944}
@@ -39097,6 +39224,47 @@ MonoBehaviour:
     - {fileID: 368899984}
     - {fileID: 122323991}
     - {fileID: 1742530668}
+  - nombreVariante: 11
+    sectoresActivos:
+    - {fileID: 2136861135}
+    - {fileID: 1934296944}
+    - {fileID: 1247668223}
+    - {fileID: 1827543779}
+    - {fileID: 676101160}
+    - {fileID: 1223926466}
+    - {fileID: 1370166327}
+    - {fileID: 1773288978}
+    - {fileID: 3915447271960441972}
+    - {fileID: 4916610155907629941}
+    - {fileID: 1812248808}
+    - {fileID: 5867286881551284366}
+    - {fileID: 775588749}
+    - {fileID: 1706160141}
+    - {fileID: 1279435204}
+    - {fileID: 1772243456}
+    - {fileID: 368899984}
+    - {fileID: 122323991}
+  - nombreVariante: 12
+    sectoresActivos:
+    - {fileID: 2136861135}
+    - {fileID: 1934296944}
+    - {fileID: 1258516825}
+    - {fileID: 800150689}
+    - {fileID: 351752535}
+    - {fileID: 1121324713}
+    - {fileID: 1370166327}
+    - {fileID: 1773288978}
+    - {fileID: 3915447271960441972}
+    - {fileID: 4916610155907629941}
+    - {fileID: 1812248808}
+    - {fileID: 5867286881551284366}
+    - {fileID: 775588749}
+    - {fileID: 1706160141}
+    - {fileID: 1279435204}
+    - {fileID: 1772243456}
+    - {fileID: 368899984}
+    - {fileID: 122323991}
+    - {fileID: 1687611606}
 --- !u!1 &2014812531
 GameObject:
   m_ObjectHideFlags: 0

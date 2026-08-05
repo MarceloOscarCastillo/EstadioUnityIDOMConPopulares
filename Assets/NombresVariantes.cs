@@ -16,6 +16,8 @@ public static class NombresVariantes
         { EstadioConfigurator.TipoConfiguracion.MaximaCapacidad, "Máxima Capacidad" },
         { EstadioConfigurator.TipoConfiguracion.Asimetrico, "Asimétrico" },
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
+        { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
+        { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "Sugerida Ampliada" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" }
     };
 

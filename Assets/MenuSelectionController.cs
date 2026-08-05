@@ -37,6 +37,8 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.MaximaCapacidad, "Máxima Capacidad" },
         { EstadioConfigurator.TipoConfiguracion.Asimetrico, "Cabeceras asimetricas" },
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
+        { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
+        { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "SugeridaAmpliada" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" }
     };
 
@@ -66,6 +68,10 @@ public class MenuSeleccionController : MonoBehaviour
             "En esta versión una cabecera tiene una bandeja y la otra dos" },
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal,
             "Es la versión original del proyecto IDOM. Es all seater, no hay tribunas sin asientos.\n\nLas cabeceras tienen dos bandejas." },
+        { EstadioConfigurator.TipoConfiguracion.Sugerida,
+            "Presenta un equilibrio entre capacidad, perfecta visibilidad y variantes para ubicar al público. Es asimétrico, con dos bandejas en una cabecera y una sola en la otra. Tiene muchas plateas bajas y una popular lateral alta." },
+        { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada,
+            "Es la ampliación de la variante llamada 'Sugerida'. La platea lateral alta tiene 20 escalones más, los codos superiores sobre Mármol son más amplios y tiene una segunda bandeja sobre la popular local" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol,
             "Esta versión tiene como rasgo distintivo una tercera bandeja de plateas sobre la calle José Mármol. Sería una posibla ampliación del estadio" }
     };

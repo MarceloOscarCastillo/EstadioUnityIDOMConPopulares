@@ -17,6 +17,8 @@ public class EstadioConfigurator : MonoBehaviour
         MaximaCapacidad,
         Asimetrico,
         IDOMOriginal,
+        Sugerida,
+        SugeridaAmpliada,
         TerceraBandejaMarmol
     }
 
