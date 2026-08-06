@@ -32687,6 +32687,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: alturaCano
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: anchoFranja
       value: 18.6
       objectReference: {fileID: 0}
@@ -32695,12 +32699,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1730792205}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: materialCano
+      value: 
+      objectReference: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: MaterialVigas
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: largoPalcoVIP
       value: 104
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: palcosBuilder
@@ -32749,6 +32761,10 @@ PrefabInstance:
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: filasQueOcupaPalco
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: generarCanoSoporte
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: largoMaximoTribuna
@@ -35468,6 +35484,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: alturaCano
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: GrisCemento
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -35480,9 +35500,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1730792205}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: materialCano
+      value: 
+      objectReference: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: MaterialVigas
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
@@ -35513,6 +35541,10 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: alturaMuroSuperior
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: generarCanoSoporte
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
