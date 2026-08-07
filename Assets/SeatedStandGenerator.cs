@@ -24,15 +24,10 @@ public class SeatedStandGenerator : MonoBehaviour
     public float largoMaximoTribuna = 118.0f;
     public float altoEscalonBase = 0.40f; // El valor base de 40cm
     public float profundidadEscalon = 0.8f;
-
-    [Header("Caño soporte butaca")]
-    public bool generarCanoSoporte = false;
-    public float alturaCano = 0.36f;
-    public float diametroCano = 0.08f;
-    public Material materialCano;
-
+   
     [Header("Posicion butaca en escalon")]
     public float offsetZButaca = -0.35f; // posicion en profundidad del escalon
+    public float elevacionCanio = 0f;
 
     [Header("Lógica de Grada")]
     public int numFilas = 40;
@@ -459,74 +454,23 @@ public class SeatedStandGenerator : MonoBehaviour
         muroGO.AddComponent<MeshRenderer>().sharedMaterial = BlueColour;
     }
 
-    //void PonerAsientos(Transform padre, Material mat)
-    //{
-    //    if (AsientoPlatea == null) return;
-    //    for (int i = 0; i < 2; i++)
-    //    {
-    //        GameObject asiento = Instantiate(AsientoPlatea);
-    //        asiento.transform.localScale = Vector3.one;
-
-    //        Vector3 posLocal = new Vector3((i == 0) ? -0.25f : 0.25f, 0.815f, -0.25f);
-
-    //        asiento.transform.position = padre.TransformPoint(posLocal);
-    //        asiento.transform.rotation = padre.rotation * Quaternion.Euler(0, 90f, 0f);
-
-    //        asiento.transform.SetParent(padre, true);
-    //        AplicarMaterialATodo(asiento, mat);
-    //    }
-    //}
-
     void PonerAsientos(Transform padre, Material mat)
     {
         if (AsientoPlatea == null) return;
 
-        // Obtener altura del prefab AsientoPlatea
-        Renderer rAsiento = AsientoPlatea.GetComponentInChildren<Renderer>();
-        
-        float alturaAsiento = rAsiento != null ? rAsiento.bounds.size.y : 0.40f;
-
-        //float yBaseCanio = generarCanoSoporte ? alturaCano : 0f;
-
-        //float yButaca = yBaseCanio + alturaAsiento / 2f;
-
-        float yAlturaBloque = altoEscalonBase / 2f;
-
-        float yButaca = yAlturaBloque + (generarCanoSoporte ? alturaCano : 0f) + alturaAsiento / 2f;
-
+        float distanciaCentroACaraSuperiorBloque = altoEscalonBase / 2f;
+        float yInicioSoporteButaca = distanciaCentroACaraSuperiorBloque + elevacionCanio;
 
         for (int i = 0; i < 2; i++)
         {
             float xPos = (i == 0) ? -0.25f : 0.25f;
-
-            // Generar caño si corresponde
-            if (generarCanoSoporte)
-            {
-                GameObject cano = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                cano.name = "Cano_Soporte";
-                cano.transform.SetParent(padre);
-                
-                cano.transform.position = padre.TransformPoint(new Vector3(xPos, yAlturaBloque + alturaCano / 2f, offsetZButaca));
-                cano.transform.rotation = padre.rotation;
-                cano.transform.localScale = new Vector3(diametroCano, alturaCano / 2f, diametroCano);
-                if (materialCano != null)
-                    cano.GetComponent<Renderer>().sharedMaterial = materialCano;
-                DestroyImmediate(cano.GetComponent<CapsuleCollider>());
-            }
-
-            // Instanciar butaca
             GameObject asiento = Instantiate(AsientoPlatea);
             asiento.transform.localScale = Vector3.one;
-            Vector3 posLocal = new Vector3(xPos, yButaca, offsetZButaca);
-            asiento.transform.SetParent(padre, true);
+            Vector3 posLocal = new Vector3(xPos, yInicioSoporteButaca, offsetZButaca);
             asiento.transform.position = padre.TransformPoint(posLocal);
             asiento.transform.rotation = padre.rotation * Quaternion.Euler(0, 90f, 0f);
-            
+            asiento.transform.SetParent(padre, true);
             AplicarMaterialATodo(asiento, mat);
-
-            Debug.Log($"offsetZButaca={offsetZButaca}, posLocal={new Vector3(xPos, yButaca, offsetZButaca)}");
-            Debug.Log($"posMundial={padre.TransformPoint(new Vector3(xPos, yButaca, offsetZButaca))}");
-
         }
     }
 

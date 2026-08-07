@@ -530,12 +530,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: palcosBuilder
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: filaInicioBoca
@@ -5157,8 +5165,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: filaInicioBoca
@@ -5606,6 +5622,8 @@ MonoBehaviour:
   radioInferior: 3.5
   anchoEscalon: 0.8
   altoEscalon: 0.4
+  elevacionCanio: 0.2
+  offsetZButaca: 0.25
   invertirSentido: 0
   filasMaximas: 21
   filasMinimas: 21
@@ -6924,12 +6942,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
       value: 16.6
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarSoportes
@@ -11218,6 +11244,8 @@ MonoBehaviour:
   radioInferior: 3.5
   anchoEscalon: 0.4
   altoEscalon: 0.2
+  elevacionCanio: 0
+  offsetZButaca: -0.35
   invertirSentido: 0
   filasMaximas: 42
   filasMinimas: 42
@@ -13976,6 +14004,8 @@ MonoBehaviour:
   radioInferior: 3.5
   anchoEscalon: 0.8
   altoEscalon: 0.4
+  elevacionCanio: 0.2
+  offsetZButaca: 0.25
   invertirSentido: 0
   filasMaximas: 21
   filasMinimas: 21
@@ -19458,8 +19488,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: filaInicioBoca
@@ -20807,6 +20845,8 @@ MonoBehaviour:
   radioInferior: 3.5
   anchoEscalon: 0.8
   altoEscalon: 0.4
+  elevacionCanio: 0.2
+  offsetZButaca: 0.25
   invertirSentido: 0
   filasMaximas: 21
   filasMinimas: 21
@@ -22078,6 +22118,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
       value: 15.3
       objectReference: {fileID: 0}
@@ -22088,6 +22132,10 @@ PrefabInstance:
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: cantidadPiezas
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filaInicioBoca2
@@ -22745,6 +22793,8 @@ MonoBehaviour:
   radioInferior: 3.5
   anchoEscalon: 0.4
   altoEscalon: 0.2
+  elevacionCanio: 0
+  offsetZButaca: -0.35
   invertirSentido: 0
   filasMaximas: 42
   filasMinimas: 42
@@ -23495,6 +23545,8 @@ MonoBehaviour:
   radioInferior: 3.5
   anchoEscalon: 0.4
   altoEscalon: 0.2
+  elevacionCanio: 0
+  offsetZButaca: -0.35
   invertirSentido: 0
   filasMaximas: 42
   filasMinimas: 42
@@ -23735,6 +23787,8 @@ MonoBehaviour:
   radioInferior: 3.5
   anchoEscalon: 0.8
   altoEscalon: 0.4
+  elevacionCanio: 0.2
+  offsetZButaca: 0.25
   invertirSentido: 0
   filasMaximas: 21
   filasMinimas: 21
@@ -26490,10 +26544,10 @@ MonoBehaviour:
   prefabPalco: {fileID: 4240674913055047226, guid: 0c9417bd3f3dd2944b37bc0320d90118, type: 3}
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  capacidadTotal: 68841
-  capacidadPopulares: 43569
-  capacidadPlateas: 24680
-  capacidadPalcos: 592
+  capacidadTotal: 43567
+  capacidadPopulares: 0
+  capacidadPlateas: 43127
+  capacidadPalcos: 440
 --- !u!4 &1369841858
 Transform:
   m_ObjectHideFlags: 0
@@ -32688,7 +32742,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: alturaCano
-      value: 1.5
+      value: 1.35
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: anchoFranja
@@ -32701,7 +32755,7 @@ PrefabInstance:
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: materialCano
       value: 
-      objectReference: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+      objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: MaterialVigas
       value: 
@@ -32726,6 +32780,10 @@ PrefabInstance:
       propertyPath: PrefabPalcoVIP
       value: 
       objectReference: {fileID: 4240674913055047226, guid: b4fbb5503bb48924191359cefb7f6658, type: 3}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: filaInicioBoca
       value: 15
@@ -33557,12 +33615,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
       value: 16.6
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarSoportes
@@ -34357,8 +34423,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: filaInicioBoca
@@ -34644,12 +34718,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: palcosBuilder
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: filaInicioBoca
@@ -35029,8 +35111,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: filaInicioBoca
@@ -35460,6 +35550,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: e4b6dcb1a2e039e4dad99db8ad1d36a9, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: yButaca
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: altoViga
       value: 0.3
       objectReference: {fileID: 0}
@@ -35485,7 +35579,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: alturaCano
-      value: 1.5
+      value: 1.35
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: GrisCemento
@@ -35502,7 +35596,7 @@ PrefabInstance:
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: materialCano
       value: 
-      objectReference: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+      objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: MaterialVigas
       value: 
@@ -35514,6 +35608,10 @@ PrefabInstance:
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: filaInicioBoca
@@ -35530,6 +35628,10 @@ PrefabInstance:
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: altoVigaDiagonal
       value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: hundimientoCanio
+      value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: anchoVigaDiagonal
@@ -35830,6 +35932,8 @@ MonoBehaviour:
   radioInferior: 3.5
   anchoEscalon: 0.4
   altoEscalon: 0.2
+  elevacionCanio: 0
+  offsetZButaca: -0.35
   invertirSentido: 0
   filasMaximas: 42
   filasMinimas: 42
@@ -36553,6 +36657,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2931133612208512928, guid: 5944501ec5e96ff49bf4fc95056d0f21, type: 3}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: prefabBaranda
       value: 
       objectReference: {fileID: 2931133612208512928, guid: 5944501ec5e96ff49bf4fc95056d0f21, type: 3}
@@ -36563,6 +36671,10 @@ PrefabInstance:
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarSoportes
@@ -38362,8 +38474,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: filaInicioBoca
@@ -38396,6 +38516,10 @@ PrefabInstance:
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: largoMaximoTribuna
       value: 74
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: profundidadEscalon
+      value: 0.76
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: altoVigaTransversal
@@ -39001,7 +39125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45b3e5ed87db05348b206a087a2f9f52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EstadioConfigurator
-  varianteAActivar: 12
+  varianteAActivar: 10
   perfilesDeEstadio:
   - nombreVariante: 1
     sectoresActivos:
@@ -42340,8 +42464,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
       propertyPath: filaInicioBoca
@@ -42723,12 +42855,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: radioInferior
       value: 15.3
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoBocaVomito
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filaInicioBoca2
@@ -43815,6 +43955,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: offsetZButaca
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: palcosBuilder
       value: 
       objectReference: {fileID: 0}
@@ -43825,6 +43969,10 @@ PrefabInstance:
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: tienePalcoVIP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: elevacionCanio
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: filaInicioBoca

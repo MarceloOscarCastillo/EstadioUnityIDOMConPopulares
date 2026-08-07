@@ -39,6 +39,11 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     public float anchoEscalon = 0.80f;
     public float altoEscalon = 0.40f;
 
+    [Header("Posicion butaca en escalon")]
+    public float elevacionCanio = 0f;    
+    public float offsetZButaca = -0.35f; // posicion en profundidad del escalon
+
+
     [Header("Lógica de Recorte")]
     public bool invertirSentido = false;
     public int filasMaximas = 48;
@@ -603,11 +608,30 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         return Mathf.RoundToInt(Mathf.Lerp(filasMaximas, filasMinimas, tCurvado));
     }
 
+    //void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor, int fila, int columna, int asiento)
+    //{
+    //    GameObject asientoObj = Instantiate(AsientoPlatea);
+    //    asientoObj.transform.localScale = Vector3.one;
+    //    asientoObj.transform.position = posicion + (Vector3.up * 0.6f);
+    //    asientoObj.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up);
+    //    asientoObj.transform.Rotate(0, 180, 0);
+    //    asientoObj.transform.SetParent(contenedor.transform, true);
+    //    AplicarMaterialATodo(asientoObj, Material);
+    //    mapaObjetos[(fila, columna, asiento)] = asientoObj;
+    //}
+
     void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor, int fila, int columna, int asiento)
     {
+        float distanciaCentroACaraSuperiorBloque = altoEscalon / 2f; // altoEscalon es el equivalente en codos
+        float yButaca = distanciaCentroACaraSuperiorBloque + elevacionCanio;
+
+        Vector3 dirRadial = (posicion - transform.position);
+        dirRadial.y = 0;
+        dirRadial.Normalize();
+
         GameObject asientoObj = Instantiate(AsientoPlatea);
         asientoObj.transform.localScale = Vector3.one;
-        asientoObj.transform.position = posicion + (Vector3.up * 0.6f);
+        asientoObj.transform.position = posicion + (Vector3.up * yButaca) + dirRadial * offsetZButaca;
         asientoObj.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up);
         asientoObj.transform.Rotate(0, 180, 0);
         asientoObj.transform.SetParent(contenedor.transform, true);
