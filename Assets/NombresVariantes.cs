@@ -5,6 +5,7 @@ public static class NombresVariantes
     public static Dictionary<EstadioConfigurator.TipoConfiguracion, string> Nombres =
         new Dictionary<EstadioConfigurator.TipoConfiguracion, string>()
     {
+        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
         { EstadioConfigurator.TipoConfiguracion.Inauguracion, "Inauguración" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores, "Populares Solo Cabeceras y Codos Inferiores" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesEn2CodosSuperiores, "Populares Cabeceras y 2 Codos Superiores" },
@@ -15,7 +16,7 @@ public static class NombresVariantes
         { EstadioConfigurator.TipoConfiguracion.CabecerasProlongadas, "Cabeceras Prolongadas" },
         { EstadioConfigurator.TipoConfiguracion.MaximaCapacidad, "Máxima Capacidad" },
         { EstadioConfigurator.TipoConfiguracion.Asimetrico, "Asimétrico" },
-        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
+        
         { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "Sugerida Ampliada" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" }

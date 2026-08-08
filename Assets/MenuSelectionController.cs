@@ -26,6 +26,7 @@ public class MenuSeleccionController : MonoBehaviour
     private Dictionary<EstadioConfigurator.TipoConfiguracion, string> nombresCortos =
         new Dictionary<EstadioConfigurator.TipoConfiguracion, string>()
     {
+        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
         { EstadioConfigurator.TipoConfiguracion.Inauguracion, "Inauguración" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores, "Populares Solo Cabeceras" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesEn2CodosSuperiores, "Populares Cabeceras y 2 Codos Sup." },
@@ -36,7 +37,7 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.CabecerasProlongadas, "Cabeceras Prolongadas" },
         { EstadioConfigurator.TipoConfiguracion.MaximaCapacidad, "Máxima Capacidad" },
         { EstadioConfigurator.TipoConfiguracion.Asimetrico, "Cabeceras asimetricas" },
-        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
+        
         { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "SugeridaAmpliada" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" }
@@ -46,6 +47,8 @@ public class MenuSeleccionController : MonoBehaviour
     private Dictionary<EstadioConfigurator.TipoConfiguracion, string> descripciones =
         new Dictionary<EstadioConfigurator.TipoConfiguracion, string>()
     {
+        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal,
+            "Es la versión original del proyecto IDOM. Es all seater, no hay tribunas sin asientos.\n\nLas cabeceras tienen dos bandejas." },
         { EstadioConfigurator.TipoConfiguracion.Inauguracion,
             "Configuración que permite alcanzar los 60.000 espectadores sin haber construido los codos superiores.\n\nConsiste en 2 cabeceras de populares, los 4 codos inferiores también son populares, así como los dos sectores sobre José Mármol.\n\nLas plateas están todas sobre Avenida La Plata.\n\nEl estadio podría inaugurarse así." },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores,
@@ -66,8 +69,7 @@ public class MenuSeleccionController : MonoBehaviour
             "En esta versión además de prolongarse las cabeceras se agrega una popular lateral alta." },
         { EstadioConfigurator.TipoConfiguracion.Asimetrico,
             "En esta versión una cabecera tiene una bandeja y la otra dos" },
-        { EstadioConfigurator.TipoConfiguracion.IDOMOriginal,
-            "Es la versión original del proyecto IDOM. Es all seater, no hay tribunas sin asientos.\n\nLas cabeceras tienen dos bandejas." },
+        
         { EstadioConfigurator.TipoConfiguracion.Sugerida,
             "Presenta un equilibrio entre capacidad, perfecta visibilidad y variantes para ubicar al público. Es asimétrico, con dos bandejas en una cabecera y una sola en la otra. Tiene muchas plateas bajas y una popular lateral alta." },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada,
