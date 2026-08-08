@@ -182,6 +182,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     public Dictionary<(int fila, int columna, int asiento), GameObject> mapaObjetos =
     new Dictionary<(int, int, int), GameObject>();
 
+    [System.NonSerialized]
+    public Dictionary<(int fila, int columna, int asiento), Vector3> mapaPosiciones =
+    new Dictionary<(int, int, int), Vector3>();
 
     [ContextMenu("Generar Codo")]
 
@@ -193,6 +196,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
     public void GenerarCodo()
     {
+        mapaPosiciones.Clear();
         mapaObjetos.Clear();
 
         if (BlockPlateaCurva == null) return;
@@ -285,6 +289,10 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                 Vector3 w4 = transform.TransformPoint(CalcularPunto(celda.angEnd, radioExterno, celda.fila));
 
                 GameObject bloqueObj = Instantiate(BlockPlateaCurva, contenedor.transform);
+
+                mapaObjetos[(celda.fila, celda.columna, 0)] = bloqueObj;
+
+                mapaPosiciones[(celda.fila, celda.columna, 0)] = bloqueObj.transform.position;
 
                 Collider col = bloqueObj.GetComponent<Collider>();
 
@@ -607,19 +615,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
         return Mathf.RoundToInt(Mathf.Lerp(filasMaximas, filasMinimas, tCurvado));
     }
-
-    //void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor, int fila, int columna, int asiento)
-    //{
-    //    GameObject asientoObj = Instantiate(AsientoPlatea);
-    //    asientoObj.transform.localScale = Vector3.one;
-    //    asientoObj.transform.position = posicion + (Vector3.up * 0.6f);
-    //    asientoObj.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up);
-    //    asientoObj.transform.Rotate(0, 180, 0);
-    //    asientoObj.transform.SetParent(contenedor.transform, true);
-    //    AplicarMaterialATodo(asientoObj, Material);
-    //    mapaObjetos[(fila, columna, asiento)] = asientoObj;
-    //}
-
+    
     void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor, int fila, int columna, int asiento)
     {
         float distanciaCentroACaraSuperiorBloque = altoEscalon / 2f; // altoEscalon es el equivalente en codos

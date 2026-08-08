@@ -75,7 +75,7 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada,
             "Es la ampliación de la variante llamada 'Sugerida'. La platea lateral alta tiene 20 escalones más, los codos superiores sobre Mármol son más amplios y tiene una segunda bandeja sobre la popular local" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol,
-            "Esta versión tiene como rasgo distintivo una tercera bandeja de plateas sobre la calle José Mármol. Sería una posibla ampliación del estadio" }
+            "Esta versión tiene como rasgo distintivo una tercera bandeja de plateas sobre la calle José Mármol. Sería una posible ampliación del estadio" }
     };
 
     void Start()

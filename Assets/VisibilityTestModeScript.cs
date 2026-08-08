@@ -225,7 +225,8 @@ public class ModoVisibilidadController : MonoBehaviour
                 {
                     if (nombreEsp == "Escalon_Cabecera" ||
                         nombreEsp == "AsientoPlatea(Clone)" ||
-                        nombreEsp == "SeatersStandBlock(Clone)")
+                        nombreEsp == "SeatersStandBlock(Clone)" ||
+                        nombreEsp == "BlockPlateaCurva(Clone)")
                         break;
                     if (objEsp.transform.parent == null) break;
                     objEsp = objEsp.transform.parent.gameObject;
@@ -234,7 +235,8 @@ public class ModoVisibilidadController : MonoBehaviour
 
                 bool esValido = nombreEsp == "Escalon_Cabecera" ||
                                 nombreEsp == "AsientoPlatea(Clone)" ||
-                                nombreEsp == "SeatersStandBlock(Clone)";
+                                nombreEsp == "SeatersStandBlock(Clone)" ||
+                                nombreEsp == "BlockPlateaCurva(Clone)";
 
                 Debug.Log($"offset={offset}, pos={pos}, hit={hitEscalon.collider?.gameObject.name}, esValido={esValido}");
 
@@ -302,47 +304,67 @@ public class ModoVisibilidadController : MonoBehaviour
 
         // Buscar asientos en fila+1 (la fila de adelante, mas cerca del campo)
         int filaAdelante = claveUsuario.fila - 1;
-        int[] offsetsAsiento = { 0, 1, -1, 2, -2 };
-
-        foreach (int offsetA in offsetsAsiento)
+     
+        if (esPopular)
         {
-            int asientoObjetivo = claveUsuario.asiento + offsetA;
+            Debug.Log($"Usuario en fila={claveUsuario.fila}, columna={claveUsuario.columna}");
+            Debug.Log($"Buscando filaAdelante={filaAdelante}");
+            Debug.Log($"Total objetos en diccionario: {codoScript.mapaObjetos.Count}");
 
-            // Buscar en la misma columna o columnas adyacentes
-            for (int deltaColumna = 0; deltaColumna <= 1; deltaColumna++)
+            InstanciarEspectadores(hit, esPopular, dirHaciaElCampo);
+
+            //int[] offsetsColumna = { 0, 1, -1, 2, -2 };
+            //foreach (int offsetCol in offsetsColumna)
+            //{
+            //    int columnaObjetivo = claveUsuario.columna + offsetCol;
+            //    bool encontrado = codoScript.mapaObjetos.TryGetValue((filaAdelante, columnaObjetivo, 0), out GameObject bloqueAdelante);
+            //    Debug.Log($"Buscando ({filaAdelante}, {columnaObjetivo}, 0): encontrado={encontrado}");
+            //    if (encontrado)
+            //    {
+            //        // Usar posicion guardada antes del static batching
+            //        if (codoScript.mapaPosiciones.TryGetValue((filaAdelante, columnaObjetivo, 0), out Vector3 posBloque))
+            //        {
+            //            Vector3 posEsp = posBloque;
+            //            // Subir a la superficie del bloque
+            //            Renderer r = bloqueAdelante.GetComponent<Renderer>();
+            //            if (r != null) posEsp.y = posBloque.y + r.bounds.size.y / 2f;
+            //            cilindrosEspectadores.Add(CrearEspectador(posEsp, esPopular, false, dirHaciaElCampo));
+            //        }
+            //    }
+            //}
+        }
+        else
+        {
+            int[] offsetsAsiento = { 0, 1, -1, 2, -2 };
+            foreach (int offsetA in offsetsAsiento)
             {
-                int[] columnas = deltaColumna == 0
-                    ? new[] { claveUsuario.columna }
-                    : new[] { claveUsuario.columna - 1, claveUsuario.columna + 1 };
-
-                foreach (int col in columnas)
+                int asientoObjetivo = claveUsuario.asiento + offsetA;
+                for (int deltaColumna = 0; deltaColumna <= 1; deltaColumna++)
                 {
-                    if (codoScript.mapaObjetos.TryGetValue((filaAdelante, col, asientoObjetivo), out GameObject objAdelante))
+                    int[] columnas = deltaColumna == 0
+                        ? new[] { claveUsuario.columna }
+                        : new[] { claveUsuario.columna - 1, claveUsuario.columna + 1 };
+                    foreach (int col in columnas)
                     {
-                        
-                        float yEsp = objAdelante.transform.position.y - 0.6f; // restar el offset de UbicarAsiento
-
-                        Transform seatEsp = objAdelante.transform.Find("Seat");
-                        if (seatEsp != null)
+                        if (codoScript.mapaObjetos.TryGetValue((filaAdelante, col, asientoObjetivo), out GameObject objAdelante))
                         {
-                            Collider seatCol = seatEsp.GetComponent<Collider>();
-                            if (seatCol != null) yEsp = seatCol.bounds.max.y;
+                            float yEsp = objAdelante.transform.position.y - 0.6f;
+                            Transform seatEsp = objAdelante.transform.Find("Seat");
+                            if (seatEsp != null)
+                            {
+                                Collider seatCol = seatEsp.GetComponent<Collider>();
+                                if (seatCol != null) yEsp = seatCol.bounds.max.y;
+                            }
+                            Vector3 posEsp = new Vector3(objAdelante.transform.position.x, yEsp, objAdelante.transform.position.z)
+                                + dirHaciaElCampo * 0.10f;
+                            cilindrosEspectadores.Add(CrearEspectador(posEsp, esPopular, false, dirHaciaElCampo));
+                            goto siguiente;
                         }
-
-                        Vector3 posEsp = new Vector3(objAdelante.transform.position.x, yEsp, objAdelante.transform.position.z)
-    + dirHaciaElCampo * 0.10f;
-                        
-                        cilindrosEspectadores.Add(CrearEspectador(posEsp, esPopular, false, dirHaciaElCampo));
-                        goto siguiente;
                     }
+                siguiente:;
                 }
-            siguiente:;
             }
         }
-
-        Debug.Log($"Usuario en fila={claveUsuario.fila}, columna={claveUsuario.columna}, asiento={claveUsuario.asiento}");
-        Debug.Log($"Buscando filaAdelante={claveUsuario.fila - 1}");
-        Debug.Log($"Total objetos en diccionario: {codoScript.mapaObjetos.Count}");
     }
 
 
