@@ -5,8 +5,7 @@ public class EstadioConfigurator : MonoBehaviour
 {
     // Las distintas variantes de tu estadio
     public enum TipoConfiguracion
-    {
-        IDOMOriginal,
+    {        
         Inauguracion,
         EstadioPopularesSoloCabecerasYCodosInferiores,
         EstadioPopularesEn2CodosSuperiores,
@@ -16,6 +15,7 @@ public class EstadioConfigurator : MonoBehaviour
         PopularesAbajoPlateasArriba,
         CabecerasProlongadas,
         MaximaCapacidad,
+        IDOMOriginal,
         Asimetrico,
         Sugerida,
         SugeridaAmpliada,

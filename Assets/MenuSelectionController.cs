@@ -59,7 +59,7 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.EstadioConPopularLateralBaja,
             "Esta versión tiene populares en las cabeceras, en los codos inferiores y en 2 de los codos superiores, del lado de la calle Inclán.\n\nTodas las tribunas laterales tienen asientos con la excepción de la tribuna baja sobre Mármol." },
         { EstadioConfigurator.TipoConfiguracion.EstadioTodosLosCodosPopulares,
-            "En esta versión las cabeceras son populares, así como los codos interiores y superiores.\n\nTodas las tribunas laterales son plateas con asientos." },
+            "En esta versión las cabeceras son populares, así como los codos inferiores y superiores.\n\nTodas las tribunas laterales son plateas con asientos." },
         { EstadioConfigurator.TipoConfiguracion.EstadioConPopularLateralAlta,
             "En esta versión las cabeceras son populares, así como los codos interiores y superiores.\n\nTodas las tribunas laterales son plateas con asientos con la excepción de la segunda bandeja sobre José Mármol." },
         { EstadioConfigurator.TipoConfiguracion.PopularesAbajoPlateasArriba,
