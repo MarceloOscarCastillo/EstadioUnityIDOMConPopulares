@@ -13,6 +13,7 @@ public static class NombresVariantes
         { EstadioConfigurator.TipoConfiguracion.EstadioTodosLosCodosPopulares, "Todos los Codos Populares" },
         { EstadioConfigurator.TipoConfiguracion.EstadioConPopularLateralAlta, "Popular Lateral Alta" },
         { EstadioConfigurator.TipoConfiguracion.PopularesAbajoPlateasArriba, "Populares Abajo, Plateas Arriba" },
+        { EstadioConfigurator.TipoConfiguracion.PlateasYCodosMarmolAmpliados, "Plateas y codos ampliados sector José Mármol" },
         { EstadioConfigurator.TipoConfiguracion.CabecerasProlongadas, "Cabeceras Prolongadas" },
         { EstadioConfigurator.TipoConfiguracion.MaximaCapacidad, "Máxima Capacidad" },
         { EstadioConfigurator.TipoConfiguracion.Asimetrico, "Asimétrico" },

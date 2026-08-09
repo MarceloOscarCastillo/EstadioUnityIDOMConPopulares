@@ -115,6 +115,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     public bool generarBarandaFrontal = false;
     public GameObject prefabBaranda;
     public float alturaBaranda = 0.9f;
+    public float offsetPivotBaranda = 0.75f;
 
 
     [Header("Soportes Estructurales")]
@@ -185,6 +186,20 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     [System.NonSerialized]
     public Dictionary<(int fila, int columna, int asiento), Vector3> mapaPosiciones =
     new Dictionary<(int, int, int), Vector3>();
+
+
+    [System.Serializable]
+    public struct OverrideParametrosCodo
+    {
+        public EstadioConfigurator.TipoConfiguracion variante;
+        public float radioInferior;
+        public int filasMaximas;
+        public int filasMinimas;
+    }
+
+    [Header("Overrides por Variante")]
+    public List<OverrideParametrosCodo> overridesParametros = new List<OverrideParametrosCodo>();
+
 
     [ContextMenu("Generar Codo")]
 
@@ -708,10 +723,6 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             float rad = angulo * Mathf.Deg2Rad;
             Vector3 dirRadial = new Vector3(Mathf.Cos(rad), 0f, Mathf.Sin(rad));
 
-            //Vector3 pOuter = new Vector3(radioInferior * Mathf.Cos(rad), 0f, radioInferior * Mathf.Sin(rad));
-            //Vector3 pInner = new Vector3((radioInferior + grosor) * Mathf.Cos(rad), 0f, (radioInferior + grosor) * Mathf.Sin(rad));
-
-
             Vector3 pOuter = new Vector3((radioInferior - profundidadPisoFrontal) * Mathf.Cos(rad), 0f, (radioInferior - profundidadPisoFrontal) * Mathf.Sin(rad));
             Vector3 pInner = new Vector3((radioInferior - profundidadPisoFrontal + grosor) * Mathf.Cos(rad), 0f, (radioInferior - profundidadPisoFrontal + grosor) * Mathf.Sin(rad));
 
@@ -848,7 +859,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             float longitudTotal = longAcum[pasosMesh];
             float espaciadoBaranda = 1.0f;
             float distancia = 0f;
-            while (distancia < longitudTotal)
+            while (distancia < longitudTotal - espaciadoBaranda / 2f)
             {
                 float paso = BuscarAngulo(longAcum, distancia, pasosMesh);
                 float angulo = paso * (anguloTotal / pasosMesh);
@@ -859,14 +870,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                     distancia += espaciadoBaranda;
                     continue;
                 }
-
-                //Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radioInferior, 0));
-
-                //Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radioInferior + grosor / 2f, 0));
-
+               
                 Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radioInferior - profundidadPisoFrontal, 0));
 
-                //pos += Vector3.up * alturaMuroFrontal;
                 pos += Vector3.up * (alturaMuroFrontal + alturaBaranda / 2f);
 
                 float delta = 0.5f;
@@ -879,7 +885,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
                 Vector3 tangente = (pB - pA).normalized;
                 GameObject baranda = Instantiate(PrefabBaranda, contenedor.transform);
-                baranda.transform.position = pos;
+                //baranda.transform.position = pos;
+                baranda.transform.position = pos + tangente * offsetPivotBaranda;
                 baranda.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up);
                 distancia += espaciadoBaranda;
             }

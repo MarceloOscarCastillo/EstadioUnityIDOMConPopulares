@@ -148,6 +148,18 @@ public class StandGenerator : MonoBehaviour
         //GenerarSector();
     }
 
+    [System.Serializable]
+    public struct OverrideNumFilas
+    {
+        public EstadioConfigurator.TipoConfiguracion variante;
+        public int numFilas;
+    }
+
+    [Header("Overrides por Variante")]
+    public List<OverrideNumFilas> overridesNumFilas = new List<OverrideNumFilas>();
+
+
+
     [ContextMenu("Generar Sector")]
     public void GenerarSector()
     {

@@ -56,6 +56,13 @@ public class SeatedStandGenerator : MonoBehaviour
     public bool generarMuroSuperior = true;
     public float alturaMuroSuperior = 2.0f;
 
+    [Header("Muros Platea")]
+    public bool generarMuroFrontal = true;
+    public bool generarMurosLateralesPlatea = true;
+    public float alturaMuroPlatea = 1.0f;
+    public float profundidadPisoFrontal = 0.5f;
+    public Material MaterialMuroPlatea;
+
     [Header("Materiales")]
     public Material RedColour;
     public Material BlueColour;
@@ -147,11 +154,22 @@ public class SeatedStandGenerator : MonoBehaviour
     public GameObject prefabBaranda;
     public float alturaBaranda = 0.90f;
     public float offsetMuroHaciaElCampo = 0f;
+    public float offsetPivotBaranda = 0.75f;
 
     private float zMuroFrontalCalculado = 0f;
 
     [Header("Nivel del Suelo")]
     public Transform ground0Level;
+
+    [System.Serializable]
+    public struct OverrideNumFilas
+    {
+        public EstadioConfigurator.TipoConfiguracion variante;
+        public int numFilas;
+    }
+
+    [Header("Overrides por Variante")]
+    public List<OverrideNumFilas> overridesNumFilas = new List<OverrideNumFilas>();
 
     [ContextMenu("Generar Platea")]
 
@@ -487,12 +505,7 @@ public class SeatedStandGenerator : MonoBehaviour
         return altura;
     }
 
-    [Header("Muros Platea")]
-    public bool generarMuroFrontal = true;
-    public bool generarMurosLateralesPlatea = true;
-    public float alturaMuroPlatea = 1.0f;
-    public float profundidadPisoFrontal = 0.5f;
-    public Material MaterialMuroPlatea;
+    
 
     void GenerarMuroFrontal(float mZ, Transform padre)
     {
@@ -616,13 +629,19 @@ public class SeatedStandGenerator : MonoBehaviour
         Mesh meshMuro = new Mesh();
         Vector3[] v = new Vector3[8];
         v[0] = new Vector3(xInicio, yBase, zMuro - g);
-        v[1] = new Vector3(xInicio, yBase + alturaMuroPlatea, zMuro - g);
+    
+        v[1] = new Vector3(xInicio, yBase + alturaMuroFrontal, zMuro - g);
+
         v[2] = new Vector3(xFin, yBase, zMuro - g);
-        v[3] = new Vector3(xFin, yBase + alturaMuroPlatea, zMuro - g);
+        
+        v[3] = new Vector3(xFin, yBase + alturaMuroFrontal, zMuro - g);
+
         v[4] = new Vector3(xInicio, yBase, zMuro + g);
-        v[5] = new Vector3(xInicio, yBase + alturaMuroPlatea, zMuro + g);
+        
+        v[5] = new Vector3(xInicio, yBase + alturaMuroFrontal, zMuro + g);
         v[6] = new Vector3(xFin, yBase, zMuro + g);
-        v[7] = new Vector3(xFin, yBase + alturaMuroPlatea, zMuro + g);
+
+        v[7] = new Vector3(xFin, yBase + alturaMuroFrontal, zMuro + g);
 
         meshMuro.vertices = v;
         meshMuro.triangles = new int[] {
@@ -639,22 +658,44 @@ public class SeatedStandGenerator : MonoBehaviour
 
         Debug.Log($"mZ={mZ}, posLocal muro={transform.TransformPoint(new Vector3(0, 0, 0))}");
 
+        //if (generarBarandaFrontal && prefabBaranda != null)
+        //{
+        //    float anchoPrefab = 1f;
+        //    int cantidad = Mathf.FloorToInt((xFin - xInicio) / anchoPrefab);
+        //    for (int i = 0; i < cantidad; i++)
+        //    {
+        //        float xPos = xInicio + i * anchoPrefab;
+
+
+        //        Vector3 posLocal = new Vector3(xPos, yBase + alturaMuroFrontal + alturaBaranda / 2f, zMuro);
+
+
+        //        GameObject baranda = Instantiate(prefabBaranda, padre);
+        //        baranda.transform.position = transform.TransformPoint(posLocal);
+        //        baranda.transform.rotation = transform.rotation * Quaternion.Euler(0, -90f, 0);
+        //    }
+        //}
+
         if (generarBarandaFrontal && prefabBaranda != null)
         {
             float anchoPrefab = 1f;
-            int cantidad = Mathf.FloorToInt((xFin - xInicio) / anchoPrefab);
+            float longitudSegmento = xFin - xInicio;
+            int cantidad = Mathf.FloorToInt(longitudSegmento / anchoPrefab);
+            float offsetCentrado = (longitudSegmento - cantidad * anchoPrefab) / 2f;
+
             for (int i = 0; i < cantidad; i++)
             {
-                float xPos = xInicio + i * anchoPrefab;
-               
-                //Vector3 posLocal = new Vector3(xPos, yBase + alturaMuroPlatea, zMuro);
-                Vector3 posLocal = new Vector3(xPos, yBase + alturaMuroPlatea + alturaBaranda / 2f, zMuro);
-
-
+                float xPos = xInicio + offsetCentrado + i * anchoPrefab + offsetPivotBaranda;
+                Vector3 posLocal = new Vector3(xPos, yBase + alturaMuroFrontal + alturaBaranda / 2f, zMuro);
                 GameObject baranda = Instantiate(prefabBaranda, padre);
                 baranda.transform.position = transform.TransformPoint(posLocal);
                 baranda.transform.rotation = transform.rotation * Quaternion.Euler(0, -90f, 0);
             }
+
+            Debug.Log($"xInicio={xInicio}, xFin={xFin}, zMuro={zMuro}, cantidad={cantidad}, offsetCentrado={offsetCentrado}");
+            Debug.Log($"Primera baranda posLocal={new Vector3(xInicio + offsetCentrado, yBase + alturaMuroFrontal + alturaBaranda / 2f, zMuro)}");
+            Debug.Log($"Primera baranda posMundial={transform.TransformPoint(new Vector3(xInicio + offsetCentrado, yBase + alturaMuroFrontal + alturaBaranda / 2f, zMuro))}");
+
         }
 
     }

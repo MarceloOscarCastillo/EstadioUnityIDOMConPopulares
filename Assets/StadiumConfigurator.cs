@@ -19,7 +19,8 @@ public class EstadioConfigurator : MonoBehaviour
         Asimetrico,
         Sugerida,
         SugeridaAmpliada,
-        TerceraBandejaMarmol
+        TerceraBandejaMarmol,
+        PlateasYCodosMarmolAmpliados,
     }
 
     [System.Serializable]
@@ -93,10 +94,60 @@ public void AplicarConfiguracionEstadio()
         foreach (MonoBehaviour sector in perfilElegido.sectoresActivos)
         {
                 Debug.Log($"Sector en perfil: {sector?.gameObject.name}, tipo: {sector?.GetType().Name}");
-                if (sector is StandGenerator sg) sg.GenerarSector();
-            else if (sector is SeatedStandGenerator ssg) ssg.GenerarSector();
-            else if (sector is UpperCurveStandWithWalkpathScript uc) uc.GenerarCodo();
-            else if (sector is PalcosBuilderScript pb) pb.GenerarPalcos();
+
+                if (sector is StandGenerator sg)
+                {
+                    var ovrd = sg.overridesNumFilas.Find(o => o.variante == varianteAActivar);
+                    if (ovrd.variante == varianteAActivar)
+                    {
+                        int numFilasOriginal = sg.numFilas;
+                        sg.numFilas = ovrd.numFilas;
+                        sg.GenerarSector();
+                        sg.numFilas = numFilasOriginal;
+                    }
+                    else
+                        sg.GenerarSector();
+                }
+
+                else if (sector is SeatedStandGenerator ssg)
+                {
+                    // Aplicar override si existe para esta variante
+                    var ovrd = ssg.overridesNumFilas.Find(o => o.variante == varianteAActivar);
+                    if (ovrd.variante == varianteAActivar)
+                    {
+                        int numFilasOriginal = ssg.numFilas;
+                        ssg.numFilas = ovrd.numFilas;
+                        ssg.GenerarSector();
+                        ssg.numFilas = numFilasOriginal; // restaurar valor original
+                    }
+                    else
+                        ssg.GenerarSector();
+
+                }
+                else if (sector is UpperCurveStandWithWalkpathScript uc)
+                {
+                    var ovrd = uc.overridesParametros.Find(o => o.variante == varianteAActivar);
+                    if (ovrd.variante == varianteAActivar)
+                    {
+                        float radioOriginal = uc.radioInferior;
+                        int filasMaxOriginal = uc.filasMaximas;
+                        int filasMinOriginal = uc.filasMinimas;
+
+                        uc.radioInferior = ovrd.radioInferior;
+                        uc.filasMaximas = ovrd.filasMaximas;
+                        uc.filasMinimas = ovrd.filasMinimas;
+
+                        uc.GenerarCodo();
+
+                        uc.radioInferior = radioOriginal;
+                        uc.filasMaximas = filasMaxOriginal;
+                        uc.filasMinimas = filasMinOriginal;
+                    }
+                    else
+                        uc.GenerarCodo();
+                }
+                else if (sector is PalcosBuilderScript pb) pb.GenerarPalcos();
+
                 else if (sector is SharedComponentsController sc) sc.GenerarComponentesCompartidos();
             }
     }
@@ -276,9 +327,49 @@ public void AplicarConfiguracionEstadio()
     private void GenerarSector(MonoBehaviour sector)
     {
         Debug.Log($"GenerarSector llamado para: {sector?.gameObject.name}, tipo: {sector?.GetType().Name}");
-        if (sector is StandGenerator sg) sg.GenerarSector();
-        else if (sector is SeatedStandGenerator ssg) ssg.GenerarSector();
-        else if (sector is UpperCurveStandWithWalkpathScript uc) uc.GenerarCodo();
+
+        if (sector is StandGenerator sg)
+        {
+            var ovrd = sg.overridesNumFilas.Find(o => o.variante == varianteAActivar);
+            if (ovrd.variante == varianteAActivar)
+            {
+                int original = sg.numFilas;
+                sg.numFilas = ovrd.numFilas;
+                sg.GenerarSector();
+                sg.numFilas = original;
+            }
+            else sg.GenerarSector();
+        }
+        else if (sector is SeatedStandGenerator ssg)
+        {
+            var ovrd = ssg.overridesNumFilas.Find(o => o.variante == varianteAActivar);
+            if (ovrd.variante == varianteAActivar)
+            {
+                int original = ssg.numFilas;
+                ssg.numFilas = ovrd.numFilas;
+                ssg.GenerarSector();
+                ssg.numFilas = original;
+            }
+            else ssg.GenerarSector();
+        }
+        else if (sector is UpperCurveStandWithWalkpathScript uc)
+        {
+            var ovrd = uc.overridesParametros.Find(o => o.variante == varianteAActivar);
+            if (ovrd.variante == varianteAActivar)
+            {
+                float radioOriginal = uc.radioInferior;
+                int filasMaxOriginal = uc.filasMaximas;
+                int filasMinOriginal = uc.filasMinimas;
+                uc.radioInferior = ovrd.radioInferior;
+                uc.filasMaximas = ovrd.filasMaximas;
+                uc.filasMinimas = ovrd.filasMinimas;
+                uc.GenerarCodo();
+                uc.radioInferior = radioOriginal;
+                uc.filasMaximas = filasMaxOriginal;
+                uc.filasMinimas = filasMinOriginal;
+            }
+            else uc.GenerarCodo();
+        }
         else if (sector is PalcosBuilderScript pb) pb.GenerarPalcos();
         else if (sector is SharedComponentsController sc) sc.GenerarComponentesCompartidos();
     }
