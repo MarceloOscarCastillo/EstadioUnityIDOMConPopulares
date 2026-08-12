@@ -656,26 +656,7 @@ public class SeatedStandGenerator : MonoBehaviour
         muroGO.AddComponent<MeshFilter>().mesh = meshMuro;
         muroGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialMuroPlatea;
 
-        Debug.Log($"mZ={mZ}, posLocal muro={transform.TransformPoint(new Vector3(0, 0, 0))}");
-
-        //if (generarBarandaFrontal && prefabBaranda != null)
-        //{
-        //    float anchoPrefab = 1f;
-        //    int cantidad = Mathf.FloorToInt((xFin - xInicio) / anchoPrefab);
-        //    for (int i = 0; i < cantidad; i++)
-        //    {
-        //        float xPos = xInicio + i * anchoPrefab;
-
-
-        //        Vector3 posLocal = new Vector3(xPos, yBase + alturaMuroFrontal + alturaBaranda / 2f, zMuro);
-
-
-        //        GameObject baranda = Instantiate(prefabBaranda, padre);
-        //        baranda.transform.position = transform.TransformPoint(posLocal);
-        //        baranda.transform.rotation = transform.rotation * Quaternion.Euler(0, -90f, 0);
-        //    }
-        //}
-
+        
         if (generarBarandaFrontal && prefabBaranda != null)
         {
             float anchoPrefab = 1f;
@@ -690,12 +671,7 @@ public class SeatedStandGenerator : MonoBehaviour
                 GameObject baranda = Instantiate(prefabBaranda, padre);
                 baranda.transform.position = transform.TransformPoint(posLocal);
                 baranda.transform.rotation = transform.rotation * Quaternion.Euler(0, -90f, 0);
-            }
-
-            Debug.Log($"xInicio={xInicio}, xFin={xFin}, zMuro={zMuro}, cantidad={cantidad}, offsetCentrado={offsetCentrado}");
-            Debug.Log($"Primera baranda posLocal={new Vector3(xInicio + offsetCentrado, yBase + alturaMuroFrontal + alturaBaranda / 2f, zMuro)}");
-            Debug.Log($"Primera baranda posMundial={transform.TransformPoint(new Vector3(xInicio + offsetCentrado, yBase + alturaMuroFrontal + alturaBaranda / 2f, zMuro))}");
-
+            }            
         }
 
     }

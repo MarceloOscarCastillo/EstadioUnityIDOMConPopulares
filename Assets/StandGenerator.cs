@@ -254,11 +254,7 @@ public class StandGenerator : MonoBehaviour
 
                     int ultimaFilaPara = filaInicioPara + ((numFilas - filaInicioPara) / frecuenciaFilasPara) * frecuenciaFilasPara;
 
-                    //if (f == ultimaFilaPara)
-                    //{
-                    //    Debug.Log($"e={e}, posX={posicionXMetros}, restoX={restoX}, distancia*2={distanciaEntrePares * 2}");
-                    //}
-
+                    
                     if (restoX < 0.1f || restoX > (distanciaEntrePares * 2) - 0.1f)
                     {
                         float anchoTotal = (piezasPorFila - 1) * anchoDeUnaPieza;

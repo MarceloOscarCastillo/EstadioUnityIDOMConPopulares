@@ -27,6 +27,7 @@ public class ContadorDeCapacidad : MonoBehaviour
     [ContextMenu("Calcular Capacidad Total")]
     public void CalcularCapacidad()
     {
+        
         // 1. Buscamos todos los contenedores generados por tus scripts
         GameObject[] contenedores = GameObject.FindGameObjectsWithTag(tagContenedores);
 

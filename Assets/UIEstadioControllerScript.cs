@@ -24,10 +24,7 @@ public class UIEstadioController : MonoBehaviour
     public GameObject canvasMenu;
 
     void Start()
-    {
-        Debug.Log($"UIEstadioController Start - instanceID: {this.GetInstanceID()}");
-        Debug.Log($"textNombreVariante en Start: {textNombreVariante}");
-
+    {        
         // Estado inicial: mostrando carga
         panelCarga.SetActive(false);
         panelStats.SetActive(false);

@@ -41,7 +41,8 @@ public class MenuSeleccionController : MonoBehaviour
         
         { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "SugeridaAmpliada" },
-        { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" }
+        { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" },
+        { EstadioConfigurator.TipoConfiguracion.Preinauguracion, "Preinauguración" }
     };
 
     // Diccionario de descripciones (tooltips)
@@ -78,7 +79,9 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada,
             "Es la ampliación de la variante llamada 'Sugerida'. La platea lateral alta tiene 20 escalones más, los codos superiores sobre Mármol son más amplios y tiene una segunda bandeja sobre la popular local" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol,
-            "Esta versión tiene como rasgo distintivo una tercera bandeja de plateas sobre la calle José Mármol. Sería una posible ampliación del estadio" }
+            "Esta versión tiene como rasgo distintivo una tercera bandeja de plateas sobre la calle José Mármol. Sería una posible ampliación del estadio" },
+        { EstadioConfigurator.TipoConfiguracion.Preinauguracion,
+            "Esta versión permitiría hacer una preinauguración con una capacidad cercana a las 60.000 personas. No cuenta con los codos superiores" }
     };
 
     void Start()

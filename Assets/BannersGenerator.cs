@@ -49,10 +49,7 @@ public class CampoDeJuego : MonoBehaviour
 
         
         float yBase = r.bounds.min.y + alturaCartel /2f;
-
-        UnityEngine.Debug.Log($"bounds.center={r.bounds.center}, bounds.size={r.bounds.size}, bounds.min={r.bounds.min}, bounds.max={r.bounds.max}");
-        UnityEngine.Debug.Log($"futbolField.position={futbolField.position}");
-
+        
         // Centros de cada borde
         Vector3 centroNorte = centro + dirZ * (largoZ / 2f-distanciaAlBordeZ);
           

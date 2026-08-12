@@ -78,17 +78,14 @@ public class ModoVisibilidadController : MonoBehaviour
         Ray ray = camaraFreeFly.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
 
         if (!Physics.Raycast(ray, out RaycastHit hit, 100f))
-        {
-            Debug.Log("Raycast no impactó nada");
+        {            
             return;
         }
 
         // Subir en la jerarquía hasta encontrar un objeto válido (máximo 3 niveles)
         GameObject objetoImpactado = hit.collider.gameObject;
         string nombre = objetoImpactado.name;
-
-        Debug.Log($"Objeto impactado: {nombre}");
-
+        
         for (int i = 0; i < 3; i++)
         {
             if (nombre == "Escalon_Cabecera" ||
@@ -123,7 +120,7 @@ public class ModoVisibilidadController : MonoBehaviour
 
         UpperCurveStandWithWalkpathScript codoScript =
    hit.collider.GetComponentInParent<UpperCurveStandWithWalkpathScript>();
-        Debug.Log($"esCodo: {codoScript != null}");
+        
 
         // Calcular direccion hacia el campo PRIMERO
         Vector3 dirHaciaElCampo;
@@ -211,9 +208,7 @@ public class ModoVisibilidadController : MonoBehaviour
             Vector3 pos = centroFilaAdelante + dirLateral * offset;
 
             if (Physics.Raycast(pos + Vector3.up * 2f, Vector3.down, out RaycastHit hitEscalon, 10f))
-            {
-                Debug.Log($"offset={offset}, hit={hitEscalon.collider.gameObject.name}");
-
+            {                
                 GameObject objEsp = hitEscalon.collider.gameObject;
                 string nombreEsp = objEsp.name;
 
@@ -238,8 +233,7 @@ public class ModoVisibilidadController : MonoBehaviour
                                 nombreEsp == "SeatersStandBlock(Clone)" ||
                                 nombreEsp == "BlockPlateaCurva(Clone)";
 
-                Debug.Log($"offset={offset}, pos={pos}, hit={hitEscalon.collider?.gameObject.name}, esValido={esValido}");
-
+                
                 if (esValido)
                 {
                     // Obtener Y del Seat
@@ -311,27 +305,7 @@ public class ModoVisibilidadController : MonoBehaviour
             Debug.Log($"Buscando filaAdelante={filaAdelante}");
             Debug.Log($"Total objetos en diccionario: {codoScript.mapaObjetos.Count}");
 
-            InstanciarEspectadores(hit, esPopular, dirHaciaElCampo);
-
-            //int[] offsetsColumna = { 0, 1, -1, 2, -2 };
-            //foreach (int offsetCol in offsetsColumna)
-            //{
-            //    int columnaObjetivo = claveUsuario.columna + offsetCol;
-            //    bool encontrado = codoScript.mapaObjetos.TryGetValue((filaAdelante, columnaObjetivo, 0), out GameObject bloqueAdelante);
-            //    Debug.Log($"Buscando ({filaAdelante}, {columnaObjetivo}, 0): encontrado={encontrado}");
-            //    if (encontrado)
-            //    {
-            //        // Usar posicion guardada antes del static batching
-            //        if (codoScript.mapaPosiciones.TryGetValue((filaAdelante, columnaObjetivo, 0), out Vector3 posBloque))
-            //        {
-            //            Vector3 posEsp = posBloque;
-            //            // Subir a la superficie del bloque
-            //            Renderer r = bloqueAdelante.GetComponent<Renderer>();
-            //            if (r != null) posEsp.y = posBloque.y + r.bounds.size.y / 2f;
-            //            cilindrosEspectadores.Add(CrearEspectador(posEsp, esPopular, false, dirHaciaElCampo));
-            //        }
-            //    }
-            //}
+            InstanciarEspectadores(hit, esPopular, dirHaciaElCampo);           
         }
         else
         {

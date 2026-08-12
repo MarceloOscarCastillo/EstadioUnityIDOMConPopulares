@@ -51,7 +51,7 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
     [ContextMenu("Generar Escalera Completa")]
     public void GenerarEscalera()
     {
-        if (prefabEscalon == null) { Debug.LogError("Asigná el prefab del escalón."); return; }
+        if (prefabEscalon == null) {  return; }
 
         LimpiarEscaleraAntigua();
         ObtenerMaterialDelPrefab();

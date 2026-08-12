@@ -314,10 +314,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
                 if (col != null) col.enabled = true;
 
                 mapaObjetos[(celda.fila, celda.columna, 0)] = bloqueObj;
-
-                Debug.Log($"Guardando en diccionario: fila={celda.fila}, col={celda.columna}, obj={bloqueObj.name}");
-
-                ConfigurarEscalon(bloqueObj, w1, w2, w3, w4);
+               
+                ConfigurarEscalon(bloqueObj, w1, w2, w3, w4, celda.fila);
 
                 Material matAUsar = celda.tipo == TipoCelda.BloqueLibre ? GrisCemento : Material;
                 AplicarMaterialATodo(bloqueObj, matAUsar);
@@ -664,7 +662,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         return anguloMaximo;
     }
 
-    void ConfigurarEscalon(GameObject pieza, Vector3 w1, Vector3 w2, Vector3 w3, Vector3 w4)
+    void ConfigurarEscalon(GameObject pieza, Vector3 w1, Vector3 w2, Vector3 w3, Vector3 w4, int fila)
     {
         ProBuilderMesh mesh = pieza.GetComponentInChildren<ProBuilderMesh>();
         if (mesh == null) return;
@@ -685,7 +683,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             else if (xOrig <= 0.5f && zOrig > 0.5f) destino = w3;
             else destino = w4;
 
-            if (esArriba) destino.y += altoEscalon * ObtenerFactorParaFila(0);
+            if (esArriba) destino.y += altoEscalon * ObtenerFactorParaFila(fila);
 
             vertices[i] = pieza.transform.InverseTransformPoint(destino);
         }

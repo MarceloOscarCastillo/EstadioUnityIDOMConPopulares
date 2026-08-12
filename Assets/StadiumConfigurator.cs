@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class EstadioConfigurator : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class EstadioConfigurator : MonoBehaviour
         SugeridaAmpliada,
         TerceraBandejaMarmol,
         PlateasYCodosMarmolAmpliados,
+        Preinauguracion
     }
 
     [System.Serializable]
@@ -289,32 +291,63 @@ public void AplicarConfiguracionEstadio()
         {
             // Comparar con variante anterior
             // Desactivar/destruir los que estaban y ya no estan
-            foreach (MonoBehaviour sector in perfilAnterior.sectoresActivos)
+            foreach (MonoBehaviour sectorEnPerfilAnterior in perfilAnterior.sectoresActivos)
             {
-                if (!perfilNuevo.sectoresActivos.Contains(sector))
+                if (!perfilNuevo.sectoresActivos.Contains(sectorEnPerfilAnterior))
                 {
                     // Destruir contenedor
-                    foreach (Transform hijo in sector.transform)
+                    foreach (Transform hijo in sectorEnPerfilAnterior.transform)
                     {
                         if (hijo.CompareTag("SectorEstadio"))
                             Destroy(hijo.gameObject);
                     }
+
+                    yield return null; // esperar que se destruyan
+                }
+
+                else
+                {
+                    bool tieneOverride = TieneOverrideEnVariante(sectorEnPerfilAnterior, varianteAnterior);
+
+                    if (tieneOverride)
+                    {
+                        // Si tiene override, destruirlo primero
+
+                        foreach (Transform hijo in sectorEnPerfilAnterior.transform)
+                        {
+                            if (hijo.CompareTag("SectorEstadio"))
+                                Destroy(hijo.gameObject);
+                        }
+                        yield return null;
+
+                        GenerarSector(sectorEnPerfilAnterior);
+
+                        yield return null;
+                    }
                 }
             }
-
-            yield return null; // esperar que se destruyan
-
-            // Generar los que son nuevos en esta variante
-            foreach (MonoBehaviour sector in perfilNuevo.sectoresActivos)
+            // Generar los sectores específicos de esta variante
+            foreach (MonoBehaviour sectorEnPerfilNuevo in perfilNuevo.sectoresActivos)
             {
-                if (!perfilAnterior.sectoresActivos.Contains(sector))
+                if (perfilAnterior.sectoresActivos.Contains(sectorEnPerfilNuevo))
                 {
-                    GenerarSector(sector);
+                    bool tieneOverrideAnterior = TieneOverrideEnVariante(sectorEnPerfilNuevo, varianteAnterior);
+                    bool tieneOverrideNuevo = TieneOverrideEnVariante(sectorEnPerfilNuevo, varianteAActivar);
+
+                    if (tieneOverrideAnterior || tieneOverrideNuevo)
+                    {
+                        GenerarSector(sectorEnPerfilNuevo);
+                        yield return null;
+                    }
+                }
+                else
+                {
+                    GenerarSector(sectorEnPerfilNuevo);
                     yield return null;
                 }
             }
-        }
 
+        }
         // Guardar variante actual como anterior
         varianteAnterior = varianteAActivar;
         perfilAnterior = perfilNuevo;
@@ -323,6 +356,7 @@ public void AplicarConfiguracionEstadio()
         //if (ui != null) ui.MostrarStats();
         if (ui != null) ui.MostrarStats(NombresVariantes.ObtenerNombre(varianteAActivar));
     }
+    
 
     private void GenerarSector(MonoBehaviour sector)
     {
@@ -401,6 +435,19 @@ public void AplicarConfiguracionEstadio()
         }
         
         Debug.Log("[EstadioConfigurator] Escena limpiada.");
+    }
+
+    private bool TieneOverrideEnVariante(MonoBehaviour sector, TipoConfiguracion? variante)
+    {
+        if(variante == null) return false;
+
+        if (sector is StandGenerator sg)
+            return sg.overridesNumFilas.Exists(o => o.variante == variante);
+        if (sector is SeatedStandGenerator ssg)
+            return ssg.overridesNumFilas.Exists(o => o.variante == variante);
+        if (sector is UpperCurveStandWithWalkpathScript uc)
+            return uc.overridesParametros.Exists(o => o.variante == variante);
+        return false;
     }
 
 }
