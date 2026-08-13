@@ -6,7 +6,7 @@ public static class NombresVariantes
         new Dictionary<EstadioConfigurator.TipoConfiguracion, string>()
     {
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
-        { EstadioConfigurator.TipoConfiguracion.Inauguracion, "Inauguración" },
+        { EstadioConfigurator.TipoConfiguracion.Preinauguracion, "Preinauguración" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores, "Populares Solo Cabeceras y Codos Inferiores" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesEn2CodosSuperiores, "Populares Cabeceras y 2 Codos Superiores" },
         { EstadioConfigurator.TipoConfiguracion.EstadioConPopularLateralBaja, "Popular Lateral Baja" },
@@ -21,7 +21,9 @@ public static class NombresVariantes
         { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "Sugerida Ampliada" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" },
-        { EstadioConfigurator.TipoConfiguracion.Preinauguracion, "Preinauguración" }
+        
+        { EstadioConfigurator.TipoConfiguracion.Recitales, "Recitales" },
+        { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal, "Ampliación final" }
     };
 
     public static string ObtenerNombre(EstadioConfigurator.TipoConfiguracion variante)

@@ -22,7 +22,9 @@ public class EstadioConfigurator : MonoBehaviour
         SugeridaAmpliada,
         TerceraBandejaMarmol,
         PlateasYCodosMarmolAmpliados,
-        Preinauguracion
+        Preinauguracion,
+        Recitales,
+        AmpliacionFinal
     }
 
     [System.Serializable]
