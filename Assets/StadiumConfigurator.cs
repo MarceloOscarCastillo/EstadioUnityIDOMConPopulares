@@ -24,7 +24,8 @@ public class EstadioConfigurator : MonoBehaviour
         PlateasYCodosMarmolAmpliados,
         Preinauguracion,
         Recitales,
-        AmpliacionFinal
+        AmpliacionFinal,
+        TooMuch
     }
 
     [System.Serializable]

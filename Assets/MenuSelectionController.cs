@@ -41,6 +41,7 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "SugeridaAmpliada" },
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal, "Ampliación Final" },
+         { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" },
        
     };
@@ -81,6 +82,8 @@ public class MenuSeleccionController : MonoBehaviour
             "Es la ampliación de la variante llamada 'Sugerida'. La platea lateral alta tiene 20 escalones más, los codos superiores sobre Mármol son más amplios y tiene una segunda bandeja sobre la popular local" },
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal,
             "Es la máxima ampliacíon posible y requiere la compra de propiedades sobre la calle Las Casas. Incluye la ampliación de los codos sobre José Marmol (ambos), del codo en Las Casas y Av. La Plata y de la segunda bandeja sobre Las Casas" },
+        { EstadioConfigurator.TipoConfiguracion.TooMuch,
+            "Similar a Amplicación Final pero con más populares" },
         { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol,
             "Esta versión tiene como rasgo distintivo una tercera bandeja de plateas sobre la calle José Mármol. Sería una posible ampliación del estadio" },
         

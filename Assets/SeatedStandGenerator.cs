@@ -1,6 +1,7 @@
+using Estadio.Techo;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using System.Collections.Generic;
 
 
 public class SeatedStandGenerator : MonoBehaviour
@@ -111,6 +112,15 @@ public class SeatedStandGenerator : MonoBehaviour
     public float grosorSoporteTecho = 0.2f;
     public float profundidadSoporteTecho = 1.0f;
     public float penetracionTensor = 1.0f;
+
+    [Header("Viga Longitudinal de Tensores")]
+    public bool generarVigaLongitudinalTensores = true;
+    public float anchoVigaTensores = 0.25f;
+    public float altoVigaTensores = 0.35f;
+
+    [Header("Publicacion de Anclajes al Techo")]
+    public bool publicarAnclajesTecho = true;
+    public string idTribunaParaTecho = "plateaSinNombre";
 
     [Header("Vigas Transversales")]
     public bool tieneVigasTransversales = true;
@@ -321,11 +331,17 @@ public class SeatedStandGenerator : MonoBehaviour
             GenerarTunelJugadores(multZ, contenedor.transform);
         }
 
+        List<float> xSoportes = new List<float>();
+
         if (generarSoportes)
         {
-            GenerarSoportes(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
+            //GenerarSoportes(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
+            //GenerarVigasTransversales(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
 
+            xSoportes = GenerarSoportes(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
             GenerarVigasTransversales(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
+            GenerarVigaLongitudinalTensores(xSoportes, multZ, contenedor.transform);
+
         }
 
         if (generarCirculacion) GenerarCirculacion(multZ, contenedor.transform);
@@ -1013,21 +1029,68 @@ public class SeatedStandGenerator : MonoBehaviour
         DestroyImmediate(tensor.GetComponent<BoxCollider>());
     }
 
-    void GenerarSoportes(float mZ, Transform padre, float anchoDeUnaPieza, float largoMaximoTribuna)
-    {
-        if (!generarSoportes || MaterialVigas == null) return;
+    //void GenerarSoportes(float mZ, Transform padre, float anchoDeUnaPieza, float largoMaximoTribuna)
+    //{
+    //    if (!generarSoportes || MaterialVigas == null) return;
 
-        // Construir lista de zonas prohibidas
+    //    // Construir lista de zonas prohibidas
+    //    List<(float xInicio, float xFin)> zonasProhibidas = new List<(float, float)>();
+
+    //    // Zona tunel
+    //    if (generarTunel)
+    //    {
+    //        float centroX = largoMaximoTribuna / 2f;
+    //        zonasProhibidas.Add((centroX - anchoTunel / 2f, centroX + anchoTunel / 2f));
+    //    }
+
+    //    // Zonas vomitos
+    //    float xActualVomito = 0;
+    //    int colAsientoVomito = 0;
+    //    while (xActualVomito < largoMaximoTribuna)
+    //    {
+    //        bool esPasillo = (colAsientoVomito >= asientosEntrePasillos);
+    //        if (esPasillo)
+    //            zonasProhibidas.Add((xActualVomito, xActualVomito + anchoPasilloEscalera));
+
+    //        xActualVomito += esPasillo ? anchoPasilloEscalera : anchoDeUnaPieza;
+    //        colAsientoVomito = esPasillo ? 0 : colAsientoVomito + 1;
+    //    }
+
+    //    float anchoTotal = largoMaximoTribuna;
+
+    //    float xActual = separacionSoportes / 2f;
+
+    //    float xAnterior = -1f;
+
+    //    while (xActual < anchoTotal)
+    //    {
+    //        float xAjustada = AjustarXSoporte(xActual, zonasProhibidas);
+
+    //        // Solo generar si no es la misma posicion que el soporte anterior
+    //        if (Mathf.Abs(xAjustada - xAnterior) > 0.01f)
+    //        {
+    //            GenerarSoporte(xAjustada, mZ, padre);
+    //            xAnterior = xAjustada;
+    //        }
+
+    //        xActual += separacionSoportes;
+    //    }
+    //}
+
+
+    List<float> GenerarSoportes(float mZ, Transform padre, float anchoDeUnaPieza, float largoMaximoTribuna)
+    {
+        var posicionesUsadas = new List<float>();
+        if (!generarSoportes || MaterialVigas == null) return posicionesUsadas;
+
         List<(float xInicio, float xFin)> zonasProhibidas = new List<(float, float)>();
 
-        // Zona tunel
         if (generarTunel)
         {
             float centroX = largoMaximoTribuna / 2f;
             zonasProhibidas.Add((centroX - anchoTunel / 2f, centroX + anchoTunel / 2f));
         }
 
-        // Zonas vomitos
         float xActualVomito = 0;
         int colAsientoVomito = 0;
         while (xActualVomito < largoMaximoTribuna)
@@ -1041,24 +1104,24 @@ public class SeatedStandGenerator : MonoBehaviour
         }
 
         float anchoTotal = largoMaximoTribuna;
-
         float xActual = separacionSoportes / 2f;
-
         float xAnterior = -1f;
 
         while (xActual < anchoTotal)
         {
             float xAjustada = AjustarXSoporte(xActual, zonasProhibidas);
 
-            // Solo generar si no es la misma posicion que el soporte anterior
             if (Mathf.Abs(xAjustada - xAnterior) > 0.01f)
             {
                 GenerarSoporte(xAjustada, mZ, padre);
+                posicionesUsadas.Add(xAjustada);
                 xAnterior = xAjustada;
             }
 
             xActual += separacionSoportes;
         }
+
+        return posicionesUsadas;
     }
 
     float AjustarXSoporte(float x, List<(float xInicio, float xFin)> zonasProhibidas)
@@ -1735,4 +1798,133 @@ public class SeatedStandGenerator : MonoBehaviour
         return filas * profundidadEscalon * mZ;
     }
 
+    // ============================================================================
+    //  2. Punto de la cabeza del tensor, en coordenadas locales de la tribuna
+    // ============================================================================
+
+    /// <summary>
+    /// Extremo superior del tensor de techo en la posicion X dada. Es de donde nace el
+    /// cable, y es lo que se publica al registro del techo. Replica exactamente el
+    /// calculo de GenerarSoporte y CrearTensorTecho.
+    /// </summary>
+    public Vector3 PosicionCabezaTensor(float x, float mZ)
+    {
+        int filasAqui = FilasEnX(x);
+
+        float zFinalDiagonal = ZBordeExteriorGrada(filasAqui, mZ) + (0.2f + metrajeExtraDiagonal) * mZ;
+        float yFinDiagonal = CalcularAlturaAcumuladaCabecera(filasAqui - 1);
+
+        float zTensor = zFinalDiagonal - (profundidadSoporteTecho / 2f) * mZ;
+        float yBase = yFinDiagonal - penetracionTensor;
+
+        return new Vector3(x, yBase + alturasSoporteTecho, zTensor);
+    }
+
+
+    // ============================================================================
+    //  3. Viga longitudinal que ata todos los tensores
+    // ============================================================================
+
+    /// <summary>
+    /// Corre apoyada sobre la arista superior interior de los tensores, la del lado del
+    /// campo. Como la platea puede ganar filas a lo largo de X, los tensores estan a
+    /// distinta altura y la viga sale como polilinea siguiendo la rampa.
+    /// </summary>
+    void GenerarVigaLongitudinalTensores(List<float> posicionesX, float mZ, Transform padre)
+    {
+        if (!generarVigaLongitudinalTensores) return;
+        if (posicionesX == null || posicionesX.Count < 2) return;
+
+        var ejes = new List<Vector3>(posicionesX.Count);
+
+        foreach (float x in posicionesX)
+        {
+            Vector3 cabeza = PosicionCabezaTensor(x, mZ);
+
+            // Arista interior del tensor (lado campo), y desde ahi el eje de la viga.
+            float zArista = cabeza.z - (profundidadSoporteTecho / 2f) * mZ;
+
+            ejes.Add(new Vector3(
+                x,
+                cabeza.y + altoVigaTensores / 2f,
+                zArista + (anchoVigaTensores / 2f) * mZ));
+        }
+
+        var verts = new List<Vector3>();
+        var tris = new List<int>();
+
+        float g = anchoVigaTensores / 2f;
+        float h = altoVigaTensores / 2f;
+
+        for (int i = 0; i < ejes.Count; i++)
+        {
+            Vector3 e = ejes[i];
+            verts.Add(new Vector3(e.x, e.y - h, e.z - g));
+            verts.Add(new Vector3(e.x, e.y + h, e.z - g));
+            verts.Add(new Vector3(e.x, e.y + h, e.z + g));
+            verts.Add(new Vector3(e.x, e.y - h, e.z + g));
+        }
+
+        for (int i = 0; i < ejes.Count - 1; i++)
+        {
+            int a = i * 4;
+            int b = (i + 1) * 4;
+
+            for (int c = 0; c < 4; c++)
+            {
+                int c1 = c;
+                int c2 = (c + 1) % 4;
+                tris.AddRange(new[] { a + c1, a + c2, b + c1, a + c2, b + c2, b + c1 });
+            }
+        }
+
+        // Tapas de los extremos
+        tris.AddRange(new[] { 0, 2, 1, 0, 3, 2 });
+        int u = (ejes.Count - 1) * 4;
+        tris.AddRange(new[] { u, u + 1, u + 2, u, u + 2, u + 3 });
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = verts.ToArray();
+        mesh.triangles = tris.ToArray();
+        mesh.RecalculateNormals();
+
+        GameObject vigaGO = new GameObject("Viga_Longitudinal_Tensores");
+        vigaGO.transform.SetParent(padre);
+        vigaGO.transform.localPosition = Vector3.zero;
+        vigaGO.transform.localRotation = Quaternion.identity;
+        vigaGO.AddComponent<MeshFilter>().mesh = mesh;
+        vigaGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialVigas;
+    }
+
+
+    // ============================================================================
+    //  4. Publicacion al registro del techo
+    // ============================================================================
+
+    /// <summary>
+    /// Publica un anclaje por tensor, mas los dos de los extremos de la viga longitudinal,
+    /// que es donde se cuelgan los cables en la zona del codo, alli donde ya no hay vigas
+    /// diagonales de la grada.
+    ///
+    /// IMPORTANTE: se llama ANTES del Static Batching. Despues de batchear, las posiciones
+    /// se pierden.
+    /// </summary>
+    void PublicarAnclajesTecho(List<float> posicionesX, float mZ, RegistroAnclajesTecho registro,
+                               Matrix4x4 mundoALocalTecho)
+    {
+        if (!publicarAnclajesTecho || registro == null) return;
+        if (posicionesX == null || posicionesX.Count == 0) return;
+
+        for (int i = 0; i < posicionesX.Count; i++)
+        {
+            Vector3 cabezaLocal = PosicionCabezaTensor(posicionesX[i], mZ);
+            Vector3 cabezaMundo = transform.TransformPoint(cabezaLocal);
+
+            // El techo trabaja en su propio sistema, centrado en el campo.
+            Vector3 posicionTecho = mundoALocalTecho.MultiplyPoint3x4(cabezaMundo);
+            Vector3 ejeTecho = mundoALocalTecho.MultiplyVector(transform.TransformVector(Vector3.up));
+
+            registro.Publicar(posicionTecho, ejeTecho, idTribunaParaTecho, i);
+        }
+    }
 }
