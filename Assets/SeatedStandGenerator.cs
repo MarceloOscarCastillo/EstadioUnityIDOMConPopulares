@@ -110,6 +110,7 @@ public class SeatedStandGenerator : MonoBehaviour
     public float alturasSoporteTecho = 0.5f;
     public float grosorSoporteTecho = 0.2f;
     public float profundidadSoporteTecho = 1.0f;
+    public float penetracionTensor = 1.0f;
 
     [Header("Vigas Transversales")]
     public bool tieneVigasTransversales = true;
@@ -412,7 +413,12 @@ public class SeatedStandGenerator : MonoBehaviour
         if (!usarRecorteFilas)
         {
             float anchoTotal = largoMaximoTribuna;
-            Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, (numFilas - 1) * profundidadEscalon * mZ);
+            //Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, (numFilas - 1) * profundidadEscalon * mZ);
+
+            //Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, numFilas * profundidadEscalon * mZ);
+
+            Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, ZBordeExteriorGrada(numFilas, mZ));
+
             GameObject muro = GameObject.CreatePrimitive(PrimitiveType.Cube);
             muro.name = "Muro_Cierre_Superior";
             muro.transform.SetParent(padre);
@@ -431,12 +437,17 @@ public class SeatedStandGenerator : MonoBehaviour
         float yIzq = 0f;
         for (int i = 0; i < filasIzq; i++)
             yIzq += altoEscalonBase * ObtenerFactorParaFila(i);
-        float zIzq = filasIzq * profundidadEscalon * mZ; ;
+        
+        //float zIzq = filasIzq * profundidadEscalon * mZ;
+        float zIzq = ZBordeExteriorGrada(filasIzq, mZ);
 
         float yDer = 0f;
         for (int i = 0; i < filasDir; i++)
             yDer += altoEscalonBase * ObtenerFactorParaFila(i);
-        float zDer = filasDir * profundidadEscalon * mZ;
+        
+        //float zDer = filasDir * profundidadEscalon * mZ;
+        float zDer = ZBordeExteriorGrada(filasDir, mZ);
+
 
         float grosor = 0.2f;
         float g = grosor / 2f;
@@ -932,15 +943,20 @@ public class SeatedStandGenerator : MonoBehaviour
 
     void GenerarSoporte(float x, float mZ, Transform padre)
     {
+        // La cantidad de filas depende de la posicion: con recorte activo la platea sube
+        // dentro de si misma, y cada viga tiene que llegar hasta donde llega la grada.
+        int filasAqui = FilasEnX(x);
+
         float zInterior = filaVigaVerticalInterior * profundidadEscalon * mZ;
         float zExterior = filaVigaVerticalExterior * profundidadEscalon * mZ;
         float zArranque = filaArranqueDiagonal * profundidadEscalon * mZ;
-        float zFinal = (numFilas - 1) * profundidadEscalon * mZ + profundidadEscalon / 2f * mZ;
+        //float zFinal = (filasAqui - 1) * profundidadEscalon * mZ + profundidadEscalon / 2f * mZ;
+
+        float zFinal = ZBordeExteriorGrada(filasAqui, mZ) + (0.2f + metrajeExtraDiagonal) * mZ;
 
         float yArranque = CalcularAlturaAcumuladaCabecera(filaArranqueDiagonal);
-        float yFinDiagonal = CalcularAlturaAcumuladaCabecera(numFilas - 1);
+        float yFinDiagonal = CalcularAlturaAcumuladaCabecera(filasAqui - 1);
 
-        // Calcular yBase desde ground0Level
         float yBase = ground0Level != null ?
             padre.InverseTransformPoint(ground0Level.position).y : 0f;
 
@@ -954,8 +970,48 @@ public class SeatedStandGenerator : MonoBehaviour
             CrearVigaHorizontalZ(padre, x, alturaVigaVerticalInterior, zInterior, zExterior, anchoViga, altoViga);
 
         CrearVigaDiagonal(padre, x, zArranque, yArranque, zFinal, yFinDiagonal, mZ);
+
+        if (vigaDiagonalTerminaConSoportesDeTecho)
+        //CrearTensorTecho(padre, x, mZ);
+        { CrearTensorTecho(padre, x, mZ, zFinal, yFinDiagonal); }
     }
 
+    /// <summary>
+    /// Punto donde nace el cable del techo: la esquina superior exterior de la viga
+    /// diagonal, mas la altura del tensor. En coordenadas locales de la tribuna.
+    /// </summary>
+    public Vector3 PosicionCabezaViga(float x, float mZ, bool incluirTensor = true)
+    {
+        int filasAqui = FilasEnX(x);
+        float zFinal = (filasAqui - 1) * profundidadEscalon * mZ + profundidadEscalon / 2f * mZ;
+        float yFinDiagonal = CalcularAlturaAcumuladaCabecera(filasAqui - 1);
+
+        float desplazamientoY = -(altoVigaDiagonal - mordidaViga);
+        float y = yFinDiagonal + desplazamientoY + altoVigaDiagonal / 2f;
+
+        if (incluirTensor && vigaDiagonalTerminaConSoportesDeTecho)
+            y += alturasSoporteTecho;
+
+        return new Vector3(x, y, zFinal);
+    }
+
+    void CrearTensorTecho(Transform padre, float x, float mZ, float zFinalDiagonal, float yFinDiagonal)
+    {
+        // Corrido hacia adentro medio espesor para que el cubo quede entero sobre la viga,
+        // y hundido penetracionTensor para que se solape con ella en vez de apoyarse en su
+        // borde superior.
+        float zTensor = zFinalDiagonal - (profundidadSoporteTecho / 2f) * mZ;
+        float yBase = yFinDiagonal - penetracionTensor;
+
+        GameObject tensor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        tensor.name = "Tensor_Techo";
+        tensor.transform.SetParent(padre);
+        tensor.transform.localScale = new Vector3(grosorSoporteTecho, alturasSoporteTecho, profundidadSoporteTecho);
+        tensor.transform.localPosition = new Vector3(x, yBase + alturasSoporteTecho / 2f, zTensor);
+        tensor.transform.localRotation = Quaternion.identity;
+        tensor.GetComponent<Renderer>().sharedMaterial = MaterialVigas;
+        DestroyImmediate(tensor.GetComponent<BoxCollider>());
+    }
 
     void GenerarSoportes(float mZ, Transform padre, float anchoDeUnaPieza, float largoMaximoTribuna)
     {
@@ -1672,5 +1728,11 @@ public class SeatedStandGenerator : MonoBehaviour
             DestroyImmediate(muroGO.GetComponent<BoxCollider>());
         }
     }
-    
+
+    float ZBordeExteriorGrada(int filas, float mZ)
+    {
+        //return ((filas - 1) * profundidadEscalon + profundidadEscalon / 2f) * mZ;
+        return filas * profundidadEscalon * mZ;
+    }
+
 }
