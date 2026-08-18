@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Estadio.Techo;
 
 public class EstadioConfigurator : MonoBehaviour
 {
@@ -64,6 +65,19 @@ public class EstadioConfigurator : MonoBehaviour
 
     private TipoConfiguracion? varianteAnterior = null;
     private PerfilEstadio perfilAnterior;
+
+    [Header("Techo")]
+    [Tooltip("Objeto que define el origen y la orientacion del sistema del techo: " +
+         "centro del campo, ejes alineados. Si queda vacio se usa el mundo.")]
+    public Transform origenTecho;
+
+    private readonly RegistroAnclajesTecho registroTecho = new RegistroAnclajesTecho();
+    public RegistroAnclajesTecho RegistroTecho => registroTecho;
+
+    public Matrix4x4 MatrizTecho => origenTecho != null
+        ? origenTecho.worldToLocalMatrix
+        : Matrix4x4.identity;
+
 
     [ContextMenu("Aplicar Configuración Seleccionada")]
 public void AplicarConfiguracionEstadio()
@@ -193,7 +207,9 @@ public void AplicarConfiguracionEstadio()
             Debug.Log($"Variante guardada: {datos.nombre}, Total: {datos.capacidadTotal}, Populares: {datos.capacidadPopulares}, Plateas: {datos.capacidadPlateas}, Palcos: {datos.capacidadPalcos}");
         }
 
-    Debug.Log($"[EstadioConfigurator] Se aplicó la variante '{varianteAActivar}'. Se encendieron {perfilElegido.sectoresActivos.Count} controladores.");
+        RecolectarAnclajesTecho(perfilElegido);
+
+        Debug.Log($"[EstadioConfigurator] Se aplicó la variante '{varianteAActivar}'. Se encendieron {perfilElegido.sectoresActivos.Count} controladores.");
 }
 
 
@@ -451,6 +467,44 @@ public void AplicarConfiguracionEstadio()
         if (sector is UpperCurveStandWithWalkpathScript uc)
             return uc.overridesParametros.Exists(o => o.variante == variante);
         return false;
+    }
+
+    
+    /// <summary>
+    /// Recolecta las cabezas de tensor de todos los sectores activos que sostienen el
+    /// techo. Se llama despues de generar todos los sectores; es seguro porque las
+    /// cabezas estan cacheadas desde la generacion y no dependen del estado actual de
+    /// los parametros ni de los transforms, que a esta altura ya fueron batcheados.
+    /// </summary>
+    public void RecolectarAnclajesTecho(PerfilEstadio perfil)
+    {
+        registroTecho.Limpiar();
+
+        Matrix4x4 mundoALocal = MatrizTecho;
+        int publicados = 0;
+
+        foreach (MonoBehaviour sector in perfil.sectoresActivos)
+        {
+            if (!(sector is IProveedorAnclajesTecho proveedor)) continue;
+            if (!proveedor.PublicaAnclajesTecho) continue;
+
+            IReadOnlyList<Vector3> cabezas = proveedor.CabezasTensoresLocales;
+            if (cabezas == null || cabezas.Count == 0) continue;
+
+            Transform t = proveedor.TransformSector;
+
+            for (int i = 0; i < cabezas.Count; i++)
+            {
+                Vector3 mundo = t.TransformPoint(cabezas[i]);
+                Vector3 local = mundoALocal.MultiplyPoint3x4(mundo);
+                Vector3 eje = mundoALocal.MultiplyVector(t.TransformVector(Vector3.up));
+
+                registroTecho.Publicar(local, eje, proveedor.IdParaTecho, i);
+                publicados++;
+            }
+        }
+
+        Debug.Log($"[Techo] {publicados} anclajes recolectados de {perfil.sectoresActivos.Count} sectores.");
     }
 
 }

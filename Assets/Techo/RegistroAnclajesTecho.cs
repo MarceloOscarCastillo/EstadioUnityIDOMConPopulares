@@ -414,6 +414,27 @@ namespace Estadio.Techo
                           $"desnivel {AlturaMaxima - AlturaMinima:F2} m");
             sb.AppendLine($"Separacion maxima entre anclajes: {SeparacionMaximaObservada:F2} m");
 
+            // Extension real de los anclajes, lado por lado. Una platea con mas filas que
+            // la otra llega mas lejos del campo, asi que la asimetria puede ser legitima;
+            // pero si los dos lados difieren mucho mas que eso, el origen esta corrido.
+            float xMin = float.MaxValue, xMax = float.MinValue;
+            float zMin = float.MaxValue, zMax = float.MinValue;
+
+            for (int i = 0; i < _ordenados.Length; i++)
+            {
+                Vector3 p = _ordenados[i].posicion;
+                xMin = Mathf.Min(xMin, p.x); xMax = Mathf.Max(xMax, p.x);
+                zMin = Mathf.Min(zMin, p.z); zMax = Mathf.Max(zMax, p.z);
+            }
+
+            sb.AppendLine($"Extension de los anclajes:");
+            sb.AppendLine($"  X: de {xMin:F1} a {xMax:F1} m  (centro en {(xMin + xMax) / 2f:F1}, " +
+                          $"semieje {(xMax - xMin) / 2f:F1})");
+            sb.AppendLine($"  Z: de {zMin:F1} a {zMax:F1} m  (centro en {(zMin + zMax) / 2f:F1}, " +
+                          $"semieje {(zMax - zMin) / 2f:F1})");
+            sb.AppendLine($"  Perimetro configurado: semiejeX={_perimetro.SemiejeX:F1}, " +
+                          $"semiejeZ={_perimetro.SemiejeZ:F1}");
+
             var porTribuna = new Dictionary<string, int>();
             for (int i = 0; i < _ordenados.Length; i++)
             {

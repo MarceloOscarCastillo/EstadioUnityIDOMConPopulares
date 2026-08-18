@@ -26,6 +26,14 @@ namespace Estadio.Techo
     [DisallowMultipleComponent]
     public sealed class VisorTechoGizmos : MonoBehaviour
     {
+        [Header("Origen del estadio")]
+        [Tooltip("Configurador del que se leen los anclajes reales. Si queda vacio, o si " +
+                 "usarAnclajesSinteticos esta marcado, el visor fabrica los suyos.")]
+        [SerializeField] private EstadioConfigurator configurador;
+        [Tooltip("Objeto que define el centro del campo y la orientacion del estadio. " +
+                 "Si se asigna, reemplaza a centroEstadio y rotacionYGrados.")]
+        [SerializeField] private Transform origenTecho;
+
         [Header("Ubicacion del estadio en la escena")]
         [Tooltip("Centro del campo de juego en coordenadas de mundo.")]
         [SerializeField] private Vector3 centroEstadio = new Vector3(136.2f, 58.1f, -505.8f);
@@ -94,8 +102,23 @@ namespace Estadio.Techo
             {
                 _perimetro = new PerimetroSuperelipse(semiejeX, semiejeZ, exponenteCodos);
 
-                _registro = new RegistroAnclajesTecho();
-                if (usarAnclajesSinteticos) PublicarAnclajesSinteticos();
+                if (!usarAnclajesSinteticos && configurador != null && configurador.RegistroTecho != null)
+                {
+                    // Anclajes reales: los publicaron los generadores de tribuna al
+                    // aplicar la variante.
+                    _registro = configurador.RegistroTecho;
+
+                    if (_registro.CantidadPublicados == 0)
+                        throw new InvalidOperationException(
+                            "El registro del configurador esta vacio. Aplicar una variante " +
+                            "desde el EstadioConfigurator antes de reconstruir el techo.");
+                }
+                else
+                {
+                    _registro = new RegistroAnclajesTecho();
+                    PublicarAnclajesSinteticos();
+                }
+
                 _registro.Indexar(_perimetro);
 
                 _borde = new BordeInteriorTecho(parametrosBorde);
@@ -208,6 +231,15 @@ namespace Estadio.Techo
         {
             if (!_valido) return;
 
+            // El configurador republica anclajes cada vez que se aplica una variante, y
+            // eso invalida el indice. Como el visor comparte ese registro y no se entera,
+            // hay que verificar el estado en cada dibujo en vez de asumirlo.
+            if (_registro != null && !_registro.IndiceValido)
+            {
+                try { _registro.Indexar(_perimetro); }
+                catch { _valido = false; return; }
+            }
+
             // La geometria se calcula en coordenadas locales, con el centro del campo en el
             // origen y los ejes alineados: es lo que hace que la superelipse y la simetria
             // de los tensores funcionen. La transformacion al mundo se aplica una sola vez,
@@ -226,8 +258,9 @@ namespace Estadio.Techo
         }
 
         /// <summary>Transformacion de coordenadas locales del techo a coordenadas de mundo.</summary>
-        public Matrix4x4 MatrizEstadio =>
-            Matrix4x4.TRS(centroEstadio, Quaternion.Euler(0f, rotacionYGrados, 0f), Vector3.one);
+        public Matrix4x4 MatrizEstadio => origenTecho != null
+            ? origenTecho.localToWorldMatrix
+            : Matrix4x4.TRS(centroEstadio, Quaternion.Euler(0f, rotacionYGrados, 0f), Vector3.one);
 
         private void DibujarCapas()
         {

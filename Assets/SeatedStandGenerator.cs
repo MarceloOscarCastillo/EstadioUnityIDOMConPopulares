@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class SeatedStandGenerator : MonoBehaviour
+public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 {
     // Estructura simple para definir los cambios de alzada
     [System.Serializable]
@@ -118,10 +118,7 @@ public class SeatedStandGenerator : MonoBehaviour
     public float anchoVigaTensores = 0.25f;
     public float altoVigaTensores = 0.35f;
 
-    [Header("Publicacion de Anclajes al Techo")]
-    public bool publicarAnclajesTecho = true;
-    public string idTribunaParaTecho = "plateaSinNombre";
-
+    
     [Header("Vigas Transversales")]
     public bool tieneVigasTransversales = true;
     public float alturaUnionVigasInteriores = 1.5f;
@@ -181,6 +178,20 @@ public class SeatedStandGenerator : MonoBehaviour
 
     [Header("Overrides por Variante")]
     public List<OverrideNumFilas> overridesNumFilas = new List<OverrideNumFilas>();
+
+    [Header("Publicacion de Anclajes al Techo")]
+    public bool publicarAnclajesTecho = false;
+    public RolEstructuralTecho rolEnElTecho = RolEstructuralTecho.ParaleloAlCampo;
+    public string idTribunaParaTecho = "sinNombre";
+
+    private readonly List<Vector3> _cabezasTensores = new List<Vector3>();
+
+    public bool PublicaAnclajesTecho => publicarAnclajesTecho;
+    public RolEstructuralTecho RolEnElTecho => rolEnElTecho;
+    public string IdParaTecho => idTribunaParaTecho;
+    public IReadOnlyList<Vector3> CabezasTensoresLocales => _cabezasTensores;
+    public Transform TransformSector => transform;
+
 
     [ContextMenu("Generar Platea")]
 
@@ -334,10 +345,7 @@ public class SeatedStandGenerator : MonoBehaviour
         List<float> xSoportes = new List<float>();
 
         if (generarSoportes)
-        {
-            //GenerarSoportes(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
-            //GenerarVigasTransversales(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
-
+        {            
             xSoportes = GenerarSoportes(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
             GenerarVigasTransversales(multZ, contenedor.transform, anchoDeUnaPieza, largoMaximoTribuna);
             GenerarVigaLongitudinalTensores(xSoportes, multZ, contenedor.transform);
@@ -362,6 +370,20 @@ public class SeatedStandGenerator : MonoBehaviour
         float t = xActual / largoMaximoTribuna;
         if (invertirRecorte) t = 1f - t;
         return Mathf.RoundToInt(Mathf.Lerp(filasEnExtremoIzquierdo, filasEnExtremoDerecho, t));
+    }
+
+    /// <summary>
+    /// Cantidad de filas en forma continua, sin redondear. La grada avanza en escalones
+    /// enteros, pero la estructura que la sostiene no tiene por que hacerlo: interpolando
+    /// aca, las puntas de las diagonales quedan alineadas en una recta y la viga
+    /// longitudinal deja de hacer zig-zag.
+    /// </summary>
+    float FilasEnXContinuo(float xActual)
+    {
+        if (!usarRecorteFilas) return numFilas;
+        float t = xActual / largoMaximoTribuna;
+        if (invertirRecorte) t = 1f - t;
+        return Mathf.Lerp(filasEnExtremoIzquierdo, filasEnExtremoDerecho, t);
     }
 
     // Método para buscar qué multiplicador aplica a cada fila
@@ -961,17 +983,22 @@ public class SeatedStandGenerator : MonoBehaviour
     {
         // La cantidad de filas depende de la posicion: con recorte activo la platea sube
         // dentro de si misma, y cada viga tiene que llegar hasta donde llega la grada.
-        int filasAqui = FilasEnX(x);
+        //int filasAqui = FilasEnX(x);
+
+        float filasAqui = FilasEnXContinuo(x);
+
+        
+       
 
         float zInterior = filaVigaVerticalInterior * profundidadEscalon * mZ;
         float zExterior = filaVigaVerticalExterior * profundidadEscalon * mZ;
         float zArranque = filaArranqueDiagonal * profundidadEscalon * mZ;
-        //float zFinal = (filasAqui - 1) * profundidadEscalon * mZ + profundidadEscalon / 2f * mZ;
 
         float zFinal = ZBordeExteriorGrada(filasAqui, mZ) + (0.2f + metrajeExtraDiagonal) * mZ;
-
+        
         float yArranque = CalcularAlturaAcumuladaCabecera(filaArranqueDiagonal);
-        float yFinDiagonal = CalcularAlturaAcumuladaCabecera(filasAqui - 1);
+        //float yFinDiagonal = CalcularAlturaAcumuladaCabecera(filasAqui - 1);
+        float yFinDiagonal = AlturaAcumuladaContinua(filasAqui);
 
         float yBase = ground0Level != null ?
             padre.InverseTransformPoint(ground0Level.position).y : 0f;
@@ -1028,61 +1055,13 @@ public class SeatedStandGenerator : MonoBehaviour
         tensor.GetComponent<Renderer>().sharedMaterial = MaterialVigas;
         DestroyImmediate(tensor.GetComponent<BoxCollider>());
     }
-
-    //void GenerarSoportes(float mZ, Transform padre, float anchoDeUnaPieza, float largoMaximoTribuna)
-    //{
-    //    if (!generarSoportes || MaterialVigas == null) return;
-
-    //    // Construir lista de zonas prohibidas
-    //    List<(float xInicio, float xFin)> zonasProhibidas = new List<(float, float)>();
-
-    //    // Zona tunel
-    //    if (generarTunel)
-    //    {
-    //        float centroX = largoMaximoTribuna / 2f;
-    //        zonasProhibidas.Add((centroX - anchoTunel / 2f, centroX + anchoTunel / 2f));
-    //    }
-
-    //    // Zonas vomitos
-    //    float xActualVomito = 0;
-    //    int colAsientoVomito = 0;
-    //    while (xActualVomito < largoMaximoTribuna)
-    //    {
-    //        bool esPasillo = (colAsientoVomito >= asientosEntrePasillos);
-    //        if (esPasillo)
-    //            zonasProhibidas.Add((xActualVomito, xActualVomito + anchoPasilloEscalera));
-
-    //        xActualVomito += esPasillo ? anchoPasilloEscalera : anchoDeUnaPieza;
-    //        colAsientoVomito = esPasillo ? 0 : colAsientoVomito + 1;
-    //    }
-
-    //    float anchoTotal = largoMaximoTribuna;
-
-    //    float xActual = separacionSoportes / 2f;
-
-    //    float xAnterior = -1f;
-
-    //    while (xActual < anchoTotal)
-    //    {
-    //        float xAjustada = AjustarXSoporte(xActual, zonasProhibidas);
-
-    //        // Solo generar si no es la misma posicion que el soporte anterior
-    //        if (Mathf.Abs(xAjustada - xAnterior) > 0.01f)
-    //        {
-    //            GenerarSoporte(xAjustada, mZ, padre);
-    //            xAnterior = xAjustada;
-    //        }
-
-    //        xActual += separacionSoportes;
-    //    }
-    //}
-
-
+    
     List<float> GenerarSoportes(float mZ, Transform padre, float anchoDeUnaPieza, float largoMaximoTribuna)
     {
         var posicionesUsadas = new List<float>();
-        if (!generarSoportes || MaterialVigas == null) return posicionesUsadas;
 
+        if (!generarSoportes || MaterialVigas == null) { _cabezasTensores.Clear(); return posicionesUsadas; }
+        
         List<(float xInicio, float xFin)> zonasProhibidas = new List<(float, float)>();
 
         if (generarTunel)
@@ -1104,7 +1083,10 @@ public class SeatedStandGenerator : MonoBehaviour
         }
 
         float anchoTotal = largoMaximoTribuna;
-        float xActual = separacionSoportes / 2f;
+
+        //float xActual = separacionSoportes / 2f;
+        float xActual = 0f;
+
         float xAnterior = -1f;
 
         while (xActual < anchoTotal)
@@ -1119,6 +1101,13 @@ public class SeatedStandGenerator : MonoBehaviour
             }
 
             xActual += separacionSoportes;
+        }
+
+        _cabezasTensores.Clear();
+        if (vigaDiagonalTerminaConSoportesDeTecho)
+        {
+            foreach (float x in posicionesUsadas)
+                _cabezasTensores.Add(PosicionCabezaTensor(x, mZ));
         }
 
         return posicionesUsadas;
@@ -1792,10 +1781,15 @@ public class SeatedStandGenerator : MonoBehaviour
         }
     }
 
-    float ZBordeExteriorGrada(int filas, float mZ)
+    float ZBordeExteriorGrada(float filas, float mZ)
     {
-        //return ((filas - 1) * profundidadEscalon + profundidadEscalon / 2f) * mZ;
-        return filas * profundidadEscalon * mZ;
+        if (usarRecorteFilas) 
+        {
+            return filas * profundidadEscalon * mZ;
+        }
+
+
+        return ((filas - 0.35f) * profundidadEscalon) * mZ;
     }
 
     // ============================================================================
@@ -1809,10 +1803,14 @@ public class SeatedStandGenerator : MonoBehaviour
     /// </summary>
     public Vector3 PosicionCabezaTensor(float x, float mZ)
     {
-        int filasAqui = FilasEnX(x);
+        //int filasAqui = FilasEnX(x);
+
+        float filasAqui = FilasEnXContinuo(x);
+        float zFinal = ZBordeExteriorGrada(filasAqui, mZ) + (0.2f + metrajeExtraDiagonal) * mZ;
+        float yFinDiagonal = AlturaAcumuladaContinua(filasAqui);
 
         float zFinalDiagonal = ZBordeExteriorGrada(filasAqui, mZ) + (0.2f + metrajeExtraDiagonal) * mZ;
-        float yFinDiagonal = CalcularAlturaAcumuladaCabecera(filasAqui - 1);
+        //float yFinDiagonal = CalcularAlturaAcumuladaCabecera(filasAqui - 1);
 
         float zTensor = zFinalDiagonal - (profundidadSoporteTecho / 2f) * mZ;
         float yBase = yFinDiagonal - penetracionTensor;
@@ -1909,22 +1907,36 @@ public class SeatedStandGenerator : MonoBehaviour
     /// IMPORTANTE: se llama ANTES del Static Batching. Despues de batchear, las posiciones
     /// se pierden.
     /// </summary>
-    void PublicarAnclajesTecho(List<float> posicionesX, float mZ, RegistroAnclajesTecho registro,
-                               Matrix4x4 mundoALocalTecho)
+    /// 
+    //METODO VIEJO COMENTADO, AHORA LA PUBLICACION DE LOS ANCLAJES LA MANEJA STADIUMCONFIGURATOR
+    //void PublicarAnclajesTecho(List<float> posicionesX, float mZ, RegistroAnclajesTecho registro,
+    //                           Matrix4x4 mundoALocalTecho)
+    //{
+    //    if (!publicarAnclajesTecho || registro == null) return;
+    //    if (posicionesX == null || posicionesX.Count == 0) return;
+
+    //    for (int i = 0; i < posicionesX.Count; i++)
+    //    {
+    //        Vector3 cabezaLocal = PosicionCabezaTensor(posicionesX[i], mZ);
+    //        Vector3 cabezaMundo = transform.TransformPoint(cabezaLocal);
+
+    //        // El techo trabaja en su propio sistema, centrado en el campo.
+    //        Vector3 posicionTecho = mundoALocalTecho.MultiplyPoint3x4(cabezaMundo);
+    //        Vector3 ejeTecho = mundoALocalTecho.MultiplyVector(transform.TransformVector(Vector3.up));
+
+    //        registro.Publicar(posicionTecho, ejeTecho, idTribunaParaTecho, i);
+    //    }
+    //}
+
+    float AlturaAcumuladaContinua(float filas)
     {
-        if (!publicarAnclajesTecho || registro == null) return;
-        if (posicionesX == null || posicionesX.Count == 0) return;
+        int entera = Mathf.FloorToInt(filas);
+        float fraccion = filas - entera;
 
-        for (int i = 0; i < posicionesX.Count; i++)
-        {
-            Vector3 cabezaLocal = PosicionCabezaTensor(posicionesX[i], mZ);
-            Vector3 cabezaMundo = transform.TransformPoint(cabezaLocal);
+        float altura = CalcularAlturaAcumuladaCabecera(entera);
+        if (fraccion > 0f)
+            altura += altoEscalonBase * ObtenerFactorParaFila(entera) * fraccion;
 
-            // El techo trabaja en su propio sistema, centrado en el campo.
-            Vector3 posicionTecho = mundoALocalTecho.MultiplyPoint3x4(cabezaMundo);
-            Vector3 ejeTecho = mundoALocalTecho.MultiplyVector(transform.TransformVector(Vector3.up));
-
-            registro.Publicar(posicionTecho, ejeTecho, idTribunaParaTecho, i);
-        }
+        return altura;
     }
 }

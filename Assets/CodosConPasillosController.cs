@@ -1395,7 +1395,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         float longitudTotal = longAcum[pasos];
 
         // Distribuir soportes a lo largo del arco interior
-        float distanciaActual = separacionSoportes / 2f;
+        //float distanciaActual = separacionSoportes / 2f;
+        float distanciaActual = 0f;
 
         while (distanciaActual < longitudTotal)
         {
