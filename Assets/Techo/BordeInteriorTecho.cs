@@ -5,6 +5,15 @@ using UnityEngine;
 
 namespace Estadio.Techo
 {
+    /// <summary>
+    /// Superficie definida por la familia transversal de cables. El borde interior la
+    /// consulta para saber a que altura queda: no la elige, la lee.
+    /// </summary>
+    public interface ISuperficieCables
+    {
+        bool TryAltura(float x, float z, out float altura);
+    }
+
     [Serializable]
     public struct ParametrosBordeInterior
     {
@@ -15,15 +24,14 @@ namespace Estadio.Techo
         [Header("Vano libre")]
         public float margenVanoX;
         public float margenVanoZ;
-        public float exponenteVano;       // redondeo de las esquinas del vano; 2 = elipse
+        [Tooltip("Redondeo de las esquinas del vano. 2 = elipse, 16 = rectangulo de " +
+                 "esquinas apenas matadas.")]
+        public float exponenteVano;
 
-        [Header("Cotas")]
-        public float alturaEsquinas;      // cota de los cuatro puntos altos
-        public float flechaRelativaLadoLargo;   // panza sobre las plateas laterales
-        public float flechaRelativaLadoCorto;   // panza sobre las cabeceras
+        [Header("Muestreo")]
+        public int muestrasAltura;
 
-        // Convencion de ejes: Z es el eje LARGO del campo (de arco a arco),
-        // X es el ANCHO (de platea lateral a platea lateral).
+        // Z es el eje LARGO del campo, X el ANCHO.
         public float SemiVanoX => semiAnchoCampo + margenVanoX;
         public float SemiVanoZ => semiLongitudCampo + margenVanoZ;
 
@@ -33,44 +41,34 @@ namespace Estadio.Techo
             semiAnchoCampo = 34.0f,
             margenVanoX = 6.0f,
             margenVanoZ = 5.0f,
-            exponenteVano = 2.6f,
-            alturaEsquinas = 44.0f,
-            flechaRelativaLadoLargo = 0.045f,
-            flechaRelativaLadoCorto = 0.035f
+            exponenteVano = 16f,
+            muestrasAltura = 240
         };
     }
 
     /// <summary>
-    /// Borde interior del techo: la curva cerrada que rodea el vano libre sobre el campo.
+    /// Borde interior del techo: la curva cerrada que rodea el vano sobre el campo.
     ///
-    /// Es la pieza que comparten los dos proyectos. Los dos tienen el mismo gesto —sube en
-    /// las cuatro esquinas, baja en el medio de cada lado— y cambian solo en como lo
-    /// materializan: el Diseno 1 con una viga tubular colgada de los cables, el Diseno 2
-    /// con el cordon superior de una celosia rigida.
+    /// Su altura NO es un parametro. Las estructuras tubulares del borde cuelgan de los
+    /// cables transversales, asi que su cota es simplemente la del cable en el punto
+    /// donde lo cruza. Si una platea es mas alta que la otra, la cuerda del cable ya
+    /// viene inclinada y el borde hereda esa inclinacion sin que nadie se lo diga.
     ///
-    /// En planta es otra superelipse, con su propio exponente: el vano tiene esquinas
-    /// redondeadas, mas suaves que las del perimetro exterior.
-    ///
-    /// En altura son cuatro tramos que cuelgan entre las cuatro esquinas, con la misma
-    /// parabola que usamos para los cables y para la panza de los puentes.
+    /// En planta sigue siendo una superelipse propia, con su exponente: el vano es mas
+    /// rectangular que el perimetro exterior.
     /// </summary>
     public sealed class BordeInteriorTecho
     {
         private ParametrosBordeInterior _parametros;
         private PerimetroSuperelipse _planta;
 
-        // Esquinas en el parametro trigonometrico: puntos altos de la curva.
         private static readonly float[] TEsquinas =
         {
-            0.25f * Mathf.PI,
-            0.75f * Mathf.PI,
-            1.25f * Mathf.PI,
-            1.75f * Mathf.PI
+            0.25f * Mathf.PI, 0.75f * Mathf.PI, 1.25f * Mathf.PI, 1.75f * Mathf.PI
         };
 
-        private readonly float[] _sEsquinas = new float[4];
-        private readonly float[] _luzArco = new float[4];
-        private readonly float[] _flechaArco = new float[4];
+        private float[] _alturas;      // muestreo uniforme en longitud de arco
+        private float _pasoMuestra;
         private readonly Vector3[] _esquinas = new Vector3[4];
 
         private int _versionBorde;
@@ -80,28 +78,13 @@ namespace Estadio.Techo
         public int VersionBorde => _versionBorde;
         public bool Construido => _construido;
 
-        /// <summary>Proyeccion en planta del borde. Expone las mismas intersecciones
-        /// cerradas que el perimetro exterior.</summary>
         public IPerimetroEstadio Planta { get { AsegurarConstruido(); return _planta; } }
-
         public float LongitudTotal { get { AsegurarConstruido(); return _planta.LongitudTotal; } }
-
-        /// <summary>Las cuatro esquinas altas, en orden antihorario.</summary>
         public IReadOnlyList<Vector3> Esquinas { get { AsegurarConstruido(); return _esquinas; } }
 
-        public float AlturaMaxima => _parametros.alturaEsquinas;
-
-        public float AlturaMinima
-        {
-            get
-            {
-                AsegurarConstruido();
-                float minima = _parametros.alturaEsquinas;
-                for (int i = 0; i < 4; i++)
-                    minima = Mathf.Min(minima, _parametros.alturaEsquinas - _flechaArco[i]);
-                return minima;
-            }
-        }
+        public float AlturaMaxima { get; private set; }
+        public float AlturaMinima { get; private set; }
+        public int MuestrasSinCable { get; private set; }
 
         public BordeInteriorTecho(ParametrosBordeInterior parametros)
         {
@@ -115,6 +98,7 @@ namespace Estadio.Techo
                     $"exponenteVano debe ser >= {PerimetroSuperelipse.ExponenteMinimo}.");
 
             _parametros = parametros;
+            _parametros.muestrasAltura = Mathf.Max(32, parametros.muestrasAltura);
             _construido = false;
             _versionBorde++;
         }
@@ -123,112 +107,131 @@ namespace Estadio.Techo
         //  Construccion
         // ------------------------------------------------------------------
 
-        public void Construir()
+        /// <summary>
+        /// Muestrea la superficie de cables a lo largo de la curva del vano. Los tramos
+        /// donde ningun cable llega —si los hubiera— se rellenan interpolando entre los
+        /// vecinos validos, de forma ciclica.
+        /// </summary>
+        public void Construir(ISuperficieCables superficie)
         {
+            if (superficie == null) throw new ArgumentNullException(nameof(superficie));
+
             _planta = new PerimetroSuperelipse(_parametros.SemiVanoX,
                                                _parametros.SemiVanoZ,
                                                _parametros.exponenteVano);
 
-            float longitud = _planta.LongitudTotal;
+            int n = _parametros.muestrasAltura;
+            _pasoMuestra = _planta.LongitudTotal / n;
+            _alturas = new float[n];
+            var valida = new bool[n];
 
-            for (int i = 0; i < 4; i++)
-                _sEsquinas[i] = _planta.LongitudDeT(TEsquinas[i]);
+            MuestrasSinCable = 0;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < n; i++)
             {
-                _luzArco[i] = i < 3
-                    ? _sEsquinas[i + 1] - _sEsquinas[i]
-                    : longitud - _sEsquinas[3] + _sEsquinas[0];
+                Vector2 xz = _planta.PuntoPorLongitud(i * _pasoMuestra);
+                if (superficie.TryAltura(xz.x, xz.y, out float y))
+                {
+                    _alturas[i] = y;
+                    valida[i] = true;
+                }
+                else
+                {
+                    MuestrasSinCable++;
+                }
+            }
 
-                // Con Z como eje largo, los arcos 1 y 3 contienen el medio de los lados
-                // largos (sobre las plateas laterales, en x = +-a); los arcos 0 y 2, el
-                // medio de las cabeceras (en z = +-b).
-                float coeficiente = (i % 2 == 1)
-                    ? _parametros.flechaRelativaLadoLargo
-                    : _parametros.flechaRelativaLadoCorto;
+            RellenarHuecos(valida);
 
-                _flechaArco[i] = coeficiente * _luzArco[i];
+            AlturaMaxima = float.NegativeInfinity;
+            AlturaMinima = float.PositiveInfinity;
+            for (int i = 0; i < n; i++)
+            {
+                AlturaMaxima = Mathf.Max(AlturaMaxima, _alturas[i]);
+                AlturaMinima = Mathf.Min(AlturaMinima, _alturas[i]);
             }
 
             for (int i = 0; i < 4; i++)
             {
                 Vector2 xz = _planta.Punto(TEsquinas[i]);
-                _esquinas[i] = new Vector3(xz.x, _parametros.alturaEsquinas, xz.y);
+                // Lectura directa de la tabla: AlturaEnT exige el borde ya construido y
+                // todavia estamos dentro de Construir.
+                float y = AlturaMuestreada(_planta.LongitudDeT(TEsquinas[i]));
+                _esquinas[i] = new Vector3(xz.x, y, xz.y);
             }
 
             _construido = true;
             _versionBorde++;
         }
 
+        private void RellenarHuecos(bool[] valida)
+        {
+            int n = _alturas.Length;
+
+            int primeraValida = -1;
+            for (int i = 0; i < n; i++) if (valida[i]) { primeraValida = i; break; }
+
+            if (primeraValida < 0)
+                throw new InvalidOperationException(
+                    "Ningun punto del borde interior encontro cable encima. Revisar que la " +
+                    "familia transversal se haya construido y que el vano quede dentro de su alcance.");
+
+            for (int k = 0; k < n; k++)
+            {
+                int i = (primeraValida + k) % n;
+                if (valida[i]) continue;
+
+                // Vecinos validos hacia atras y hacia adelante, ciclicos.
+                int atras = i, pasosAtras = 0;
+                do { atras = (atras - 1 + n) % n; pasosAtras++; } while (!valida[atras] && pasosAtras < n);
+
+                int adelante = i, pasosAdelante = 0;
+                do { adelante = (adelante + 1) % n; pasosAdelante++; } while (!valida[adelante] && pasosAdelante < n);
+
+                float f = (float)pasosAtras / (pasosAtras + pasosAdelante);
+                _alturas[i] = Mathf.Lerp(_alturas[atras], _alturas[adelante], f);
+                valida[i] = true;
+            }
+        }
+
         private void AsegurarConstruido()
         {
             if (!_construido)
                 throw new InvalidOperationException(
-                    "El borde interior no esta construido. Llamar a Construir().");
+                    "El borde interior no esta construido. Llamar a Construir(superficie) " +
+                    "despues de tender la familia transversal de cables.");
         }
 
         // ------------------------------------------------------------------
-        //  Altura
+        //  Consultas
         // ------------------------------------------------------------------
 
-        /// <summary>
-        /// Altura del borde a la longitud de arco s. Cada uno de los cuatro tramos cuelga
-        /// entre dos esquinas con la parabola de siempre; los lados largos cuelgan mas
-        /// porque su luz es mayor, sin que haya que decirselo.
-        /// </summary>
         public float AlturaEnS(float s)
         {
             AsegurarConstruido();
+            return AlturaMuestreada(s);
+        }
 
+        /// <summary>Interpolacion en la tabla de alturas, sin validar estado. Se usa
+        /// tambien desde Construir, cuando el borde todavia no esta marcado como listo.</summary>
+        private float AlturaMuestreada(float s)
+        {
+            int n = _alturas.Length;
             float longitud = _planta.LongitudTotal;
             s = Mathf.Repeat(s, longitud);
 
-            int arco = LocalizarArco(s, longitud, out float u);
-            float flecha = _flechaArco[arco];
+            float indice = s / _pasoMuestra;
+            int i0 = Mathf.FloorToInt(indice) % n;
+            int i1 = (i0 + 1) % n;
+            float f = indice - Mathf.Floor(indice);
 
-            return _parametros.alturaEsquinas - 4f * flecha * u * (1f - u);
+            return Mathf.Lerp(_alturas[i0], _alturas[i1], f);
         }
 
         public float AlturaEnT(float t)
         {
             AsegurarConstruido();
             return AlturaEnS(_planta.LongitudDeT(t));
-        }
-
-        private int LocalizarArco(float s, float longitud, out float u)
-        {
-            // El arco 3 envuelve el origen del parametro.
-            if (s < _sEsquinas[0] || s >= _sEsquinas[3])
-            {
-                float recorrido = s >= _sEsquinas[3]
-                    ? s - _sEsquinas[3]
-                    : longitud - _sEsquinas[3] + s;
-                u = Mathf.Clamp01(recorrido / _luzArco[3]);
-                return 3;
-            }
-
-            for (int i = 0; i < 3; i++)
-            {
-                if (s < _sEsquinas[i + 1])
-                {
-                    u = Mathf.Clamp01((s - _sEsquinas[i]) / _luzArco[i]);
-                    return i;
-                }
-            }
-
-            u = 0f;
-            return 0;
-        }
-
-        // ------------------------------------------------------------------
-        //  Puntos y cruces
-        // ------------------------------------------------------------------
-
-        public Vector3 PuntoEnT(float t)
-        {
-            AsegurarConstruido();
-            Vector2 xz = _planta.Punto(t);
-            return new Vector3(xz.x, AlturaEnT(t), xz.y);
         }
 
         public Vector3 PuntoEnS(float s)
@@ -238,24 +241,20 @@ namespace Estadio.Techo
             return new Vector3(xz.x, AlturaEnS(s), xz.y);
         }
 
-        /// <summary>
-        /// Cruce del borde con un cable transversal en x0. Estos son los apoyos
-        /// intermedios de la familia transversal: el punto donde el cable toma la viga
-        /// borde (Diseno 1) o la celosia perimetral (Diseno 2).
-        /// </summary>
-        public bool IntersectarX(float x0, out Vector3 puntoZNegativo, out Vector3 puntoZPositivo)
+        public Vector3 PuntoEnT(float t)
         {
             AsegurarConstruido();
-            puntoZNegativo = default;
-            puntoZPositivo = default;
-
-            if (!_planta.IntersectarX(x0, out float zPositivo, out float zNegativo)) return false;
-
-            puntoZPositivo = PuntoDesdeXZ(new Vector2(x0, zPositivo));
-            puntoZNegativo = PuntoDesdeXZ(new Vector2(x0, zNegativo));
-            return true;
+            Vector2 xz = _planta.Punto(t);
+            return new Vector3(xz.x, AlturaEnT(t), xz.y);
         }
 
+        private Vector3 PuntoDesdeXZ(Vector2 xz)
+        {
+            return new Vector3(xz.x, AlturaEnS(_planta.SDePunto(xz)), xz.y);
+        }
+
+        /// <summary>Cruce del borde con un cable transversal en z0. Son los dos puntos
+        /// donde el cable toma la estructura tubular del vano.</summary>
         public bool IntersectarZ(float z0, out Vector3 puntoXNegativo, out Vector3 puntoXPositivo)
         {
             AsegurarConstruido();
@@ -269,38 +268,58 @@ namespace Estadio.Techo
             return true;
         }
 
-        private Vector3 PuntoDesdeXZ(Vector2 xz)
-        {
-            return new Vector3(xz.x, AlturaEnS(_planta.SDePunto(xz)), xz.y);
-        }
-
-        /// <summary>
-        /// Muestreo equiespaciado en metros del borde completo. La cantidad se ajusta al
-        /// multiplo de 4 mas cercano para que caigan puntos exactos sobre los cuatro ejes.
-        /// </summary>
-        public Vector3[] MuestrearPorSeparacion(float separacionObjetivo, out float separacionReal)
+        public bool IntersectarX(float x0, out Vector3 puntoZNegativo, out Vector3 puntoZPositivo)
         {
             AsegurarConstruido();
+            puntoZNegativo = default;
+            puntoZPositivo = default;
 
-            Vector2[] planta = _planta.MuestrearPorSeparacion(separacionObjetivo, out separacionReal);
-            var puntos = new Vector3[planta.Length];
+            if (!_planta.IntersectarX(x0, out float zPositivo, out float zNegativo)) return false;
 
-            for (int i = 0; i < planta.Length; i++)
-                puntos[i] = new Vector3(planta[i].x, AlturaEnS(i * separacionReal), planta[i].y);
+            puntoZPositivo = PuntoDesdeXZ(new Vector2(x0, zPositivo));
+            puntoZNegativo = PuntoDesdeXZ(new Vector2(x0, zNegativo));
+            return true;
+        }
+
+        /// <summary>Muestreo del arco entre dos esquinas consecutivas. arco 1 y 3 son los
+        /// lados largos (sobre las plateas), 0 y 2 las cabeceras.</summary>
+        public Vector3[] MuestrearArco(int arco, int segmentos)
+        {
+            AsegurarConstruido();
+            arco = Mathf.Clamp(arco, 0, 3);
+            segmentos = Mathf.Max(2, segmentos);
+
+            float longitud = _planta.LongitudTotal;
+            float sInicio = _planta.LongitudDeT(TEsquinas[arco]);
+            float sFin = _planta.LongitudDeT(TEsquinas[(arco + 1) % 4]);
+            if (sFin <= sInicio) sFin += longitud;
+
+            var puntos = new Vector3[segmentos + 1];
+            for (int i = 0; i <= segmentos; i++)
+                puntos[i] = PuntoEnS(Mathf.Lerp(sInicio, sFin, (float)i / segmentos));
 
             return puntos;
         }
 
+        public float LongitudArco(int arco)
+        {
+            AsegurarConstruido();
+            arco = Mathf.Clamp(arco, 0, 3);
+
+            float longitud = _planta.LongitudTotal;
+            float sInicio = _planta.LongitudDeT(TEsquinas[arco]);
+            float sFin = _planta.LongitudDeT(TEsquinas[(arco + 1) % 4]);
+            if (sFin <= sInicio) sFin += longitud;
+
+            return sFin - sInicio;
+        }
+
         // ------------------------------------------------------------------
-        //  Validacion
+        //  Validacion y diagnostico
         // ------------------------------------------------------------------
 
-        /// <summary>
-        /// El borde no puede bajar por debajo del coronamiento de las tribunas: si lo hace,
-        /// la viga borde o la celosia atravesarian la ultima fila de la platea.
-        /// </summary>
         public bool Validar(IPerimetroEstadio perimetroExterior, RegistroAnclajesTecho registro,
-                            List<string> mensajes, float holguraMinima = 3f)
+                            List<string> mensajes, float holguraMinimaSobreCampo = 20f)
         {
             if (mensajes == null) throw new ArgumentNullException(nameof(mensajes));
 
@@ -316,37 +335,22 @@ namespace Estadio.Techo
                 _parametros.SemiVanoZ >= perimetroExterior.SemiejeZ)
             {
                 mensajes.Add("ERROR: el vano excede las dimensiones del estadio.");
-                return false;
+                valido = false;
             }
 
-            // El punto mas bajo del borde esta en el medio de cada lado. Se compara contra
-            // el coronamiento en la misma direccion radial.
-            const int muestras = 4;
-            float[] tMedios = { 0f, 0.5f * Mathf.PI, Mathf.PI, 1.5f * Mathf.PI };
-            string[] nombres = { "lateral X+", "cabecera Z+", "lateral X-", "cabecera Z-" };
-
-            for (int i = 0; i < muestras; i++)
+            if (MuestrasSinCable > 0)
             {
-                Vector3 puntoBorde = PuntoEnT(tMedios[i]);
-                Vector2 direccion = new Vector2(puntoBorde.x, puntoBorde.z);
-                if (direccion.sqrMagnitude < 1e-6f) continue;
+                float fraccion = (float)MuestrasSinCable / _alturas.Length;
+                mensajes.Add($"AVISO: el {fraccion * 100f:F0}% del borde no encontro cable encima " +
+                             "y se relleno interpolando. Suele ser la zona de los codos.");
+            }
 
-                float sExterior = perimetroExterior.SDePunto(direccion);
-                float coronamiento = registro.AlturaCoronamiento(sExterior);
-                float holgura = puntoBorde.y - coronamiento;
-
-                if (holgura < 0f)
-                {
-                    mensajes.Add($"ERROR: en el medio de la {nombres[i]} el borde interior queda " +
-                                 $"{-holgura:F1} m por debajo del coronamiento de la tribuna. " +
-                                 "Subir alturaEsquinas o reducir la flecha.");
-                    valido = false;
-                }
-                else if (holgura < holguraMinima)
-                {
-                    mensajes.Add($"AVISO: solo {holgura:F1} m entre el borde interior y el " +
-                                 $"coronamiento en la {nombres[i]}.");
-                }
+            if (AlturaMinima < holguraMinimaSobreCampo)
+            {
+                mensajes.Add($"ERROR: el borde interior baja hasta {AlturaMinima:F1} m " +
+                             $"(minimo {holguraMinimaSobreCampo:F1} m). Aumentar la tension de los " +
+                             "cables transversales para reducir la panza.");
+                valido = false;
             }
 
             return valido;
@@ -360,14 +364,18 @@ namespace Estadio.Techo
             if (!_construido) return sb.ToString();
 
             sb.AppendLine($"Vano: {2f * _parametros.SemiVanoX:F1} x {2f * _parametros.SemiVanoZ:F1} m, " +
-                          $"exponente {_parametros.exponenteVano:F2}");
+                          $"exponente {_parametros.exponenteVano:F1}");
             sb.AppendLine($"Perimetro del borde: {LongitudTotal:F1} m");
-            sb.AppendLine($"Cota de esquinas: {_parametros.alturaEsquinas:F2} m");
-            sb.AppendLine($"Lados largos (plateas): luz {_luzArco[1]:F1} m, panza {_flechaArco[1]:F2} m " +
-                          $"-> cota minima {_parametros.alturaEsquinas - _flechaArco[1]:F2} m");
-            sb.AppendLine($"Cabeceras:              luz {_luzArco[0]:F1} m, panza {_flechaArco[0]:F2} m " +
-                          $"-> cota minima {_parametros.alturaEsquinas - _flechaArco[0]:F2} m");
-            sb.AppendLine($"Desnivel total del borde: {AlturaMaxima - AlturaMinima:F2} m");
+            sb.AppendLine($"Altura derivada de los cables: min {AlturaMinima:F2} m, " +
+                          $"max {AlturaMaxima:F2} m, desnivel {AlturaMaxima - AlturaMinima:F2} m");
+            sb.AppendLine($"Esquinas: " +
+                          $"{_esquinas[0].y:F1} | {_esquinas[1].y:F1} | " +
+                          $"{_esquinas[2].y:F1} | {_esquinas[3].y:F1} m");
+            sb.AppendLine($"Lados largos (plateas): {LongitudArco(1):F1} m y {LongitudArco(3):F1} m");
+            sb.AppendLine($"Cabeceras: {LongitudArco(0):F1} m y {LongitudArco(2):F1} m");
+
+            if (MuestrasSinCable > 0)
+                sb.AppendLine($"Muestras sin cable encima: {MuestrasSinCable} de {_alturas.Length}");
 
             return sb.ToString();
         }

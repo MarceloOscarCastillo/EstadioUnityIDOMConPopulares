@@ -72,10 +72,10 @@ namespace Estadio.Techo
         /// Diseno 1 (consultora): dos puentes livianos junto al vano y las dos vigas borde
         /// tubulares sobre los lados largos, colgadas de los cables. Valores tentativos.
         /// </summary>
-        public static DescriptorMarco Diseno1(BordeInteriorTecho borde, float retiroPuente = 1.5f)
+        public static DescriptorMarco Diseno1(BordeInteriorTecho borde, float retiroPuente = 1.5f, float holguraSobreBorde = 1.0f)
         {
             float z = borde.Parametros.SemiVanoZ + retiroPuente;
-            float altura = borde.Parametros.alturaEsquinas;
+            float altura = borde.AlturaMaxima + holguraSobreBorde;
 
             var d = new DescriptorMarco { nombre = "Diseno 1 - membrana tensada" };
 
@@ -111,12 +111,13 @@ namespace Estadio.Techo
         /// interior y el exterior de cada cabecera hay que medirla de las axonometrias.
         /// </summary>
         public static DescriptorMarco Diseno2(BordeInteriorTecho borde, IPerimetroEstadio perimetro,
-                                              float retiroInterior = 1.5f, float retiroExterior = 12f)
+                                              float retiroInterior = 1.5f, float retiroExterior = 12f,
+                                              float holguraSobreBorde = 1.0f)
         {
             float zInterior = borde.Parametros.SemiVanoZ + retiroInterior;
             float zExterior = Mathf.Min(borde.Parametros.SemiVanoZ + retiroExterior,
                                         perimetro.SemiejeZ * 0.92f);
-            float altura = borde.Parametros.alturaEsquinas;
+            float altura = borde.AlturaMaxima + holguraSobreBorde;
 
             var d = new DescriptorMarco { nombre = "Diseno 2 - reticulado rigido" };
 

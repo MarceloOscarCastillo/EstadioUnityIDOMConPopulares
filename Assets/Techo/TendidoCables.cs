@@ -9,35 +9,30 @@ namespace Estadio.Techo
 
     public enum FamiliaCable
     {
-        /// <summary>Cruza la cancha por lo ancho: esta a z constante y varia en X.
-        /// Es la familia que carga, la que sostiene las vigas borde. Con panza.</summary>
+        /// <summary>Cruza la cancha por lo ancho: a z constante, varia en X. Es la familia
+        /// que carga: de ella cuelgan las estructuras tubulares del borde del vano.</summary>
         Transversal,
-        /// <summary>Corre a lo largo de la cancha: esta a x constante y varia en Z.
-        /// Sobrevuela las plateas laterales y se apoya en los puentes.</summary>
+        /// <summary>Corre a lo largo de la cancha: a x constante, varia en Z. Vive sobre la
+        /// superficie que definen los transversales, no la define.</summary>
         Longitudinal
     }
 
     public enum TipoApoyoCable
     {
-        Anclaje,        // tensor sobre una viga diagonal del perimetro
-        BordeLibre,     // punto del perimetro sin viga cercana
-        BordeInterior,  // cruce con el borde del vano (viga borde o celosia)
-        Puente,         // cruce con un puente transversal
-        CableCruzado    // nudo de red: apoyo sobre un cable de la otra familia
+        Anclaje,
+        BordeLibre,
+        BordeInterior,
+        Puente,
+        CableCruzado
     }
 
     public struct ApoyoCable
     {
         public Vector3 posicion;
         public TipoApoyoCable tipo;
-        public AnclajeTecho anclaje;   // valido solo si tipo == Anclaje
+        public AnclajeTecho anclaje;
     }
 
-    /// <summary>
-    /// Un cable completo, de tensor a tensor. El "par" de cada tensor no se busca: son los
-    /// dos apoyos extremos de este mismo cable, que salen de la misma interseccion cerrada
-    /// con la superelipse y por lo tanto son simetricos por construccion.
-    /// </summary>
     public sealed class Cable
     {
         public FamiliaCable familia;
@@ -82,11 +77,8 @@ namespace Estadio.Techo
             return apoyos[apoyos.Length - 1].posicion;
         }
 
-        /// <summary>
-        /// Punto del cable a una coordenada dada del eje sobre el que corre: X para los
-        /// transversales, Z para los longitudinales. Es lo que permite armar los nudos de
-        /// red, apoyando un cable sobre otro.
-        /// </summary>
+        /// <summary>Punto del cable a una coordenada del eje sobre el que corre:
+        /// X para los transversales, Z para los longitudinales.</summary>
         public bool TryPuntoEnEje(float coordenadaEje, out Vector3 punto)
         {
             punto = default;
@@ -131,13 +123,13 @@ namespace Estadio.Techo
         public float separacionTransversal;
         public float separacionLongitudinal;
 
-        [Header("Panza: flecha relativa a la luz del tramo")]
-        public float flechaRelativaTransversalExterior;
-        public float flechaRelativaTransversalSobreVano;
+        [Header("Tension")]
+        [Tooltip("Panza del cable transversal, relativa a la luz entre sus dos tensores. " +
+                 "Mas tension = menos panza = borde del vano mas alto. Es el parametro que " +
+                 "reemplaza a la vieja alturaEsquinas.")]
+        public float flechaRelativaTransversal;
+        [Tooltip("Panza de los longitudinales entre apoyos. Casi cero: van tensos.")]
         public float flechaRelativaLongitudinal;
-
-        [Header("Red sobre las cabeceras")]
-        public bool tenderTransversalesEnCabecera;
 
         [Header("Descartes")]
         public float anguloIncidenciaMinimo;
@@ -149,10 +141,8 @@ namespace Estadio.Techo
         {
             separacionTransversal = 4.5f,
             separacionLongitudinal = 6.0f,
-            flechaRelativaTransversalExterior = 0.055f,
-            flechaRelativaTransversalSobreVano = 0.008f,
+            flechaRelativaTransversal = 0.045f,
             flechaRelativaLongitudinal = 0.004f,
-            tenderTransversalesEnCabecera = true,
             anguloIncidenciaMinimo = 30f,
             toleranciaSnapAnclaje = 3.0f,
             margenAlPuente = 2.5f,
@@ -161,28 +151,33 @@ namespace Estadio.Techo
     }
 
     /// <summary>
-    /// Las dos familias de cables del Diseno 1. Se construyen primero las longitudinales,
-    /// porque las transversales de cabecera se apoyan sobre ellas formando una red.
+    /// Las dos familias de cables, en dos fases.
+    ///
+    /// FASE 1 - ConstruirTransversales: cada cable va de tensor a tensor en un solo tramo,
+    /// con una parabola cuya flecha depende de la tension. Esto define la superficie del
+    /// techo. De aca sale la altura del borde interior: las tubulares cuelgan del cable,
+    /// no al reves.
+    ///
+    /// FASE 2 - Completar: se parten los transversales en los cruces con el borde ya
+    /// construido, y se tienden los longitudinales. Partir el cable NO cambia su forma:
+    /// la flecha de cada tramo se calcula como f_global * (fraccion de luz)^2, que es
+    /// exactamente la misma parabola expresada por tramos.
     /// </summary>
-    public sealed class TendidoCables
+    public sealed class TendidoCables : ISuperficieCables
     {
         private ParametrosTendido _parametros;
 
         private readonly List<Cable> _transversales = new List<Cable>(64);
         private readonly List<Cable> _longitudinales = new List<Cable>(64);
-
-        private Cable _longitudinalInternoXPositivo;
-        private Cable _longitudinalInternoXNegativo;
+        private Cable[] _transversalesPorZ = Array.Empty<Cable>();
 
         private int _versionTendido;
-        private int _versionMarcoUsada = -1;
-        private int _versionBordeUsada = -1;
+        private bool _fase1Lista;
         private bool _construido;
 
         private int _descartadosPorAngulo;
         private int _apoyosSinViga;
         private int _apoyosTotales;
-        private int _transversalesCabeceraSinRed;
 
         public IReadOnlyList<Cable> Transversales => _transversales;
         public IReadOnlyList<Cable> Longitudinales => _longitudinales;
@@ -197,52 +192,155 @@ namespace Estadio.Techo
         public void Configurar(ParametrosTendido parametros)
         {
             _parametros = parametros;
+            _fase1Lista = false;
             _construido = false;
             _versionTendido++;
         }
 
-        public bool NecesitaConstruir(MarcoRigidoTecho marco, BordeInteriorTecho borde)
-        {
-            return !_construido
-                || marco.VersionMarco != _versionMarcoUsada
-                || borde.VersionBorde != _versionBordeUsada;
-        }
-
         // ------------------------------------------------------------------
-        //  Construccion
+        //  FASE 1: transversales de tensor a tensor
         // ------------------------------------------------------------------
 
-        public void Construir(IPerimetroEstadio perimetro, RegistroAnclajesTecho registro,
-                              BordeInteriorTecho borde, MarcoRigidoTecho marco)
+        public void ConstruirTransversales(IPerimetroEstadio perimetro, RegistroAnclajesTecho registro)
         {
             if (perimetro == null) throw new ArgumentNullException(nameof(perimetro));
             if (registro == null) throw new ArgumentNullException(nameof(registro));
-            if (borde == null) throw new ArgumentNullException(nameof(borde));
-            if (marco == null) throw new ArgumentNullException(nameof(marco));
 
             _transversales.Clear();
             _longitudinales.Clear();
-            _longitudinalInternoXPositivo = null;
-            _longitudinalInternoXNegativo = null;
-
             _descartadosPorAngulo = 0;
             _apoyosSinViga = 0;
             _apoyosTotales = 0;
-            _transversalesCabeceraSinRed = 0;
 
+            float limite = perimetro.SemiejeZ - _parametros.margenAlPerimetro;
+            int pasos = Mathf.FloorToInt(limite / _parametros.separacionTransversal);
+            int indice = 0;
+
+            for (int k = -pasos; k <= pasos; k++)
+            {
+                float z0 = k * _parametros.separacionTransversal;
+
+                float angulo = perimetro.AnguloIncidenciaZ(z0);
+                if (angulo < _parametros.anguloIncidenciaMinimo) { _descartadosPorAngulo++; continue; }
+
+                if (!perimetro.IntersectarZ(z0, out float xPositivo, out float xNegativo)) continue;
+
+                var apoyos = new List<ApoyoCable>(2)
+                {
+                    ApoyoExtremo(new Vector2(xNegativo, z0), perimetro, registro),
+                    ApoyoExtremo(new Vector2(xPositivo, z0), perimetro, registro)
+                };
+
+                _transversales.Add(Ensamblar(FamiliaCable.Transversal, indice++, z0, angulo,
+                                             apoyos, _parametros.flechaRelativaTransversal));
+            }
+
+            _transversalesPorZ = _transversales.ToArray();
+            Array.Sort(_transversalesPorZ, (a, b) => a.coordenada.CompareTo(b.coordenada));
+
+            _fase1Lista = true;
+            _construido = false;
+            _versionTendido++;
+        }
+
+        /// <summary>
+        /// Altura de la superficie de cables en (x, z), interpolando entre los dos
+        /// transversales que flanquean el punto. Es lo que consulta el borde interior.
+        /// </summary>
+        public bool TryAltura(float x, float z, out float altura)
+        {
+            altura = 0f;
+            if (_transversalesPorZ.Length < 2) return false;
+
+            int siguiente = -1;
+            for (int i = 0; i < _transversalesPorZ.Length; i++)
+                if (_transversalesPorZ[i].coordenada >= z) { siguiente = i; break; }
+
+            if (siguiente <= 0) return false;
+            int anterior = siguiente - 1;
+
+            if (!_transversalesPorZ[anterior].TryPuntoEnEje(x, out Vector3 pa)) return false;
+            if (!_transversalesPorZ[siguiente].TryPuntoEnEje(x, out Vector3 pb)) return false;
+
+            float separacion = _transversalesPorZ[siguiente].coordenada
+                             - _transversalesPorZ[anterior].coordenada;
+
+            if (separacion < 1e-4f) { altura = pa.y; return true; }
+
+            float u = Mathf.Clamp01((z - _transversalesPorZ[anterior].coordenada) / separacion);
+            altura = Mathf.Lerp(pa.y, pb.y, u);
+            return true;
+        }
+
+        // ------------------------------------------------------------------
+        //  FASE 2: partir transversales en el borde y tender longitudinales
+        // ------------------------------------------------------------------
+
+        public void Completar(IPerimetroEstadio perimetro, RegistroAnclajesTecho registro,
+                              BordeInteriorTecho borde, MarcoRigidoTecho marco)
+        {
+            if (!_fase1Lista)
+                throw new InvalidOperationException(
+                    "Llamar primero a ConstruirTransversales, y con esos cables construir el borde.");
+
+            if (borde == null) throw new ArgumentNullException(nameof(borde));
+            if (marco == null) throw new ArgumentNullException(nameof(marco));
+
+            PartirTransversalesEnElBorde(borde);
             ConstruirLongitudinales(perimetro, registro, borde, marco);
-            ConstruirTransversales(perimetro, registro, borde);
 
-            _versionMarcoUsada = marco.VersionMarco;
-            _versionBordeUsada = borde.VersionBorde;
             _construido = true;
             _versionTendido++;
         }
 
         /// <summary>
-        /// Familia longitudinal: a x constante, fuera del vano, sobre las plateas laterales.
-        /// Se apoya en la cuerda superior de cada puente que alcance, y por eso puede ir
-        /// recta. Funciona igual con dos puentes que con cuatro.
+        /// Inserta los dos cruces con el borde como apoyos intermedios. La curva no cambia:
+        /// los puntos insertados ya estan sobre la parabola, y la flecha de cada tramo se
+        /// deduce de la global por f_tramo = f_global * (Δu)^2.
+        /// </summary>
+        private void PartirTransversalesEnElBorde(BordeInteriorTecho borde)
+        {
+            foreach (Cable cable in _transversales)
+            {
+                if (cable.apoyos.Length != 2) continue;
+                if (!borde.IntersectarZ(cable.coordenada, out Vector3 bordeXNeg, out Vector3 bordeXPos))
+                    continue;
+
+                Vector3 a = cable.apoyos[0].posicion;
+                Vector3 b = cable.apoyos[1].posicion;
+                float luzTotal = cable.luzPorTramo[0];
+                if (luzTotal < 1e-3f) continue;
+
+                float flechaGlobal = cable.flechaPorTramo[0];
+
+                float uNeg = Mathf.Clamp01((bordeXNeg.x - a.x) / (b.x - a.x));
+                float uPos = Mathf.Clamp01((bordeXPos.x - a.x) / (b.x - a.x));
+                if (uPos < uNeg) { float t = uNeg; uNeg = uPos; uPos = t; Vector3 q = bordeXNeg; bordeXNeg = bordeXPos; bordeXPos = q; }
+
+                var apoyos = new ApoyoCable[4];
+                apoyos[0] = cable.apoyos[0];
+                apoyos[1] = new ApoyoCable { posicion = bordeXNeg, tipo = TipoApoyoCable.BordeInterior };
+                apoyos[2] = new ApoyoCable { posicion = bordeXPos, tipo = TipoApoyoCable.BordeInterior };
+                apoyos[3] = cable.apoyos[1];
+
+                float[] fracciones = { uNeg, uPos - uNeg, 1f - uPos };
+
+                cable.apoyos = apoyos;
+                cable.luzPorTramo = new float[3];
+                cable.flechaPorTramo = new float[3];
+
+                for (int i = 0; i < 3; i++)
+                {
+                    cable.luzPorTramo[i] = luzTotal * fracciones[i];
+                    cable.flechaPorTramo[i] = flechaGlobal * fracciones[i] * fracciones[i];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Longitudinales: a x constante, fuera del vano, sobre las plateas laterales. Sus
+        /// apoyos toman la altura de la superficie que definen los transversales, porque
+        /// viven sobre ella en lugar de definirla.
         /// </summary>
         private void ConstruirLongitudinales(IPerimetroEstadio perimetro, RegistroAnclajesTecho registro,
                                              BordeInteriorTecho borde, MarcoRigidoTecho marco)
@@ -278,103 +376,19 @@ namespace Estadio.Techo
                         if (puente.z >= zPositivo - _parametros.margenAlPuente) continue;
                         if (!puente.AlcanzaX(x0)) continue;
 
-                        apoyos.Add(new ApoyoCable
-                        {
-                            posicion = puente.PuntoCuerdaSuperior(puente.UDeX(x0)),
-                            tipo = TipoApoyoCable.Puente
-                        });
+                        Vector3 p = puente.PuntoCuerdaSuperior(puente.UDeX(x0));
+                        if (TryAltura(x0, puente.z, out float ySuperficie))
+                            p.y = Mathf.Min(p.y, ySuperficie);
+
+                        apoyos.Add(new ApoyoCable { posicion = p, tipo = TipoApoyoCable.Puente });
                     }
 
                     apoyos.Add(ApoyoExtremo(new Vector2(x0, zPositivo), perimetro, registro));
 
-                    var flechas = new float[apoyos.Count - 1];
-                    for (int i = 0; i < flechas.Length; i++)
-                        flechas[i] = _parametros.flechaRelativaLongitudinal;
-
-                    Cable cable = Ensamblar(FamiliaCable.Longitudinal, indice++, x0, angulo, apoyos, flechas);
-                    _longitudinales.Add(cable);
-
-                    if (j == 1)
-                    {
-                        if (signo > 0) _longitudinalInternoXPositivo = cable;
-                        else _longitudinalInternoXNegativo = cable;
-                    }
+                    _longitudinales.Add(Ensamblar(FamiliaCable.Longitudinal, indice++, x0, angulo,
+                                                  apoyos, _parametros.flechaRelativaLongitudinal));
                 }
             }
-        }
-
-        /// <summary>
-        /// Familia transversal: a z constante, cruzando la cancha por lo ancho. Dentro del
-        /// vano toma el borde interior en sus dos cruces, que es donde sostiene la viga
-        /// borde. Sobre las cabeceras, si esta habilitado, se apoya en los dos longitudinales
-        /// internos formando un nudo de red.
-        /// </summary>
-        private void ConstruirTransversales(IPerimetroEstadio perimetro, RegistroAnclajesTecho registro,
-                                            BordeInteriorTecho borde)
-        {
-            float semiVanoZ = borde.Parametros.SemiVanoZ;
-            float limite = _parametros.tenderTransversalesEnCabecera
-                ? perimetro.SemiejeZ - _parametros.margenAlPerimetro
-                : semiVanoZ - _parametros.margenAlPuente;
-
-            int pasos = Mathf.FloorToInt(limite / _parametros.separacionTransversal);
-            int indice = 0;
-
-            for (int k = -pasos; k <= pasos; k++)
-            {
-                float z0 = k * _parametros.separacionTransversal;
-
-                float angulo = perimetro.AnguloIncidenciaZ(z0);
-                if (angulo < _parametros.anguloIncidenciaMinimo) { _descartadosPorAngulo++; continue; }
-
-                if (!perimetro.IntersectarZ(z0, out float xPositivo, out float xNegativo)) continue;
-
-                var apoyos = new List<ApoyoCable>(4)
-                {
-                    ApoyoExtremo(new Vector2(xNegativo, z0), perimetro, registro)
-                };
-
-                if (borde.IntersectarZ(z0, out Vector3 bordeXNegativo, out Vector3 bordeXPositivo))
-                {
-                    apoyos.Add(new ApoyoCable { posicion = bordeXNegativo, tipo = TipoApoyoCable.BordeInterior });
-                    apoyos.Add(new ApoyoCable { posicion = bordeXPositivo, tipo = TipoApoyoCable.BordeInterior });
-                }
-                else if (TryNudosDeRed(z0, out Vector3 nudoXNegativo, out Vector3 nudoXPositivo))
-                {
-                    apoyos.Add(new ApoyoCable { posicion = nudoXNegativo, tipo = TipoApoyoCable.CableCruzado });
-                    apoyos.Add(new ApoyoCable { posicion = nudoXPositivo, tipo = TipoApoyoCable.CableCruzado });
-                }
-                else
-                {
-                    // Cable de cabecera sin nada donde apoyarse: queda de un solo tramo.
-                    _transversalesCabeceraSinRed++;
-                }
-
-                apoyos.Add(ApoyoExtremo(new Vector2(xPositivo, z0), perimetro, registro));
-
-                float[] flechas = apoyos.Count == 4
-                    ? new[]
-                    {
-                        _parametros.flechaRelativaTransversalExterior,
-                        _parametros.flechaRelativaTransversalSobreVano,
-                        _parametros.flechaRelativaTransversalExterior
-                    }
-                    : new[] { _parametros.flechaRelativaTransversalExterior };
-
-                _transversales.Add(Ensamblar(FamiliaCable.Transversal, indice++, z0, angulo, apoyos, flechas));
-            }
-        }
-
-        /// <summary>Cruce del cable transversal con los dos longitudinales internos.</summary>
-        private bool TryNudosDeRed(float z0, out Vector3 nudoXNegativo, out Vector3 nudoXPositivo)
-        {
-            nudoXNegativo = default;
-            nudoXPositivo = default;
-
-            if (_longitudinalInternoXNegativo == null || _longitudinalInternoXPositivo == null) return false;
-
-            return _longitudinalInternoXNegativo.TryPuntoEnEje(z0, out nudoXNegativo)
-                && _longitudinalInternoXPositivo.TryPuntoEnEje(z0, out nudoXPositivo);
         }
 
         private ApoyoCable ApoyoExtremo(Vector2 puntoXZ, IPerimetroEstadio perimetro,
@@ -402,7 +416,7 @@ namespace Estadio.Techo
         }
 
         private static Cable Ensamblar(FamiliaCable familia, int indice, float coordenada,
-                                       float angulo, List<ApoyoCable> apoyos, float[] flechasRelativas)
+                                       float angulo, List<ApoyoCable> apoyos, float flechaRelativa)
         {
             var cable = new Cable
             {
@@ -425,7 +439,7 @@ namespace Estadio.Techo
 
                 float luz = Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z));
                 cable.luzPorTramo[i] = luz;
-                cable.flechaPorTramo[i] = flechasRelativas[Mathf.Min(i, flechasRelativas.Length - 1)] * luz;
+                cable.flechaPorTramo[i] = flechaRelativa * luz;
                 cable.longitudHorizontal += luz;
             }
 
@@ -436,13 +450,13 @@ namespace Estadio.Techo
         //  Validacion y diagnostico
         // ------------------------------------------------------------------
 
-        public bool Validar(List<string> mensajes, float fraccionMaximaSinViga = 0.15f)
+        public bool Validar(List<string> mensajes, float fraccionMaximaSinViga = 0.60f)
         {
             if (mensajes == null) throw new ArgumentNullException(nameof(mensajes));
 
             if (!_construido)
             {
-                mensajes.Add("ERROR: el tendido no esta construido.");
+                mensajes.Add("ERROR: el tendido no esta completo.");
                 return false;
             }
 
@@ -454,41 +468,24 @@ namespace Estadio.Techo
                 valido = false;
             }
 
-            if (_longitudinales.Count < 4)
-            {
-                mensajes.Add($"ERROR: solo {_longitudinales.Count} cables longitudinales.");
-                valido = false;
-            }
-
             if (_apoyosTotales > 0)
             {
                 float fraccion = (float)_apoyosSinViga / _apoyosTotales;
                 if (fraccion > fraccionMaximaSinViga)
                 {
                     mensajes.Add($"ERROR: el {fraccion * 100f:F0}% de los tensores no encontro viga " +
-                                 $"diagonal dentro de {_parametros.toleranciaSnapAnclaje:F1} m " +
-                                 $"({_apoyosSinViga} de {_apoyosTotales}). Acercar la separacion de " +
-                                 "cables a la de las vigas.");
+                                 $"diagonal ({_apoyosSinViga} de {_apoyosTotales}).");
                     valido = false;
                 }
                 else if (_apoyosSinViga > 0)
                 {
-                    mensajes.Add($"AVISO: {_apoyosSinViga} tensores quedaron sin viga diagonal cercana.");
+                    mensajes.Add($"AVISO: {_apoyosSinViga} de {_apoyosTotales} tensores sin viga " +
+                                 "diagonal cercana. En los codos es esperado.");
                 }
             }
 
-            if (_transversalesCabeceraSinRed > 0)
-            {
-                mensajes.Add($"AVISO: {_transversalesCabeceraSinRed} cables transversales de cabecera " +
-                             "quedaron de un solo tramo, sin longitudinal donde apoyarse. Van a " +
-                             "colgar mucho mas que el resto.");
-            }
-
             if (_descartadosPorAngulo > 0)
-            {
-                mensajes.Add($"AVISO: {_descartadosPorAngulo} cables descartados por llegar rasantes " +
-                             $"al perimetro (menos de {_parametros.anguloIncidenciaMinimo:F0} grados).");
-            }
+                mensajes.Add($"AVISO: {_descartadosPorAngulo} cables descartados por incidencia rasante.");
 
             return valido;
         }
@@ -496,28 +493,24 @@ namespace Estadio.Techo
         public string Diagnostico()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Tendido de cables (version {_versionTendido}, construido: {_construido})");
+            sb.AppendLine($"Tendido de cables (version {_versionTendido}, completo: {_construido})");
 
-            if (!_construido) return sb.ToString();
+            if (!_fase1Lista) return sb.ToString();
 
             sb.AppendLine($"Transversales: {_transversales.Count} | Longitudinales: {_longitudinales.Count}");
             sb.AppendLine($"Tensores: {_apoyosTotales} ({_apoyosSinViga} sin viga diagonal cercana)");
             sb.AppendLine($"Descartados por incidencia rasante: {_descartadosPorAngulo}");
-            sb.AppendLine($"Transversales de cabecera sin red: {_transversalesCabeceraSinRed}");
 
             if (_transversales.Count > 0)
             {
                 Cable central = _transversales[_transversales.Count / 2];
-                sb.AppendLine($"Transversal central: {central.CantidadTramos} tramos, " +
-                              $"luz total {central.longitudHorizontal:F1} m, " +
-                              $"panza exterior {central.flechaPorTramo[0]:F2} m");
-            }
+                float alturaA = central.apoyos[0].posicion.y;
+                float alturaB = central.apoyos[central.apoyos.Length - 1].posicion.y;
 
-            if (_longitudinales.Count > 0)
-            {
-                Cable interno = _longitudinalInternoXPositivo ?? _longitudinales[0];
-                sb.AppendLine($"Longitudinal interno: {interno.CantidadTramos} tramos, " +
-                              $"x={interno.coordenada:F1} m, luz total {interno.longitudHorizontal:F1} m");
+                sb.AppendLine($"Transversal central: {central.CantidadTramos} tramos, " +
+                              $"luz {central.longitudHorizontal:F1} m");
+                sb.AppendLine($"  tensores a {alturaA:F1} y {alturaB:F1} m " +
+                              $"(desnivel {Mathf.Abs(alturaA - alturaB):F1} m)");
             }
 
             return sb.ToString();

@@ -22,6 +22,17 @@ namespace Estadio.Techo
     /// dejalo en anclajes sinteticos: fabrica un coronamiento plausible (laterales altas,
     /// cabeceras bajas) para que puedas calibrar el techo desde hoy.
     /// </summary>
+    /// <summary>
+    /// Superficie horizontal a cota fija. El Diseno 2 no tiene cables de los que derivar
+    /// el borde, asi que hasta que modelemos su parrilla reticulada se usa esto.
+    /// </summary>
+    public sealed class SuperficiePlana : ISuperficieCables
+    {
+        private readonly float _altura;
+        public SuperficiePlana(float altura) { _altura = altura; }
+        public bool TryAltura(float x, float z, out float altura) { altura = _altura; return true; }
+    }
+
     [ExecuteAlways]
     [DisallowMultipleComponent]
     public sealed class VisorTechoGizmos : MonoBehaviour
@@ -122,27 +133,40 @@ namespace Estadio.Techo
                 _registro.Indexar(_perimetro);
 
                 _borde = new BordeInteriorTecho(parametrosBorde);
-                _borde.Construir();
 
-                DescriptorMarco descriptor = diseno == DisenoTecho.Diseno1Membrana
-                    ? DescriptorMarco.Diseno1(_borde)
-                    : DescriptorMarco.Diseno2(_borde, _perimetro);
-
-                _marco = new MarcoRigidoTecho(descriptor);
-                _marco.Construir(_perimetro, _registro, _borde);
+                DescriptorMarco descriptor;
 
                 if (diseno == DisenoTecho.Diseno1Membrana)
                 {
+                    // Orden invertido respecto de antes: los transversales definen la
+                    // superficie, el borde lee su altura de ellos, y recien despues se
+                    // parten los cables y se tienden los longitudinales.
                     _tendido = new TendidoCables(parametrosTendido);
-                    _tendido.Construir(_perimetro, _registro, _borde, _marco);
+                    _tendido.ConstruirTransversales(_perimetro, _registro);
+
+                    _borde.Construir(_tendido);
+
+                    descriptor = DescriptorMarco.Diseno1(_borde);
+                    _marco = new MarcoRigidoTecho(descriptor);
+                    _marco.Construir(_perimetro, _registro, _borde);
+
+                    _tendido.Completar(_perimetro, _registro, _borde, _marco);
 
                     _membrana = new MembranaTecho(parametrosMembrana);
                     _membrana.Construir(_perimetro, _registro, _borde, _tendido);
                 }
                 else
                 {
+                    // Sin cables no hay superficie de la que derivar el borde: se usa una
+                    // superficie plana provisoria a la cota del coronamiento mas alto.
                     _tendido = null;
                     _membrana = null;
+
+                    _borde.Construir(new SuperficiePlana(_registro.AlturaMaxima));
+
+                    descriptor = DescriptorMarco.Diseno2(_borde, _perimetro);
+                    _marco = new MarcoRigidoTecho(descriptor);
+                    _marco.Construir(_perimetro, _registro, _borde);
                 }
 
                 _valido = true;
@@ -151,6 +175,7 @@ namespace Estadio.Techo
             {
                 _ultimoError = e.Message;
                 Debug.LogError($"[VisorTechoGizmos] {e.Message}", this);
+                Debug.LogError($"[VisorTechoGizmos] {e}", this);
             }
         }
 
