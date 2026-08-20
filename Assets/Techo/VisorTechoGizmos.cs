@@ -1,76 +1,20 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Estadio.Techo
 {
-    public enum DisenoTecho
-    {
-        Diseno1Membrana,
-        Diseno2Reticulado
-    }
-
     /// <summary>
-    /// Herramienta de calibracion. Construye toda la geometria del techo y la dibuja con
-    /// Gizmos en la vista de escena.
+    /// Dibuja con Gizmos la geometria que calcula ControladorTecho. No calcula nada por su
+    /// cuenta: si lo hiciera, lo que se ve en la vista de escena podria diferir de lo que
+    /// se genera en modo juego.
     ///
-    /// No instancia nada: los Gizmos son lineas de editor, no GameObjects, asi que esto
-    /// NO puede engordar el archivo de escena ni quedar serializado. Se puede usar en modo
-    /// editor sin riesgo.
-    ///
-    /// Si todavia no conectaste la publicacion de anclajes desde tus generadores de tribuna,
-    /// dejalo en anclajes sinteticos: fabrica un coronamiento plausible (laterales altas,
-    /// cabeceras bajas) para que puedas calibrar el techo desde hoy.
+    /// Los Gizmos son lineas de editor, no GameObjects: esto no puede engordar el archivo
+    /// de escena ni quedar serializado.
     /// </summary>
-    /// <summary>
-    /// Superficie horizontal a cota fija. El Diseno 2 no tiene cables de los que derivar
-    /// el borde, asi que hasta que modelemos su parrilla reticulada se usa esto.
-    /// </summary>
-    public sealed class SuperficiePlana : ISuperficieCables
-    {
-        private readonly float _altura;
-        public SuperficiePlana(float altura) { _altura = altura; }
-        public bool TryAltura(float x, float z, out float altura) { altura = _altura; return true; }
-    }
-
-    [ExecuteAlways]
+    [RequireComponent(typeof(ControladorTecho))]
     [DisallowMultipleComponent]
     public sealed class VisorTechoGizmos : MonoBehaviour
     {
-        [Header("Origen del estadio")]
-        [Tooltip("Configurador del que se leen los anclajes reales. Si queda vacio, o si " +
-                 "usarAnclajesSinteticos esta marcado, el visor fabrica los suyos.")]
-        [SerializeField] private EstadioConfigurator configurador;
-        [Tooltip("Objeto que define el centro del campo y la orientacion del estadio. " +
-                 "Si se asigna, reemplaza a centroEstadio y rotacionYGrados.")]
-        [SerializeField] private Transform origenTecho;
-
-        [Header("Ubicacion del estadio en la escena")]
-        [Tooltip("Centro del campo de juego en coordenadas de mundo.")]
-        [SerializeField] private Vector3 centroEstadio = new Vector3(136.2f, 58.1f, -505.8f);
-        [Tooltip("Rotacion del estadio alrededor de Y, en grados.")]
-        [SerializeField] private float rotacionYGrados = 170.42f;
-
-        [Header("Perimetro del estadio")]
-        [Tooltip("Z es el eje LARGO del campo (de arco a arco); X es el ANCHO.")]
-        [SerializeField] private float semiejeX = 100f;
-        [SerializeField] private float semiejeZ = 130f;
-        [SerializeField] private float exponenteCodos = 4f;
-
-        [Header("Anclajes sinteticos (mientras no publiquen las tribunas)")]
-        [SerializeField] private bool usarAnclajesSinteticos = true;
-        [SerializeField] private float separacionVigas = 7.5f;
-        [SerializeField] private float alturaCoronamientoLateral = 38f;
-        [SerializeField] private float alturaCoronamientoCabecera = 28f;
-
-        [Header("Diseno")]
-        [SerializeField] private DisenoTecho diseno = DisenoTecho.Diseno1Membrana;
-
-        [Header("Parametros")]
-        [SerializeField] private ParametrosBordeInterior parametrosBorde = ParametrosBordeInterior.PorDefecto;
-        [SerializeField] private ParametrosTendido parametrosTendido = ParametrosTendido.PorDefecto;
-        [SerializeField] private ParametrosMembrana parametrosMembrana = ParametrosMembrana.PorDefecto;
-
         [Header("Capas a dibujar")]
         [SerializeField] private bool dibujarPerimetro = true;
         [SerializeField] private bool dibujarAnclajes = true;
@@ -86,255 +30,91 @@ namespace Estadio.Techo
         [SerializeField, Range(1, 8)] private int pasoDibujoMembrana = 4;
         [SerializeField, Range(1, 6)] private int pasoDibujoCables = 1;
 
-        private PerimetroSuperelipse _perimetro;
-        private RegistroAnclajesTecho _registro;
-        private BordeInteriorTecho _borde;
-        private MarcoRigidoTecho _marco;
-        private TendidoCables _tendido;
-        private MembranaTecho _membrana;
+        private ControladorTecho _controlador;
 
-        private bool _valido;
-        private string _ultimoError;
-
-        private void OnEnable() => Reconstruir();
-        private void OnValidate() => Reconstruir();
-
-        // ------------------------------------------------------------------
-        //  Construccion
-        // ------------------------------------------------------------------
-
-        [ContextMenu("Reconstruir")]
-        public void Reconstruir()
+        private ControladorTecho Controlador
         {
-            _valido = false;
-            _ultimoError = null;
-
-            try
+            get
             {
-                _perimetro = new PerimetroSuperelipse(semiejeX, semiejeZ, exponenteCodos);
-
-                if (!usarAnclajesSinteticos && configurador != null && configurador.RegistroTecho != null)
-                {
-                    // Anclajes reales: los publicaron los generadores de tribuna al
-                    // aplicar la variante.
-                    _registro = configurador.RegistroTecho;
-
-                    if (_registro.CantidadPublicados == 0)
-                        throw new InvalidOperationException(
-                            "El registro del configurador esta vacio. Aplicar una variante " +
-                            "desde el EstadioConfigurator antes de reconstruir el techo.");
-                }
-                else
-                {
-                    _registro = new RegistroAnclajesTecho();
-                    PublicarAnclajesSinteticos();
-                }
-
-                _registro.Indexar(_perimetro);
-
-                _borde = new BordeInteriorTecho(parametrosBorde);
-
-                DescriptorMarco descriptor;
-
-                if (diseno == DisenoTecho.Diseno1Membrana)
-                {
-                    // Orden invertido respecto de antes: los transversales definen la
-                    // superficie, el borde lee su altura de ellos, y recien despues se
-                    // parten los cables y se tienden los longitudinales.
-                    _tendido = new TendidoCables(parametrosTendido);
-                    _tendido.ConstruirTransversales(_perimetro, _registro);
-
-                    _borde.Construir(_tendido);
-
-                    descriptor = DescriptorMarco.Diseno1(_borde);
-                    _marco = new MarcoRigidoTecho(descriptor);
-                    _marco.Construir(_perimetro, _registro, _borde);
-
-                    _tendido.Completar(_perimetro, _registro, _borde, _marco);
-
-                    _membrana = new MembranaTecho(parametrosMembrana);
-                    _membrana.Construir(_perimetro, _registro, _borde, _tendido);
-                }
-                else
-                {
-                    // Sin cables no hay superficie de la que derivar el borde: se usa una
-                    // superficie plana provisoria a la cota del coronamiento mas alto.
-                    _tendido = null;
-                    _membrana = null;
-
-                    _borde.Construir(new SuperficiePlana(_registro.AlturaMaxima));
-
-                    descriptor = DescriptorMarco.Diseno2(_borde, _perimetro);
-                    _marco = new MarcoRigidoTecho(descriptor);
-                    _marco.Construir(_perimetro, _registro, _borde);
-                }
-
-                _valido = true;
-            }
-            catch (Exception e)
-            {
-                _ultimoError = e.Message;
-                Debug.LogError($"[VisorTechoGizmos] {e.Message}", this);
-                Debug.LogError($"[VisorTechoGizmos] {e}", this);
+                if (_controlador == null) _controlador = GetComponent<ControladorTecho>();
+                return _controlador;
             }
         }
-
-        /// <summary>
-        /// Coronamiento sintetico: alto en los laterales, bajo en las cabeceras, con
-        /// transicion suave por los codos. Es el perfil que describiste, para poder
-        /// calibrar antes de conectar los generadores de tribuna.
-        /// </summary>
-        private void PublicarAnclajesSinteticos()
-        {
-            Vector2[] puntos = _perimetro.MuestrearPorSeparacion(separacionVigas, out float separacionReal);
-
-            for (int i = 0; i < puntos.Length; i++)
-            {
-                float t = _perimetro.TDePunto(puntos[i]);
-                // Con Z largo, las plateas laterales estan en x = +-a (t = 0, PI) y las
-                // cabeceras en z = +-b (t = PI/2, 3PI/2).
-                float mezcla = Mathf.Abs(Mathf.Cos(t));   // 0 en cabecera, 1 en lateral
-                mezcla = mezcla * mezcla * (3f - 2f * mezcla);
-
-                float altura = Mathf.Lerp(alturaCoronamientoCabecera, alturaCoronamientoLateral, mezcla);
-
-                Vector2 normal = _perimetro.NormalExterior(t);
-                Vector3 ejeViga = new Vector3(normal.x, 1.6f, normal.y).normalized;
-
-                _registro.Publicar(new Vector3(puntos[i].x, altura, puntos[i].y),
-                                   ejeViga, "sintetico", i);
-            }
-        }
-
-        // ------------------------------------------------------------------
-        //  Diagnostico
-        // ------------------------------------------------------------------
-
-        [ContextMenu("Imprimir diagnostico")]
-        public void ImprimirDiagnostico()
-        {
-            if (!_valido) Reconstruir();
-            if (!_valido)
-            {
-                Debug.LogError($"[Techo] No se pudo construir: {_ultimoError}", this);
-                return;
-            }
-
-            var mensajes = new List<string>();
-
-            Debug.Log(_perimetro.Diagnostico(), this);
-            Debug.Log(_registro.Diagnostico(), this);
-            Debug.Log(_borde.Diagnostico(), this);
-            Debug.Log(_marco.Diagnostico(), this);
-            if (_tendido != null) Debug.Log(_tendido.Diagnostico(), this);
-            if (_membrana != null) Debug.Log(_membrana.Diagnostico(), this);
-
-            _registro.Validar(ParametrosValidacionAnclajes.PorDefecto, mensajes);
-            _borde.Validar(_perimetro, _registro, mensajes);
-            _marco.Validar(ParametrosValidacionMarco.PorDefecto, _borde, mensajes);
-            _tendido?.Validar(mensajes);
-            _membrana?.Validar(mensajes);
-
-            if (mensajes.Count == 0)
-            {
-                Debug.Log("[Techo] Sin observaciones.", this);
-                return;
-            }
-
-            foreach (string mensaje in mensajes)
-            {
-                if (mensaje.StartsWith("ERROR")) Debug.LogError($"[Techo] {mensaje}", this);
-                else Debug.LogWarning($"[Techo] {mensaje}", this);
-            }
-        }
-
-        // ------------------------------------------------------------------
-        //  Dibujo
-        // ------------------------------------------------------------------
 
         private void OnDrawGizmos()
         {
-            if (!_valido) return;
+            ControladorTecho c = Controlador;
+            if (c == null || !c.GeometriaLista) return;
 
-            // El configurador republica anclajes cada vez que se aplica una variante, y
-            // eso invalida el indice. Como el visor comparte ese registro y no se entera,
-            // hay que verificar el estado en cada dibujo en vez de asumirlo.
-            if (_registro != null && !_registro.IndiceValido)
-            {
-                try { _registro.Indexar(_perimetro); }
-                catch { _valido = false; return; }
-            }
+            // El configurador republica anclajes cada vez que se aplica una variante, y eso
+            // invalida el indice. Como el registro es compartido, hay que verificarlo aca.
+            if (c.Registro != null && !c.Registro.IndiceValido)
+                c.Registro.Indexar(c.Perimetro);
 
-            // La geometria se calcula en coordenadas locales, con el centro del campo en el
-            // origen y los ejes alineados: es lo que hace que la superelipse y la simetria
-            // de los tensores funcionen. La transformacion al mundo se aplica una sola vez,
-            // aca, al dibujar.
-            Matrix4x4 matrizPrevia = Gizmos.matrix;
-            Gizmos.matrix = MatrizEstadio;
+            // La geometria vive en coordenadas locales del techo: centro del campo en el
+            // origen y ejes alineados. La transformacion al mundo se aplica solo al dibujar.
+            Matrix4x4 previa = Gizmos.matrix;
+            Gizmos.matrix = c.MatrizEstadio;
 
-            try
-            {
-                DibujarCapas();
-            }
-            finally
-            {
-                Gizmos.matrix = matrizPrevia;
-            }
+            try { DibujarCapas(c); }
+            finally { Gizmos.matrix = previa; }
         }
 
-        /// <summary>Transformacion de coordenadas locales del techo a coordenadas de mundo.</summary>
-        public Matrix4x4 MatrizEstadio => origenTecho != null
-            ? origenTecho.localToWorldMatrix
-            : Matrix4x4.TRS(centroEstadio, Quaternion.Euler(0f, rotacionYGrados, 0f), Vector3.one);
-
-        private void DibujarCapas()
+        private void DibujarCapas(ControladorTecho c)
         {
-            if (dibujarPerimetro) DibujarPerimetro();
-            if (dibujarAnclajes) DibujarAnclajes();
-            if (dibujarBordeInterior) DibujarBordeInterior();
-            if (dibujarPuentes) DibujarPuentes();
-            if (dibujarLongitudinales) DibujarLongitudinales();
+            if (dibujarPerimetro) DibujarPerimetro(c);
+            if (dibujarAnclajes) DibujarAnclajes(c);
+            if (dibujarBordeInterior) DibujarBordeInterior(c);
+            if (dibujarPuentes) DibujarPuentes(c);
+            if (dibujarLongitudinales) DibujarLongitudinales(c);
 
-            if (_tendido != null)
+            if (c.Tendido != null)
             {
-                if (dibujarCablesTransversales) DibujarCables(_tendido.Transversales, new Color(0.11f, 0.62f, 0.46f));
-                if (dibujarCablesLongitudinales) DibujarCables(_tendido.Longitudinales, new Color(0.20f, 0.55f, 0.70f));
+                if (dibujarCablesTransversales)
+                    DibujarCables(c.Tendido.Transversales, new Color(0.11f, 0.62f, 0.46f));
+                if (dibujarCablesLongitudinales)
+                    DibujarCables(c.Tendido.Longitudinales, new Color(0.20f, 0.55f, 0.70f));
             }
 
-            if (_membrana != null)
+            if (c.Membrana != null)
             {
-                if (dibujarMembrana) DibujarRejilla(_membrana.RejillaMembrana,
-                                                    new Color(0.75f, 0.78f, 0.82f, 0.9f), pasoDibujoMembrana);
-                if (dibujarFaldon && _membrana.HayFaldon)
-                    DibujarRejilla(_membrana.RejillaFaldon, new Color(0.85f, 0.35f, 0.19f), pasoDibujoMembrana);
+                if (dibujarMembrana)
+                    DibujarRejilla(c.Membrana.RejillaMembrana,
+                                   new Color(0.75f, 0.78f, 0.82f, 0.9f), pasoDibujoMembrana);
+
+                if (dibujarFaldon && c.Membrana.HayFaldon)
+                    DibujarRejilla(c.Membrana.RejillaFaldon,
+                                   new Color(0.85f, 0.35f, 0.19f), pasoDibujoMembrana);
             }
         }
 
-        private void DibujarPerimetro()
+        // ------------------------------------------------------------------
+
+        private void DibujarPerimetro(ControladorTecho c)
         {
             Gizmos.color = new Color(0.45f, 0.45f, 0.42f);
             const int pasos = 240;
-            float longitud = _perimetro.LongitudTotal;
+            float longitud = c.Perimetro.LongitudTotal;
 
-            Vector3 anterior = PuntoPerimetro(0f);
+            Vector3 anterior = PuntoPerimetro(c, 0f);
             for (int i = 1; i <= pasos; i++)
             {
-                Vector3 actual = PuntoPerimetro(longitud * i / pasos);
+                Vector3 actual = PuntoPerimetro(c, longitud * i / pasos);
                 Gizmos.DrawLine(anterior, actual);
                 anterior = actual;
             }
         }
 
-        private Vector3 PuntoPerimetro(float s)
+        private static Vector3 PuntoPerimetro(ControladorTecho c, float s)
         {
-            Vector2 xz = _perimetro.PuntoPorLongitud(s);
-            return new Vector3(xz.x, _registro.AlturaCoronamiento(s), xz.y);
+            Vector2 xz = c.Perimetro.PuntoPorLongitud(s);
+            return new Vector3(xz.x, c.Registro.AlturaCoronamiento(s), xz.y);
         }
 
-        private void DibujarAnclajes()
+        private static void DibujarAnclajes(ControladorTecho c)
         {
             Gizmos.color = new Color(0.37f, 0.37f, 0.35f);
-            IReadOnlyList<AnclajeTecho> anclajes = _registro.Anclajes;
+            IReadOnlyList<AnclajeTecho> anclajes = c.Registro.Anclajes;
 
             for (int i = 0; i < anclajes.Count; i++)
             {
@@ -344,30 +124,30 @@ namespace Estadio.Techo
             }
         }
 
-        private void DibujarBordeInterior()
+        private static void DibujarBordeInterior(ControladorTecho c)
         {
             Gizmos.color = new Color(0.85f, 0.35f, 0.19f);
             const int pasos = 200;
-            float longitud = _borde.LongitudTotal;
+            float longitud = c.Borde.LongitudTotal;
 
-            Vector3 anterior = _borde.PuntoEnS(0f);
+            Vector3 anterior = c.Borde.PuntoEnS(0f);
             for (int i = 1; i <= pasos; i++)
             {
-                Vector3 actual = _borde.PuntoEnS(longitud * i / pasos);
+                Vector3 actual = c.Borde.PuntoEnS(longitud * i / pasos);
                 Gizmos.DrawLine(anterior, actual);
                 anterior = actual;
             }
 
             Gizmos.color = new Color(0.98f, 0.75f, 0.20f);
-            foreach (Vector3 esquina in _borde.Esquinas)
+            foreach (Vector3 esquina in c.Borde.Esquinas)
                 Gizmos.DrawSphere(esquina, 1.6f);
         }
 
-        private void DibujarPuentes()
+        private static void DibujarPuentes(ControladorTecho c)
         {
             const int pasos = 40;
 
-            foreach (PuenteConstruido puente in _marco.Puentes)
+            foreach (PuenteConstruido puente in c.Marco.Puentes)
             {
                 Gizmos.color = new Color(0.42f, 0.40f, 0.80f);
 
@@ -388,7 +168,6 @@ namespace Estadio.Techo
                     inferiorAnterior = inferior;
                 }
 
-                // Pedestales
                 Gizmos.color = new Color(0.85f, 0.35f, 0.19f);
                 Gizmos.DrawLine(puente.apoyoXNegativo.posicionCuerdaSuperior,
                                 puente.apoyoXNegativo.posicionCoronamiento);
@@ -397,11 +176,11 @@ namespace Estadio.Techo
             }
         }
 
-        private void DibujarLongitudinales()
+        private static void DibujarLongitudinales(ControladorTecho c)
         {
             Gizmos.color = new Color(0.85f, 0.35f, 0.19f);
 
-            foreach (LongitudinalConstruido longitudinal in _marco.Longitudinales)
+            foreach (LongitudinalConstruido longitudinal in c.Marco.Longitudinales)
                 for (int i = 1; i < longitudinal.eje.Length; i++)
                     Gizmos.DrawLine(longitudinal.eje[i - 1], longitudinal.eje[i]);
         }
@@ -410,15 +189,15 @@ namespace Estadio.Techo
         {
             Gizmos.color = color;
 
-            for (int c = 0; c < cables.Count; c += pasoDibujoCables)
+            for (int i = 0; i < cables.Count; i += pasoDibujoCables)
             {
-                Vector3[] puntos = cables[c].Muestrear(10);
-                for (int i = 1; i < puntos.Length; i++)
-                    Gizmos.DrawLine(puntos[i - 1], puntos[i]);
+                Vector3[] puntos = cables[i].Muestrear(10);
+                for (int j = 1; j < puntos.Length; j++)
+                    Gizmos.DrawLine(puntos[j - 1], puntos[j]);
             }
         }
 
-        private void DibujarRejilla(RejillaSuperficie rejilla, Color color, int paso)
+        private static void DibujarRejilla(RejillaSuperficie rejilla, Color color, int paso)
         {
             if (rejilla.vertices == null || rejilla.vertices.Length == 0) return;
 
