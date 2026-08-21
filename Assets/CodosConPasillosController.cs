@@ -70,6 +70,10 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
     [Tooltip("Si true usa forma personalizada (sigmoide) para el recorte de filas. Si false usa recorte circular puro.")]
     public bool usarFormaPersonalizada = true;
 
+    [Header("Recorte por Lineas Limite")]
+    public bool recortarPorLineasLimite = false;
+    public List<Transform> lineasLimite = new List<Transform>();
+    public float margenLineaLimite = 0f;
 
 
     [Header("Configuración de Alzada")]
@@ -270,6 +274,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         // Construir mapa de celdas
         List<Celda> mapa = ConstruirMapa(angulosVomitos);
 
+
+
         // Instanciar hormigon segun mapa
         foreach (Celda celda in mapa)
         {
@@ -280,6 +286,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
             if (generarBocaLogistica && EsZonaBocaLogistica(celda.angStart, celda.angEnd, celda.fila)) continue;
 
+            
             if (celda.tipo == TipoCelda.Escalera)
             {
                 Vector3 pA = transform.TransformPoint(CalcularPunto(celda.angStart, radioInterno, celda.fila));
@@ -1035,7 +1042,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         for (int p = 0; p <= cantidadPiezas; p++)
         {
             float angulo = p * anguloPorPieza;
+
             float filasFloat = FilasEnAnguloFloat(angulo);
+
             int filaBase = (int)filasFloat;
             float fraccion = filasFloat % 1f;
 
@@ -1861,6 +1870,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
         return enAnguloAfectado && enFilaAfectada;
     }
 
+        
     void CrearParedTriangularBocaLogistica(GameObject contenedor,
     out List<Vector3> puntosIzqOut, out List<Vector3> puntosDerOut)
     {

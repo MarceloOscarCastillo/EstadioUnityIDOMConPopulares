@@ -26,7 +26,8 @@ public class EstadioConfigurator : MonoBehaviour
         Preinauguracion,
         Recitales,
         AmpliacionFinal,
-        TooMuch
+        TooMuch,
+        OficinaUrbana
     }
 
     [System.Serializable]
@@ -120,9 +121,16 @@ public void AplicarConfiguracionEstadio()
                     if (ovrd.variante == varianteAActivar)
                     {
                         int numFilasOriginal = sg.numFilas;
+                        var rangosOriginal = sg.rangosDeAlzada;
+
                         sg.numFilas = ovrd.numFilas;
+                        if (ovrd.noConsiderarRangosAlzada) sg.rangosDeAlzada = null;
+
+
                         sg.GenerarSector();
+
                         sg.numFilas = numFilasOriginal;
+                        sg.rangosDeAlzada = rangosOriginal;
                     }
                     else
                         sg.GenerarSector();
@@ -387,9 +395,15 @@ public void AplicarConfiguracionEstadio()
             if (ovrd.variante == varianteAActivar)
             {
                 int original = sg.numFilas;
+                var rangosOriginal = sg.rangosDeAlzada;
+
                 sg.numFilas = ovrd.numFilas;
+                if (ovrd.noConsiderarRangosAlzada) sg.rangosDeAlzada = null;
+
                 sg.GenerarSector();
+
                 sg.numFilas = original;
+                sg.rangosDeAlzada = rangosOriginal;
             }
             else sg.GenerarSector();
         }

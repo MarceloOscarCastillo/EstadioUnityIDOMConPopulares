@@ -27,6 +27,8 @@ public class MenuSeleccionController : MonoBehaviour
         new Dictionary<EstadioConfigurator.TipoConfiguracion, string>()
     {
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
+
+        { EstadioConfigurator.TipoConfiguracion.OficinaUrbana, "Oficina Urbana - 2023" },
             { EstadioConfigurator.TipoConfiguracion.Preinauguracion, "Preinauguración" },{ EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores, "Populares Solo Cabeceras" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesEn2CodosSuperiores, "Populares Cabeceras y 2 Codos Sup." },
         { EstadioConfigurator.TipoConfiguracion.EstadioConPopularLateralBaja, "Popular Lateral Baja" },
@@ -41,9 +43,7 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "SugeridaAmpliada" },
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal, "Ampliación Final" },
-         { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" },
-        { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" },
-       
+         { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" },             
     };
 
     // Diccionario de descripciones (tooltips)
@@ -52,6 +52,9 @@ public class MenuSeleccionController : MonoBehaviour
     {
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal,
             "Es la versión original del proyecto IDOM. Es all seater, no hay tribunas sin asientos.\n\nLas cabeceras tienen dos bandejas." },
+            { EstadioConfigurator.TipoConfiguracion.OficinaUrbana,
+            "Es la versión que el estudio Oficina Urbana hizo para la campaña de Sergio Costantino en 2023. Sólo tiene populares en 2 codos." },
+
 { EstadioConfigurator.TipoConfiguracion.Preinauguracion,
             "Esta versión permitiría hacer una preinauguración con una capacidad cercana a las 60.000 personas. No cuenta con los codos superiores" },
 { EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores,
@@ -79,14 +82,11 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.Sugerida,
             "Presenta un equilibrio entre capacidad, perfecta visibilidad y variantes para ubicar al público. Es asimétrico, con dos bandejas en una cabecera y una sola en la otra. Tiene muchas plateas bajas y una popular lateral alta." },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada,
-            "Es la ampliación de la variante llamada 'Sugerida'. La platea lateral alta tiene 20 escalones más, los codos superiores sobre Mármol son más amplios y tiene una segunda bandeja sobre la popular local" },
+            "Es la ampliación de la variante llamada 'Sugerida'. La tribuna lateral alta tiene 20 escalones más, los codos superiores sobre Mármol son más amplios y tiene una segunda bandeja sobre la popular local" },
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal,
             "Es la máxima ampliacíon posible y requiere la compra de propiedades sobre la calle Las Casas. Incluye la ampliación de los codos sobre José Marmol (ambos), del codo en Las Casas y Av. La Plata y de la segunda bandeja sobre Las Casas" },
         { EstadioConfigurator.TipoConfiguracion.TooMuch,
-            "Similar a Amplicación Final pero con más populares" },
-        { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol,
-            "Esta versión tiene como rasgo distintivo una tercera bandeja de plateas sobre la calle José Mármol. Sería una posible ampliación del estadio" },
-        
+            "Similar a Amplicación Final pero con más populares" },               
     };
 
     void Start()

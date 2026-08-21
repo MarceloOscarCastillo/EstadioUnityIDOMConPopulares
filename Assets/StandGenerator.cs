@@ -159,6 +159,7 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     {
         public EstadioConfigurator.TipoConfiguracion variante;
         public int numFilas;
+        public bool noConsiderarRangosAlzada;
     }
 
     [Header("Overrides por Variante")]

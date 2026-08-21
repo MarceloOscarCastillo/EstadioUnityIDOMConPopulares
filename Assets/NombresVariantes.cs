@@ -6,6 +6,8 @@ public static class NombresVariantes
         new Dictionary<EstadioConfigurator.TipoConfiguracion, string>()
     {
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal, "IDOM Original" },
+
+        { EstadioConfigurator.TipoConfiguracion.OficinaUrbana, "Oficina Urbana - 2023" },
         { EstadioConfigurator.TipoConfiguracion.Preinauguracion, "Preinauguración" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesSoloCabecerasYCodosInferiores, "Populares Solo Cabeceras y Codos Inferiores" },
         { EstadioConfigurator.TipoConfiguracion.EstadioPopularesEn2CodosSuperiores, "Populares Cabeceras y 2 Codos Superiores" },
@@ -19,9 +21,7 @@ public static class NombresVariantes
         { EstadioConfigurator.TipoConfiguracion.Asimetrico, "Asimétrico" },
 
         { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
-        { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "Sugerida Ampliada" },
-        { EstadioConfigurator.TipoConfiguracion.TerceraBandejaMarmol, "Tercera bandeja sobre José Mármol" },
-
+        { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "Sugerida Ampliada" },        
         { EstadioConfigurator.TipoConfiguracion.Recitales, "Recitales" },
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal, "Ampliación final" },
         { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" }
