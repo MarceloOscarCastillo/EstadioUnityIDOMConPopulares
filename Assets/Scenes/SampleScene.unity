@@ -12729,7 +12729,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &671784516
 Transform:
   m_ObjectHideFlags: 0
@@ -12738,13 +12738,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 671784515}
   serializedVersion: 2
-  m_LocalRotation: {x: 4.8110032e-18, y: 0.9965096, z: -1.4329422e-17, w: -0.083478734}
+  m_LocalRotation: {x: -0, y: -0.9999985, z: 0, w: -0.0017452018}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 941235794}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -180.2, z: 0}
 --- !u!114 &671784517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12754,16 +12754,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 671784515}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b76f9e5a3fefc845955c2222bfb984f, type: 3}
+  m_Script: {fileID: 11500000, guid: 6015a2da41e924044a03eabcb85ae681, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Estadio.Techo.VisorTechoGizmos
-  dibujarPerimetro: 1
-  dibujarAnclajes: 1
+  dibujarPerimetroEstadio: 0
+  dibujarVigasLongitudinales: 1
+  dibujarAnclajes: 0
   dibujarBordeInterior: 1
-  dibujarPuentes: 1
-  dibujarLongitudinales: 1
+  dibujarMarco: 1
   dibujarCablesTransversales: 1
-  dibujarCablesLongitudinales: 0
+  dibujarCablesLongitudinales: 1
   dibujarMembrana: 1
   dibujarFaldon: 1
   pasoDibujoMembrana: 4
@@ -12777,7 +12777,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 671784515}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9db84885ec032742bd0519c2fa68632, type: 3}
+  m_Script: {fileID: 11500000, guid: d516e646681b4e14692d92f34158da2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Estadio.Techo.ControladorTecho
   origenTecho: {fileID: 12055150}
@@ -12787,9 +12787,12 @@ MonoBehaviour:
   exponenteCodos: 5
   usarAnclajesSinteticos: 0
   separacionVigas: 5
-  alturaCoronamientoLateral: 38
+  alturaCoronamientoLateral: 44
   alturaCoronamientoCabecera: 16.5
   diseno: 0
+  parametrosPerimetroTecho:
+    semiLargoTecho: 90
+    separacionAnclajes: 5
   parametrosBorde:
     semiLongitudCampo: 52.5
     semiAnchoCampo: 34
@@ -12798,14 +12801,10 @@ MonoBehaviour:
     exponenteVano: 16
     muestrasAltura: 240
   parametrosTendido:
-    separacionTransversal: 4.5
+    separacionTransversal: 5
     separacionLongitudinal: 6
     flechaRelativaTransversal: 0.045
     flechaRelativaLongitudinal: 0.004
-    anguloIncidenciaMinimo: 30
-    toleranciaSnapAnclaje: 3
-    margenAlPuente: 2.5
-    margenAlPerimetro: 3
   parametrosMembrana:
     divisionesPerimetrales: 192
     anillos: 12
@@ -12814,6 +12813,10 @@ MonoBehaviour:
     alturaBordeLiso: 34
     generarFaldon: 1
     alturaMinimaFaldon: 0.5
+  cantoTubular: 1.8
+  anchoTubular: 1.2
+  cantoPuente: 1.8
+  anchoPuente: 1.2
   generarPorEtapas: 1
 --- !u!114 &671784519
 MonoBehaviour:
@@ -12829,6 +12832,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Estadio.Techo.GeneradorMallasTecho
   prefabTubular: {fileID: 3614648656375751202, guid: e36e761e6d8afec4fa84121a73b1266f, type: 3}
   longitudModuloTubular: 2
+  prefabPuente: {fileID: 0}
+  longitudModuloPuente: 2
   anguloMaximoEntreModulos: 12
   origenTecho: {fileID: 12055150}
   combinarEstatico: 1

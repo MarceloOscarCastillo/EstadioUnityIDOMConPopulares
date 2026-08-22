@@ -285,18 +285,33 @@ namespace Estadio.Techo
         /// lados largos (sobre las plateas), 0 y 2 las cabeceras.</summary>
         public Vector3[] MuestrearArco(int arco, int segmentos)
         {
+            //AsegurarConstruido();
+            //arco = Mathf.Clamp(arco, 0, 3);
+            //segmentos = Mathf.Max(2, segmentos);
+
+            //float longitud = _planta.LongitudTotal;
+            //float sInicio = _planta.LongitudDeT(TEsquinas[arco]);
+            //float sFin = _planta.LongitudDeT(TEsquinas[(arco + 1) % 4]);
+            //if (sFin <= sInicio) sFin += longitud;
+
+            //var puntos = new Vector3[segmentos + 1];
+            //for (int i = 0; i <= segmentos; i++)
+            //    puntos[i] = PuntoEnS(Mathf.Lerp(sInicio, sFin, (float)i / segmentos));
+
+            //return puntos;
+
             AsegurarConstruido();
             arco = Mathf.Clamp(arco, 0, 3);
             segmentos = Mathf.Max(2, segmentos);
 
-            float longitud = _planta.LongitudTotal;
-            float sInicio = _planta.LongitudDeT(TEsquinas[arco]);
-            float sFin = _planta.LongitudDeT(TEsquinas[(arco + 1) % 4]);
-            if (sFin <= sInicio) sFin += longitud;
+            // Por parametro trigonometrico, no por longitud de arco: el arco 3 cruza el origen
+            // del parametro y PuntoEnS hace Repeat, con lo que el eje saltaba al otro extremo.
+            float tInicio = (0.25f + 0.5f * arco) * Mathf.PI;
+            float tFin = tInicio + 0.5f * Mathf.PI;
 
             var puntos = new Vector3[segmentos + 1];
             for (int i = 0; i <= segmentos; i++)
-                puntos[i] = PuntoEnS(Mathf.Lerp(sInicio, sFin, (float)i / segmentos));
+                puntos[i] = PuntoEnT(Mathf.Lerp(tInicio, tFin, (float)i / segmentos));
 
             return puntos;
         }

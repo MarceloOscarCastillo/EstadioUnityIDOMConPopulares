@@ -5,12 +5,11 @@ using UnityEngine;
 namespace Estadio.Techo
 {
     /// <summary>
-    /// Convierte la geometria del techo en objetos de escena. Por ahora solo las
-    /// estructuras longitudinales: barre el prefab modular a lo largo de cada eje.
+    /// Convierte la geometria del techo en objetos de escena. Por ahora los cuatro elementos
+    /// del borde del vano: barre el prefab modular a lo largo de cada eje.
     ///
-    /// Como todo lo demas del techo, no crea nada en modo editor: solo genera cuando se
-    /// lo pide el controlador del boton, en modo juego. Asi no puede quedar serializado
-    /// en la escena.
+    /// Solo corre en modo juego. Asi los objetos generados no pueden quedar serializados en
+    /// el archivo de escena.
     /// </summary>
     public sealed class GeneradorMallasTecho : MonoBehaviour
     {
@@ -20,11 +19,15 @@ namespace Estadio.Techo
         [SerializeField] private GameObject prefabTubular;
         [SerializeField] private float longitudModuloTubular = 2.0f;
 
+        [Tooltip("Modulo del puente de cabecera. Si queda vacio se usa el mismo que las " +
+                 "tubulares.")]
+        [SerializeField] private GameObject prefabPuente;
+        [SerializeField] private float longitudModuloPuente = 2.0f;
+
         [Header("Esquinas del vano")]
-        [Tooltip("Angulo de giro a partir del cual se corta el barrido y se deja el hueco " +
-                 "de la esquina sin cubrir. Con el vano casi rectangular, el giro se " +
-                 "concentra en pocos metros.")]
-        [SerializeField] private float anguloMaximoEntreModulos = 12f;
+        [Tooltip("Giro a partir del cual se corta el barrido y se deja el hueco de la " +
+                 "esquina. Con el vano casi rectangular el giro se concentra en pocos metros.")]
+        [SerializeField] private float anguloMaximoEntreModulos = 20f;
 
         [Header("Salida")]
         [SerializeField] private Transform origenTecho;
@@ -36,8 +39,6 @@ namespace Estadio.Techo
         public int ModulosInstanciados { get; private set; }
         public int EsquinasSalteadas { get; private set; }
 
-        // ------------------------------------------------------------------
-        //  Ciclo de vida
         // ------------------------------------------------------------------
 
         public void Descartar()
@@ -57,10 +58,6 @@ namespace Estadio.Techo
             if (_raiz != null) _raiz.SetActive(visible);
         }
 
-        /// <summary>
-        /// Genera las estructuras longitudinales del marco. Se llama solo en modo juego:
-        /// si se llamara en modo editor, los objetos quedarian serializados en la escena.
-        /// </summary>
         public void Generar(MarcoRigidoTecho marco)
         {
             if (!Application.isPlaying)
@@ -81,8 +78,8 @@ namespace Estadio.Techo
             _raiz = new GameObject("Techo_Generado");
             _raiz.transform.SetParent(origenTecho != null ? origenTecho : transform, false);
 
-            foreach (LongitudinalConstruido longitudinal in marco.Longitudinales)
-                BarrerTubular(longitudinal);
+            foreach (ElementoBordeConstruido elemento in marco.Elementos)
+                BarrerElemento(elemento);
 
             if (combinarEstatico)
             {
@@ -92,7 +89,7 @@ namespace Estadio.Techo
                 StaticBatchingUtility.Combine(_raiz);
             }
 
-            Debug.Log($"[Techo] {ModulosInstanciados} modulos tubulares instanciados, " +
+            Debug.Log($"[Techo] {ModulosInstanciados} modulos instanciados, " +
                       $"{EsquinasSalteadas} tramos de esquina salteados.", this);
         }
 
@@ -100,21 +97,18 @@ namespace Estadio.Techo
         //  Barrido
         // ------------------------------------------------------------------
 
-        /// <summary>
-        /// Recorre la polilinea del eje instanciando modulos. La cantidad se calcula por
-        /// tramo y la escala en X se ajusta levemente para que cierre exacto: es mucho
-        /// menos visible que dejar un resto sin cubrir al final.
-        ///
-        /// Donde el giro entre segmentos consecutivos supera el umbral —las esquinas del
-        /// vano— se corta el barrido y se deja el hueco. Una esquina no es un modulo mas
-        /// de la serie sino un nudo estructural, y merece su propia pieza.
-        /// </summary>
-        private void BarrerTubular(LongitudinalConstruido longitudinal)
+        private void BarrerElemento(ElementoBordeConstruido elemento)
         {
-            Vector3[] eje = longitudinal.eje;
+            Vector3[] eje = elemento.eje;
             if (eje == null || eje.Length < 2) return;
 
-            var contenedor = new GameObject($"Tubular_{longitudinal.id}");
+            bool esPuente = elemento.tipo == TipoElementoBorde.PuenteCabecera;
+            GameObject prefab = esPuente && prefabPuente != null ? prefabPuente : prefabTubular;
+            float longitudModulo = esPuente && prefabPuente != null
+                ? longitudModuloPuente
+                : longitudModuloTubular;
+
+            var contenedor = new GameObject($"Borde_{elemento.id}");
             contenedor.transform.SetParent(_raiz.transform, false);
 
             // Se acumulan segmentos consecutivos mientras la direccion se mantenga estable.
@@ -127,7 +121,7 @@ namespace Estadio.Techo
 
                 if (Vector3.Angle(direccion, direccionAnterior) > anguloMaximoEntreModulos)
                 {
-                    BarrerTramoRecto(tramo, contenedor.transform);
+                    BarrerTramoRecto(tramo, contenedor.transform, prefab, longitudModulo);
                     EsquinasSalteadas++;
                     tramo.Clear();
                 }
@@ -136,10 +130,15 @@ namespace Estadio.Techo
                 direccionAnterior = direccion;
             }
 
-            BarrerTramoRecto(tramo, contenedor.transform);
+            BarrerTramoRecto(tramo, contenedor.transform, prefab, longitudModulo);
         }
 
-        private void BarrerTramoRecto(List<Vector3> puntos, Transform padre)
+        /// <summary>
+        /// La cantidad de modulos se calcula por tramo y la escala en X se ajusta levemente
+        /// para que cierre exacto: es mucho menos visible que dejar un resto sin cubrir.
+        /// </summary>
+        private void BarrerTramoRecto(List<Vector3> puntos, Transform padre,
+                                      GameObject prefab, float longitudModulo)
         {
             if (puntos.Count < 2) return;
 
@@ -147,11 +146,10 @@ namespace Estadio.Techo
             for (int i = 1; i < puntos.Count; i++)
                 longitud += Vector3.Distance(puntos[i - 1], puntos[i]);
 
-            if (longitud < longitudModuloTubular * 0.5f) return;
+            if (longitud < longitudModulo * 0.5f) return;
 
-            int cantidad = Mathf.Max(1, Mathf.RoundToInt(longitud / longitudModuloTubular));
-            float longitudReal = longitud / cantidad;
-            float escalaX = longitudReal / longitudModuloTubular;
+            int cantidad = Mathf.Max(1, Mathf.RoundToInt(longitud / longitudModulo));
+            float escalaX = (longitud / cantidad) / longitudModulo;
 
             for (int i = 0; i < cantidad; i++)
             {
@@ -161,11 +159,15 @@ namespace Estadio.Techo
                 Vector3 direccion = fin - inicio;
                 if (direccion.sqrMagnitude < 1e-6f) continue;
 
-                GameObject modulo = Instantiate(prefabTubular, padre);
+                GameObject modulo = Instantiate(prefab, padre);
                 modulo.transform.localPosition = inicio;
 
-                // El eje X local del modulo sigue la direccion del tramo.
-                modulo.transform.localRotation = Quaternion.FromToRotation(Vector3.right, direccion.normalized);
+                // LookRotation fija tambien el giro alrededor del eje: FromToRotation deja el
+                // roll indeterminado y los modulos no empalman.
+                Vector3 dir = direccion.normalized;
+                modulo.transform.localRotation = Quaternion.LookRotation(dir, Vector3.up)
+                                               * Quaternion.Euler(0f, -90f, 0f);
+
                 modulo.transform.localScale = new Vector3(escalaX, 1f, 1f);
 
                 ModulosInstanciados++;
