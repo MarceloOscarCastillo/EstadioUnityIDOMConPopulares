@@ -41,7 +41,7 @@ namespace Estadio.Techo
 
         [Header("Anclajes sinteticos (mientras no publiquen las tribunas)")]
         [SerializeField] private bool usarAnclajesSinteticos = false;
-        [SerializeField] private float separacionVigas = 5f;
+        [SerializeField] private float separacionVigas =    5f;
         [SerializeField] private float alturaCoronamientoLateral = 44f;
         [SerializeField] private float alturaCoronamientoCabecera = 30f;
 
@@ -66,6 +66,7 @@ namespace Estadio.Techo
         private PerimetroSuperelipse _perimetroEstadio;
         private PerimetroTecho _perimetroTecho;
         private RegistroAnclajesTecho _registro;
+        private RegistroCoronamientos _coronamientos;
         private BordeInteriorTecho _borde;
         private MarcoRigidoTecho _marco;
         private TendidoCables _tendido;
@@ -89,6 +90,7 @@ namespace Estadio.Techo
         public PerimetroSuperelipse PerimetroEstadio => _perimetroEstadio;
         public PerimetroTecho PerimetroTecho => _perimetroTecho;
         public RegistroAnclajesTecho Registro => _registro;
+        public RegistroCoronamientos Coronamientos => _coronamientos;
         public BordeInteriorTecho Borde => _borde;
         public MarcoRigidoTecho Marco => _marco;
         public TendidoCables Tendido => _tendido;
@@ -124,6 +126,9 @@ namespace Estadio.Techo
                 _registro = ObtenerRegistro();
                 if (!_registro.IndiceValido) _registro.Indexar(_perimetroEstadio);
 
+                _coronamientos = ObtenerCoronamientos();
+                if (!_coronamientos.IndiceValido) _coronamientos.Indexar(_perimetroEstadio);
+
                 _perimetroTecho = new PerimetroTecho(parametrosPerimetroTecho);
                 _perimetroTecho.Construir(_registro);
 
@@ -143,7 +148,8 @@ namespace Estadio.Techo
                     _tendido.Completar(_perimetroTecho, _borde);
 
                     _membrana = new MembranaTecho(parametrosMembrana);
-                    _membrana.Construir(_perimetroEstadio, _registro, _borde, _tendido);
+                    _membrana.Construir(_perimetroEstadio, _perimetroTecho, _coronamientos,
+                                        _borde, _tendido);
                 }
                 else
                 {
@@ -185,6 +191,40 @@ namespace Estadio.Techo
 
             var sintetico = new RegistroAnclajesTecho();
             PublicarAnclajesSinteticos(sintetico);
+            return sintetico;
+        }
+
+        /// <summary>
+        /// Coronamientos: el borde superior de todas las gradas, que es hasta donde baja el
+        /// faldon. Lo publican todos los sectores, sostengan o no el techo.
+        /// </summary>
+        private RegistroCoronamientos ObtenerCoronamientos()
+        {
+            if (!usarAnclajesSinteticos && configurador != null &&
+                configurador.RegistroCoronamientos != null &&
+                configurador.RegistroCoronamientos.CantidadPublicados > 0)
+            {
+                return configurador.RegistroCoronamientos;
+            }
+
+            var sintetico = new RegistroCoronamientos();
+
+            const int muestras = 160;
+            float longitud = _perimetroEstadio.LongitudTotal;
+
+            for (int i = 0; i < muestras; i++)
+            {
+                float s = longitud * i / muestras;
+                float t = _perimetroEstadio.TDeLongitud(s);
+                Vector2 xz = _perimetroEstadio.Punto(t);
+
+                float mezcla = Mathf.Abs(Mathf.Cos(t));
+                mezcla = mezcla * mezcla * (3f - 2f * mezcla);
+                float altura = Mathf.Lerp(alturaCoronamientoCabecera, alturaCoronamientoLateral, mezcla);
+
+                sintetico.Publicar(new Vector3(xz.x, altura - 2f, xz.y), "sintetico");
+            }
+
             return sintetico;
         }
 
@@ -291,6 +331,7 @@ namespace Estadio.Techo
 
             Debug.Log(_perimetroEstadio.Diagnostico(), this);
             Debug.Log(_registro.Diagnostico(), this);
+            Debug.Log(_coronamientos.Diagnostico(), this);
             Debug.Log(_perimetroTecho.Diagnostico(), this);
             Debug.Log(_borde.Diagnostico(), this);
             Debug.Log(_marco.Diagnostico(), this);
@@ -300,6 +341,7 @@ namespace Estadio.Techo
             var mensajes = new List<string>();
 
             _registro.Validar(ParametrosValidacionAnclajes.PorDefecto, mensajes);
+            _coronamientos.Validar(mensajes);
             _perimetroTecho.Validar(mensajes);
             _borde.Validar(_perimetroEstadio, _registro, mensajes);
             _marco.Validar(ParametrosValidacionMarco.PorDefecto, mensajes);

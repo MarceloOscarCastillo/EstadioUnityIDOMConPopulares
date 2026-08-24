@@ -31,6 +31,15 @@ public interface IProveedorAnclajesTecho
     /// </summary>
     IReadOnlyList<Vector3> CabezasTensoresLocales { get; }
 
+    /// <summary>
+    /// Borde superior de la grada, en coordenadas locales del sector. Lo publican TODOS
+    /// los sectores, sostengan o no el techo: el faldon recorre el perimetro entero y
+    /// necesita saber hasta donde bajar en cada punto. Como el coronamiento varia dentro
+    /// de una misma seccion —recorte de filas, una o dos bandejas— hace falta la
+    /// polilinea completa y no un valor unico.
+    /// </summary>
+    IReadOnlyList<Vector3> CoronamientoLocal { get; }
+
     Transform TransformSector { get; }
 }
 

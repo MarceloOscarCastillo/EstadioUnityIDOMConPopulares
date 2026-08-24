@@ -6,9 +6,8 @@ using UnityEngine;
 namespace Estadio.Techo
 {
     /// <summary>
-    /// Rejilla de una superficie lista para triangular. Fila 0 es el borde interior
-    /// (o el borde superior, en el faldon); la ultima fila es el borde exterior
-    /// (o el inferior). Las columnas recorren el perimetro y cierran sobre si mismas.
+    /// Rejilla de una superficie lista para triangular. Fila 0 es el borde interior; la
+    /// ultima fila, el borde inferior del faldon.
     /// </summary>
     public struct RejillaSuperficie
     {
@@ -26,58 +25,58 @@ namespace Estadio.Techo
     {
         [Header("Resolucion")]
         public int divisionesPerimetrales;   // columnas alrededor del anillo
-        public int anillos;                  // filas entre borde interior y perimetro
+        public int anillosPano;              // filas entre el borde interior y el perimetro
+        public int anillosFaldon;            // filas de la banda vertical
 
         [Header("Forma")]
-        public float festonRelativo;         // caida de la tela entre cables adyacentes
-
-        [Header("Borde exterior")]
-        [Tooltip("0 = el borde sigue exactamente el coronamiento de cada tribuna (sin faldon). " +
-                 "1 = el borde corre liso a cota fija y el faldon cierra toda la diferencia.")]
-        public float suavizadoBordeExterior;
-        public float alturaBordeLiso;        // cota del borde cuando suavizado = 1
+        [Tooltip("Caida de la tela entre cables adyacentes. Da el borde festoneado tipico " +
+                 "de las membranas tensadas.")]
+        public float festonRelativo;
 
         [Header("Faldon")]
-        public bool generarFaldon;
-        public float alturaMinimaFaldon;     // por debajo de esto no se genera banda
+        [Tooltip("Cuanto baja la tela por debajo del muro superior de la grada. Un solape " +
+                 "asegura el cierre en vez de dejar una junta al ras.")]
+        public float solapeFaldon;
+        [Tooltip("Caida minima del faldon donde la tribuna casi llega al techo.")]
+        public float caidaMinimaFaldon;
 
         public static ParametrosMembrana PorDefecto => new ParametrosMembrana
         {
             divisionesPerimetrales = 192,
-            anillos = 12,
+            anillosPano = 12,
+            anillosFaldon = 2,
             festonRelativo = 0.022f,
-            suavizadoBordeExterior = 0.65f,
-            alturaBordeLiso = 34.0f,
-            generarFaldon = true,
-            alturaMinimaFaldon = 0.5f
+            solapeFaldon = 1.5f,
+            caidaMinimaFaldon = 0.5f
         };
     }
 
     /// <summary>
-    /// La superficie de membrana y su faldon vertical.
+    /// La membrana es UNA sola superficie continua. Sube desde el borde del vano, cruza por
+    /// encima de los anclajes —el anclaje es un punto por donde pasa, no el final— y baja
+    /// verticalmente hasta superar el muro superior de la grada.
     ///
-    /// La altura sale de la familia transversal de cables: para un punto (x,z) se buscan
-    /// los dos cables transversales que lo flanquean, se evalua cada uno a esa cota Z y se
-    /// interpola, restando el feston que hace la tela entre ambos. Los cables longitudinales
-    /// no intervienen: viven sobre esta superficie, no la definen.
+    /// Por eso el faldon no es un elemento aparte que cuelga del borde: es la continuacion
+    /// de la misma tela. Y por eso existe en todo el perimetro: en los laterales la tribuna
+    /// casi llega al techo y la caida es minima; en las cabeceras la tribuna esta mucho mas
+    /// abajo y la caida es maxima. La panza del faldon no se modela, sale de esa resta.
     ///
-    /// El faldon es la resta entre el borde exterior de la membrana y el coronamiento de la
-    /// tribuna, exactamente como lo dedujimos: maximo en el centro de las cabeceras, nulo
-    /// donde la tribuna llega a la cota del borde.
+    /// La altura de la tela sale de la familia transversal de cables. Los longitudinales no
+    /// intervienen: viven sobre esta superficie, no la definen.
     /// </summary>
     public sealed class MembranaTecho
     {
         private ParametrosMembrana _parametros;
 
-        private IPerimetroEstadio _perimetro;
-        private RegistroAnclajesTecho _registro;
+        private IPerimetroEstadio _perimetroEstadio;
+        private PerimetroTecho _perimetroTecho;
+        private RegistroCoronamientos _coronamientos;
         private BordeInteriorTecho _borde;
 
-        private Cable[] _transversalesPorZ;   // ordenados por coordenada creciente
+        private Cable[] _transversalesPorZ;
 
-        private RejillaSuperficie _rejillaMembrana;
+        private RejillaSuperficie _rejillaPano;
         private RejillaSuperficie _rejillaFaldon;
-        private bool _hayFaldon;
 
         private int _versionMembrana;
         private int _versionTendidoUsada = -1;
@@ -86,13 +85,13 @@ namespace Estadio.Techo
         public ParametrosMembrana Parametros => _parametros;
         public int VersionMembrana => _versionMembrana;
         public bool Construida => _construida;
-        public bool HayFaldon => _hayFaldon;
 
-        public RejillaSuperficie RejillaMembrana { get { AsegurarConstruida(); return _rejillaMembrana; } }
+        public RejillaSuperficie RejillaPano { get { AsegurarConstruida(); return _rejillaPano; } }
         public RejillaSuperficie RejillaFaldon { get { AsegurarConstruida(); return _rejillaFaldon; } }
 
-        public float AlturaFaldonMaxima { get; private set; }
         public float SuperficieAproximada { get; private set; }
+        public float CaidaFaldonMaxima { get; private set; }
+        public float CaidaFaldonMinima { get; private set; }
 
         public MembranaTecho(ParametrosMembrana parametros)
         {
@@ -103,8 +102,8 @@ namespace Estadio.Techo
         {
             _parametros = parametros;
             _parametros.divisionesPerimetrales = Mathf.Max(16, parametros.divisionesPerimetrales);
-            _parametros.anillos = Mathf.Max(2, parametros.anillos);
-            _parametros.suavizadoBordeExterior = Mathf.Clamp01(parametros.suavizadoBordeExterior);
+            _parametros.anillosPano = Mathf.Max(2, parametros.anillosPano);
+            _parametros.anillosFaldon = Mathf.Max(1, parametros.anillosFaldon);
             _construida = false;
             _versionMembrana++;
         }
@@ -118,29 +117,36 @@ namespace Estadio.Techo
         //  Construccion
         // ------------------------------------------------------------------
 
-        public void Construir(IPerimetroEstadio perimetro, RegistroAnclajesTecho registro,
-                              BordeInteriorTecho borde, TendidoCables tendido)
+        public void Construir(IPerimetroEstadio perimetroEstadio, PerimetroTecho perimetroTecho,
+                              RegistroCoronamientos coronamientos, BordeInteriorTecho borde,
+                              TendidoCables tendido)
         {
-            _perimetro = perimetro ?? throw new ArgumentNullException(nameof(perimetro));
-            _registro = registro ?? throw new ArgumentNullException(nameof(registro));
+            _perimetroEstadio = perimetroEstadio ?? throw new ArgumentNullException(nameof(perimetroEstadio));
+            _perimetroTecho = perimetroTecho ?? throw new ArgumentNullException(nameof(perimetroTecho));
+            _coronamientos = coronamientos ?? throw new ArgumentNullException(nameof(coronamientos));
             _borde = borde ?? throw new ArgumentNullException(nameof(borde));
             if (tendido == null) throw new ArgumentNullException(nameof(tendido));
 
             _transversalesPorZ = new List<Cable>(tendido.Transversales).ToArray();
             Array.Sort(_transversalesPorZ, (a, b) => a.coordenada.CompareTo(b.coordenada));
 
-            ConstruirRejillaMembrana();
-            ConstruirRejillaFaldon();
+            ConstruirPano();
+            ConstruirFaldon();
 
             _versionTendidoUsada = tendido.VersionTendido;
             _construida = true;
             _versionMembrana++;
         }
 
-        private void ConstruirRejillaMembrana()
+        /// <summary>
+        /// Pano principal: del borde del vano al perimetro del techo. Como el perimetro del
+        /// techo es un rectangulo —dos vigas rectas y dos cables de cierre— y el borde del
+        /// vano tambien, el mapeo entre los dos es directo: misma fraccion de recorrido.
+        /// </summary>
+        private void ConstruirPano()
         {
             int columnas = _parametros.divisionesPerimetrales;
-            int filas = _parametros.anillos + 1;
+            int filas = _parametros.anillosPano + 1;
 
             var rejilla = new RejillaSuperficie
             {
@@ -149,31 +155,29 @@ namespace Estadio.Techo
                 vertices = new Vector3[filas * columnas],
                 uv = new Vector2[filas * columnas]
             };
-
-            float longitudBorde = _borde.LongitudTotal;
-            float longitudPerimetro = _perimetro.LongitudTotal;
+            
             float area = 0f;
 
             for (int c = 0; c < columnas; c++)
             {
                 float sigma = (float)c / columnas;
+               
+                Vector3 interior = PuntoBordePorCuartos(sigma);
 
-                Vector3 interior = _borde.PuntoEnS(sigma * longitudBorde);
-                Vector3 exterior = PuntoBordeExterior(sigma * longitudPerimetro);
+                Vector3 exterior = PuntoPerimetroTecho(sigma);
 
                 for (int f = 0; f < filas; f++)
                 {
                     float w = (float)f / (filas - 1);
 
-                    // Recorrido radial en planta, del borde del vano hacia el perimetro.
                     float x = Mathf.Lerp(interior.x, exterior.x, w);
                     float z = Mathf.Lerp(interior.z, exterior.z, w);
 
                     float y;
-                    if (!TryAlturaSuperficie(x, z, out y))
+                    if (!TryAlturaTela(x, z, out y))
                         y = Mathf.Lerp(interior.y, exterior.y, w);
 
-                    // Los bordes mandan: la membrana esta fijada ahi.
+                    // Los bordes mandan: la tela esta fijada ahi.
                     if (f == 0) y = interior.y;
                     else if (f == filas - 1) y = exterior.y;
 
@@ -187,8 +191,144 @@ namespace Estadio.Techo
                 for (int f = 0; f < filas - 1; f++)
                     area += AreaCelda(rejilla, f, c);
 
-            _rejillaMembrana = rejilla;
+            _rejillaPano = rejilla;
             SuperficieAproximada = area;
+        }
+
+        /// <summary>
+        /// Faldon: la misma tela, ya pasado el perimetro del techo, bajando en vertical hasta
+        /// superar el muro superior de la grada. La caida es la resta entre por donde pasa la
+        /// tela y ese muro, mas el solape: minima en los laterales, maxima en el medio de las
+        /// cabeceras. No hay que darle forma.
+        /// </summary>
+        private void ConstruirFaldon()
+        {
+            int columnas = _parametros.divisionesPerimetrales;
+            int filas = _parametros.anillosFaldon + 1;
+
+            var rejilla = new RejillaSuperficie
+            {
+                filas = filas,
+                columnas = columnas,
+                vertices = new Vector3[filas * columnas],
+                uv = new Vector2[filas * columnas]
+            };
+
+            CaidaFaldonMaxima = 0f;
+            CaidaFaldonMinima = float.PositiveInfinity;
+
+            for (int c = 0; c < columnas; c++)
+            {
+                float sigma = (float)c / columnas;
+
+                Vector3 arriba = PuntoPerimetroTecho(sigma);
+                float muro = _coronamientos.AlturaBajoPunto(new Vector2(arriba.x, arriba.z));
+
+                float caida = Mathf.Max(_parametros.caidaMinimaFaldon,
+                                        arriba.y - muro + _parametros.solapeFaldon);
+
+                CaidaFaldonMaxima = Mathf.Max(CaidaFaldonMaxima, caida);
+                CaidaFaldonMinima = Mathf.Min(CaidaFaldonMinima, caida);
+
+                for (int f = 0; f < filas; f++)
+                {
+                    float w = (float)f / (filas - 1);
+
+                    int i = rejilla.Indice(f, c);
+                    rejilla.vertices[i] = new Vector3(arriba.x, arriba.y - caida * w, arriba.z);
+                    rejilla.uv[i] = new Vector2(sigma, w * caida);
+                }
+            }
+
+            if (CaidaFaldonMinima > CaidaFaldonMaxima) CaidaFaldonMinima = 0f;
+
+            _rejillaFaldon = rejilla;
+        }
+
+        // ------------------------------------------------------------------
+        //  Geometria
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Punto del perimetro del techo a la fraccion sigma del recorrido. Es el rectangulo
+        /// que forman las dos vigas longitudinales y los dos cables de cierre: la tela pasa
+        /// por encima de ahi y despues baja.
+        /// </summary>
+        private Vector3 PuntoPerimetroTecho(float sigma)
+        {
+            float semiLargo = _perimetroTecho.SemiLargo;
+
+            // El recorrido se reparte en cuatro tramos, uno por lado, con la misma fraccion
+            // que el borde interior para que el pano no se retuerza.
+            float t = Mathf.Repeat(sigma, 1f) * 4f;
+            int lado = Mathf.Min(3, Mathf.FloorToInt(t));
+            float u = t - lado;
+
+            switch (lado)
+            {
+                case 0: return PuntoEnViga(true, Mathf.Lerp(semiLargo, -semiLargo, u));
+                case 1: return PuntoEnCierre(false, Mathf.Lerp(1f, 0f, u));
+                case 2: return PuntoEnViga(false, Mathf.Lerp(-semiLargo, semiLargo, u));
+                default: return PuntoEnCierre(true, Mathf.Lerp(0f, 1f, u));
+            }
+        }
+
+        /// <summary>Punto sobre una viga longitudinal a la cota Z dada, tomando la altura de
+        /// la tela ahi.</summary>
+        private Vector3 PuntoEnViga(bool ladoPositivo, float z)
+        {
+            RectaViga recta = ladoPositivo
+                ? _perimetroTecho.RectaXPositivo
+                : _perimetroTecho.RectaXNegativo;
+
+            float x = recta.XenZ(z);
+            if (!TryAlturaTela(x, z, out float y)) y = 0f;
+            return new Vector3(x, y, z);
+        }
+
+        /// <summary>Punto sobre un cable de cierre, a la fraccion u de su recorrido en X.</summary>
+        private Vector3 PuntoEnCierre(bool ladoPositivo, float u)
+        {
+            float z = ladoPositivo ? _perimetroTecho.ZCierrePositivo : _perimetroTecho.ZCierreNegativo;
+
+            float xNeg = _perimetroTecho.RectaXNegativo.XenZ(z);
+            float xPos = _perimetroTecho.RectaXPositivo.XenZ(z);
+            float x = Mathf.Lerp(xNeg, xPos, Mathf.Clamp01(u));
+
+            if (!TryAlturaTela(x, z, out float y)) y = 0f;
+            return new Vector3(x, y, z);
+        }
+
+        /// <summary>
+        /// Altura de la tela en (x, z): se interpola entre los dos cables transversales que
+        /// flanquean el punto y se resta el feston que hace la tela entre ambos.
+        /// </summary>
+        public bool TryAlturaTela(float x, float z, out float altura)
+        {
+            altura = 0f;
+            if (_transversalesPorZ == null || _transversalesPorZ.Length < 2) return false;
+
+            int siguiente = -1;
+            for (int i = 0; i < _transversalesPorZ.Length; i++)
+                if (_transversalesPorZ[i].coordenada >= z) { siguiente = i; break; }
+
+            if (siguiente < 0) siguiente = _transversalesPorZ.Length - 1;
+            if (siguiente == 0) siguiente = 1;
+            int anterior = siguiente - 1;
+
+            if (!_transversalesPorZ[anterior].TryPuntoEnEje(x, out Vector3 pa)) return false;
+            if (!_transversalesPorZ[siguiente].TryPuntoEnEje(x, out Vector3 pb)) return false;
+
+            float separacion = _transversalesPorZ[siguiente].coordenada
+                             - _transversalesPorZ[anterior].coordenada;
+
+            if (separacion < 1e-4f) { altura = pa.y; return true; }
+
+            float u = Mathf.Clamp01((z - _transversalesPorZ[anterior].coordenada) / separacion);
+            altura = Mathf.Lerp(pa.y, pb.y, u)
+                   - 4f * _parametros.festonRelativo * separacion * u * (1f - u);
+
+            return true;
         }
 
         private static float AreaCelda(RejillaSuperficie rejilla, int fila, int columna)
@@ -201,125 +341,17 @@ namespace Estadio.Techo
             return 0.5f * (Vector3.Cross(b - a, d - a).magnitude + Vector3.Cross(b - c, d - c).magnitude);
         }
 
-        /// <summary>
-        /// Banda vertical que cuelga del borde exterior hasta el coronamiento de la tribuna.
-        /// Su altura es la resta entre las dos curvas: maxima donde la cabecera es mas baja,
-        /// nula donde la tribuna alcanza el borde. No hay que disenarla.
-        /// </summary>
-        private void ConstruirRejillaFaldon()
-        {
-            _hayFaldon = false;
-            AlturaFaldonMaxima = 0f;
-
-            if (!_parametros.generarFaldon)
-            {
-                _rejillaFaldon = default;
-                return;
-            }
-
-            int columnas = _parametros.divisionesPerimetrales;
-            float longitudPerimetro = _perimetro.LongitudTotal;
-
-            var rejilla = new RejillaSuperficie
-            {
-                filas = 2,
-                columnas = columnas,
-                vertices = new Vector3[2 * columnas],
-                uv = new Vector2[2 * columnas]
-            };
-
-            for (int c = 0; c < columnas; c++)
-            {
-                float sigma = (float)c / columnas;
-                float s = sigma * longitudPerimetro;
-
-                Vector3 arriba = PuntoBordeExterior(s);
-                float coronamiento = _registro.AlturaCoronamiento(s);
-                float caida = Mathf.Max(0f, arriba.y - coronamiento);
-
-                if (caida > AlturaFaldonMaxima) AlturaFaldonMaxima = caida;
-                if (caida >= _parametros.alturaMinimaFaldon) _hayFaldon = true;
-
-                Vector3 abajo = new Vector3(arriba.x, arriba.y - caida, arriba.z);
-
-                rejilla.vertices[rejilla.Indice(0, c)] = arriba;
-                rejilla.vertices[rejilla.Indice(1, c)] = abajo;
-                rejilla.uv[rejilla.Indice(0, c)] = new Vector2(sigma, 0f);
-                rejilla.uv[rejilla.Indice(1, c)] = new Vector2(sigma, caida);
-            }
-
-            _rejillaFaldon = rejilla;
-        }
-
-        // ------------------------------------------------------------------
-        //  Evaluacion de la superficie
-        // ------------------------------------------------------------------
-
-        /// <summary>
-        /// Altura de la membrana en (x, z), interpolando entre los dos cables transversales
-        /// que flanquean el punto y restando el feston de la tela entre ambos.
-        /// </summary>
-        public bool TryAlturaSuperficie(float x, float z, out float altura)
-        {
-            altura = 0f;
-            if (_transversalesPorZ == null || _transversalesPorZ.Length < 2) return false;
-
-            // Los cables transversales estan a z constante y varian en X: se busca el par
-            // que flanquea el punto en Z y se evalua cada uno a la cota X pedida.
-            int siguiente = -1;
-            for (int i = 0; i < _transversalesPorZ.Length; i++)
-            {
-                if (_transversalesPorZ[i].coordenada >= z) { siguiente = i; break; }
-            }
-
-            if (siguiente <= 0) return false;
-            int anterior = siguiente - 1;
-
-            Cable cableAnterior = _transversalesPorZ[anterior];
-            Cable cableSiguiente = _transversalesPorZ[siguiente];
-
-            if (!cableAnterior.TryPuntoEnEje(x, out Vector3 puntoAnterior)) return false;
-            if (!cableSiguiente.TryPuntoEnEje(x, out Vector3 puntoSiguiente)) return false;
-
-            float separacion = cableSiguiente.coordenada - cableAnterior.coordenada;
-            if (separacion < 1e-4f) { altura = puntoAnterior.y; return true; }
-
-            float u = Mathf.Clamp01((z - cableAnterior.coordenada) / separacion);
-            altura = Mathf.Lerp(puntoAnterior.y, puntoSiguiente.y, u)
-                   - 4f * _parametros.festonRelativo * separacion * u * (1f - u);
-
-            return true;
-        }
-
-        /// <summary>
-        /// Borde exterior de la membrana. Entre seguir el coronamiento de cada tribuna
-        /// (suavizado = 0, sin faldon) y correr liso a cota fija (suavizado = 1, faldon
-        /// maximo). Es el parametro que decide cuanto faldon hay.
-        /// </summary>
-        public Vector3 PuntoBordeExterior(float s)
-        {
-            float t = _perimetro.TDeLongitud(s);
-            Vector2 xz = _perimetro.Punto(t);
-
-            float coronamiento = _registro.AlturaCoronamiento(s);
-            float altura = Mathf.Lerp(coronamiento, _parametros.alturaBordeLiso,
-                                      _parametros.suavizadoBordeExterior);
-
-            return new Vector3(xz.x, Mathf.Max(altura, coronamiento), xz.y);
-        }
-
         private void AsegurarConstruida()
         {
             if (!_construida)
-                throw new InvalidOperationException(
-                    "La membrana no esta construida. Llamar a Construir(...).");
+                throw new InvalidOperationException("La membrana no esta construida.");
         }
 
         // ------------------------------------------------------------------
         //  Validacion y diagnostico
         // ------------------------------------------------------------------
 
-        public bool Validar(List<string> mensajes, float holguraMinimaSobreCoronamiento = 0f)
+        public bool Validar(List<string> mensajes)
         {
             if (mensajes == null) throw new ArgumentNullException(nameof(mensajes));
 
@@ -333,37 +365,28 @@ namespace Estadio.Techo
             int porDebajo = 0;
             float peor = 0f;
 
-            // Ningun punto de la membrana puede quedar por debajo del coronamiento de la
-            // tribuna que tiene abajo: seria tela atravesando la ultima fila.
-            for (int c = 0; c < _rejillaMembrana.columnas; c += 4)
+            // Ningun punto del pano puede quedar por debajo del muro que tiene abajo: seria
+            // tela atravesando la ultima fila de la grada.
+            for (int c = 0; c < _rejillaPano.columnas; c += 4)
             {
-                for (int f = 1; f < _rejillaMembrana.filas - 1; f++)
+                for (int f = 1; f < _rejillaPano.filas - 1; f++)
                 {
-                    Vector3 p = _rejillaMembrana.Vertice(f, c);
-                    float s = _perimetro.SDePunto(new Vector2(p.x, p.z));
-                    float coronamiento = _registro.AlturaCoronamiento(s);
-                    float holgura = p.y - coronamiento;
+                    Vector3 p = _rejillaPano.Vertice(f, c);
+                    float muro = _coronamientos.AlturaBajoPunto(new Vector2(p.x, p.z));
 
-                    if (holgura >= holguraMinimaSobreCoronamiento) continue;
+                    if (p.y >= muro) continue;
 
                     porDebajo++;
-                    peor = Mathf.Max(peor, -holgura);
+                    peor = Mathf.Max(peor, muro - p.y);
                 }
             }
 
             if (porDebajo > 0)
             {
-                mensajes.Add($"ERROR: {porDebajo} puntos de la membrana quedan por debajo del " +
-                             $"coronamiento (peor caso {peor:F2} m). Reducir festonRelativo o la " +
-                             "panza de los cables transversales.");
+                mensajes.Add($"ERROR: {porDebajo} puntos del pano quedan por debajo del muro de la " +
+                             $"grada (peor caso {peor:F2} m). Reducir festonRelativo o aumentar la " +
+                             "tension de los cables transversales.");
                 valido = false;
-            }
-
-            if (_parametros.generarFaldon && !_hayFaldon)
-            {
-                mensajes.Add("AVISO: el faldon quedo vacio. Con suavizadoBordeExterior en " +
-                             $"{_parametros.suavizadoBordeExterior:F2} el borde de la membrana " +
-                             "sigue al coronamiento y no queda hueco que cerrar.");
             }
 
             return valido;
@@ -376,16 +399,23 @@ namespace Estadio.Techo
 
             if (!_construida) return sb.ToString();
 
-            sb.AppendLine($"Rejilla: {_rejillaMembrana.filas} anillos x " +
-                          $"{_rejillaMembrana.columnas} divisiones " +
-                          $"({_rejillaMembrana.vertices.Length} vertices)");
-            sb.AppendLine($"Superficie aproximada: {SuperficieAproximada:F0} m2");
-            sb.AppendLine($"Faldon: {(_hayFaldon ? "si" : "no")}, altura maxima " +
-                          $"{AlturaFaldonMaxima:F2} m");
-            sb.AppendLine($"Suavizado del borde exterior: {_parametros.suavizadoBordeExterior:F2} " +
-                          $"(cota lisa {_parametros.alturaBordeLiso:F1} m)");
+            sb.AppendLine($"Pano: {_rejillaPano.filas} anillos x {_rejillaPano.columnas} divisiones " +
+                          $"({_rejillaPano.vertices.Length} vertices)");
+            sb.AppendLine($"Superficie del pano: {SuperficieAproximada:F0} m2");
+            sb.AppendLine($"Faldon: caida de {CaidaFaldonMinima:F2} a {CaidaFaldonMaxima:F2} m " +
+                          $"(solape {_parametros.solapeFaldon:F2} m)");
 
             return sb.ToString();
+        }
+
+        private Vector3 PuntoBordePorCuartos(float sigma)
+        {
+            float t = Mathf.Repeat(sigma, 1f) * 4f;
+            int arco = (Mathf.Min(3, Mathf.FloorToInt(t)) + 1) % 4;
+            float u = t - Mathf.Floor(t);
+
+            float tInicio = (0.25f + 0.5f * arco) * Mathf.PI;
+            return _borde.PuntoEnT(tInicio + u * 0.5f * Mathf.PI);
         }
     }
 }

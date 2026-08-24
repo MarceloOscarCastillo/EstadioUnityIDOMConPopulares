@@ -112,6 +112,10 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public float grosorSoporteTecho = 0.2f;
     public float profundidadSoporteTecho = 1.0f;
     public float penetracionTensor = 1.0f;
+    private readonly List<Vector3> coronamiento = new List<Vector3>();
+    
+    public IReadOnlyList<Vector3> CoronamientoLocal =>
+    publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.Empty<Vector3>();
 
     [Header("Viga Longitudinal de Tensores")]
     public bool generarVigaLongitudinalTensores = true;
@@ -183,6 +187,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public bool publicarAnclajesTecho = false;
     public RolEstructuralTecho rolEnElTecho = RolEstructuralTecho.ParaleloAlCampo;
     public string idTribunaParaTecho = "sinNombre";
+    public bool publicarCoronamientoTecho = true;
 
     private readonly List<Vector3> _cabezasTensores = new List<Vector3>();
 
@@ -190,6 +195,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public RolEstructuralTecho RolEnElTecho => rolEnElTecho;
     public string IdParaTecho => idTribunaParaTecho;
     public IReadOnlyList<Vector3> CabezasTensoresLocales => _cabezasTensores;
+
     public Transform TransformSector => transform;
 
 
@@ -353,7 +359,9 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         }
 
         if (generarCirculacion) GenerarCirculacion(multZ, contenedor.transform);
-        
+
+        CachearCoronamiento(multZ);
+
         foreach (Transform hijo in contenedor.GetComponentsInChildren<Transform>())
         {
             if (hijo.gameObject != contenedor && Application.isPlaying)
@@ -1938,5 +1946,27 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             altura += altoEscalonBase * ObtenerFactorParaFila(entera) * fraccion;
 
         return altura;
+    }
+
+    /// <summary>
+    /// Recorre el ancho de la platea registrando la cara superior del ultimo escalon de cada
+    /// columna. Con recorte de filas la altura varia a lo largo de X, y esta polilinea la
+    /// sigue.
+    /// </summary>
+    void CachearCoronamiento(float mZ)
+    {
+        coronamiento.Clear();
+
+        float paso = 2f;   // un punto cada dos metros alcanza para el faldon
+        for (float x = 0f; x <= largoMaximoTribuna; x += paso)
+        {
+            int filas = FilasEnX(x);
+            if (filas <= 0) continue;
+
+            float y = CalcularAlturaAcumuladaPlatea(filas - 1);
+            float z = ZBordeExteriorGrada(filas, mZ);
+
+            coronamiento.Add(new Vector3(x, y, z));
+        }
     }
 }

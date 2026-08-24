@@ -117,6 +117,13 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public float grosorSoporteTecho = 0.2f;
     public float profundidadSoporteTecho = 1.0f;
     public float penetracionTensor = 1.0f;
+    public bool publicarCoronamientoTecho = true;
+
+    private readonly List<Vector3> coronamiento = new List<Vector3>();
+    
+    public IReadOnlyList<Vector3> CoronamientoLocal =>
+    publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.Empty<Vector3>();
+
 
     [Header("Viga Longitudinal de Tensores")]
     public bool generarVigaLongitudinalTensores = true;
@@ -344,6 +351,8 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         }
 
         if (generarCirculacion) GenerarCirculacion(multiplicadorZ, contenedor.transform);
+
+        CachearCoronamiento(multiplicadorZ);
 
         foreach (Transform hijo in contenedorGO.GetComponentsInChildren<Transform>())
         {
@@ -1242,28 +1251,19 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         vigaGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialVigas;
     }
 
-    // ----------------------------------------------------------------------------
-    //  8. PUBLICACION AL REGISTRO DEL TECHO
-    //     IMPORTANTE: llamar ANTES del Static Batching.
-    // ----------------------------------------------------------------------------
+    void CachearCoronamiento(float mZ)
+    {
+        coronamiento.Clear();
 
-    //Metodo viejo cuando la publicacion la iba a decidir cada sector en vez de que la publicacion la haga StadiumConfigurator
-    //void PublicarAnclajesTecho(List<float> posicionesX, float mZ,
-    //                           Estadio.Techo.RegistroAnclajesTecho registro,
-    //                           Matrix4x4 mundoALocalTecho)
-    //{
-    //    if (!publicarAnclajesTecho || registro == null) return;
-    //    if (posicionesX == null || posicionesX.Count == 0) return;
+        float anchoTotal = piezasPorFila * anchoDeUnaPieza;
+        float y = CalcularAlturaAcumuladaCabecera(numFilas - 1);
+        float z = ZBordeExteriorGrada(numFilas, mZ);
 
-    //    for (int i = 0; i < posicionesX.Count; i++)
-    //    {
-    //        Vector3 cabezaLocal = PosicionCabezaTensor(posicionesX[i], mZ);
-    //        Vector3 cabezaMundo = transform.TransformPoint(cabezaLocal);
+        float paso = 2f;
+        for (float x = 0f; x <= anchoTotal; x += paso)
+            coronamiento.Add(new Vector3(x, y, z));
+    }
 
-    //        Vector3 posicionTecho = mundoALocalTecho.MultiplyPoint3x4(cabezaMundo);
-    //        Vector3 ejeTecho = mundoALocalTecho.MultiplyVector(transform.TransformVector(Vector3.up));
 
-    //        registro.Publicar(posicionTecho, ejeTecho, idTribunaParaTecho, i);
-    //    }
-    //}
+    
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.ProBuilder;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
-public class UpperCurveStandWithWalkpathScript : MonoBehaviour
+public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclajesTecho
 {
     public enum TipoCelda { Bloque, Escalera, Vacio, BloqueLibre }
 
@@ -203,6 +203,20 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
     [Header("Overrides por Variante")]
     public List<OverrideParametrosCodo> overridesParametros = new List<OverrideParametrosCodo>();
+
+
+    [Header("Publicacion al Techo")]
+    public bool publicarCoronamientoTecho = true;
+    public string idSectorParaTecho = "codo";
+
+    private readonly List<Vector3> coronamiento = new List<Vector3>();
+
+    public bool PublicaAnclajesTecho => false;
+    public RolEstructuralTecho RolEnElTecho => RolEstructuralTecho.Codo;
+    public string IdParaTecho => idSectorParaTecho;
+    public IReadOnlyList<Vector3> CabezasTensoresLocales => System.Array.Empty<Vector3>();
+    public IReadOnlyList<Vector3> CoronamientoLocal => coronamiento;
+    public Transform TransformSector => transform;
 
 
     [ContextMenu("Generar Codo")]
@@ -514,6 +528,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
 
             GenerarVigasTransversalesCodo(contenedor);
         }
+
+        CachearCoronamientoCodo();
 
         foreach (Transform hijo in contenedor.GetComponentsInChildren<Transform>())
         {
@@ -2221,6 +2237,24 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour
             materialPisoFrontal != null ? materialPisoFrontal : MaterialMuro;
     }
 
+    void CachearCoronamientoCodo()
+    {
+        coronamiento.Clear();
+
+        float anguloPorPieza = anguloTotal / cantidadPiezas;
+
+        for (int p = 0; p <= cantidadPiezas; p++)
+        {
+            float angulo = p * anguloPorPieza;
+            int filas = FilasEnAngulo(angulo);
+            if (filas <= 0) continue;
+
+            float radio = radioInferior + filas * anchoEscalon;
+            Vector3 punto = CalcularPunto(angulo, radio, filas - 1);
+
+            coronamiento.Add(punto);
+        }
+    }
 
 
 

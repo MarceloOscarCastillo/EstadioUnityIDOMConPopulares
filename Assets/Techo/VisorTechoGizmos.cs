@@ -80,13 +80,13 @@ namespace Estadio.Techo
                     DibujarCables(c.Tendido.Longitudinales, new Color(0.20f, 0.55f, 0.70f));
             }
 
-            if (c.Membrana != null)
+            if (c.Membrana != null && c.Membrana.Construida)
             {
                 if (dibujarMembrana)
-                    DibujarRejilla(c.Membrana.RejillaMembrana,
+                    DibujarRejilla(c.Membrana.RejillaPano,
                                    new Color(0.75f, 0.78f, 0.82f, 0.9f), pasoDibujoMembrana);
 
-                if (dibujarFaldon && c.Membrana.HayFaldon)
+                if (dibujarFaldon)
                     DibujarRejilla(c.Membrana.RejillaFaldon,
                                    new Color(0.85f, 0.35f, 0.19f), pasoDibujoMembrana);
             }

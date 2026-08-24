@@ -79,6 +79,9 @@ public class EstadioConfigurator : MonoBehaviour
         ? origenTecho.worldToLocalMatrix
         : Matrix4x4.identity;
 
+    private readonly RegistroCoronamientos registroCoronamientos = new RegistroCoronamientos();
+    public RegistroCoronamientos RegistroCoronamientos => registroCoronamientos;
+
 
     [ContextMenu("Aplicar Configuración Seleccionada")]
 public void AplicarConfiguracionEstadio()
@@ -483,42 +486,86 @@ public void AplicarConfiguracionEstadio()
         return false;
     }
 
-    
+
     /// <summary>
     /// Recolecta las cabezas de tensor de todos los sectores activos que sostienen el
     /// techo. Se llama despues de generar todos los sectores; es seguro porque las
     /// cabezas estan cacheadas desde la generacion y no dependen del estado actual de
     /// los parametros ni de los transforms, que a esta altura ya fueron batcheados.
     /// </summary>
+    //public void RecolectarAnclajesTecho(PerfilEstadio perfil)
+    //{
+    //    registroTecho.Limpiar();
+
+    //    Matrix4x4 mundoALocal = MatrizTecho;
+    //    int publicados = 0;
+
+    //    foreach (MonoBehaviour sector in perfil.sectoresActivos)
+    //    {
+    //        if (!(sector is IProveedorAnclajesTecho proveedor)) continue;
+    //        if (!proveedor.PublicaAnclajesTecho) continue;
+
+    //        IReadOnlyList<Vector3> cabezas = proveedor.CabezasTensoresLocales;
+    //        if (cabezas == null || cabezas.Count == 0) continue;
+
+    //        Transform t = proveedor.TransformSector;
+
+    //        for (int i = 0; i < cabezas.Count; i++)
+    //        {
+    //            Vector3 mundo = t.TransformPoint(cabezas[i]);
+    //            Vector3 local = mundoALocal.MultiplyPoint3x4(mundo);
+    //            Vector3 eje = mundoALocal.MultiplyVector(t.TransformVector(Vector3.up));
+
+    //            registroTecho.Publicar(local, eje, proveedor.IdParaTecho, i);
+    //            publicados++;
+    //        }
+    //    }
+
+    //    Debug.Log($"[Techo] {publicados} anclajes recolectados de {perfil.sectoresActivos.Count} sectores.");
+    //}
+
+
     public void RecolectarAnclajesTecho(PerfilEstadio perfil)
     {
         registroTecho.Limpiar();
+        registroCoronamientos.Limpiar();
 
         Matrix4x4 mundoALocal = MatrizTecho;
-        int publicados = 0;
+        int anclajes = 0;
+        int coronamiento = 0;
 
         foreach (MonoBehaviour sector in perfil.sectoresActivos)
         {
             if (!(sector is IProveedorAnclajesTecho proveedor)) continue;
-            if (!proveedor.PublicaAnclajesTecho) continue;
-
-            IReadOnlyList<Vector3> cabezas = proveedor.CabezasTensoresLocales;
-            if (cabezas == null || cabezas.Count == 0) continue;
 
             Transform t = proveedor.TransformSector;
 
-            for (int i = 0; i < cabezas.Count; i++)
+            // Anclajes: solo los sectores que sostienen el techo.
+            if (proveedor.PublicaAnclajesTecho)
             {
-                Vector3 mundo = t.TransformPoint(cabezas[i]);
-                Vector3 local = mundoALocal.MultiplyPoint3x4(mundo);
-                Vector3 eje = mundoALocal.MultiplyVector(t.TransformVector(Vector3.up));
+                IReadOnlyList<Vector3> cabezas = proveedor.CabezasTensoresLocales;
+                for (int i = 0; cabezas != null && i < cabezas.Count; i++)
+                {
+                    Vector3 local = mundoALocal.MultiplyPoint3x4(t.TransformPoint(cabezas[i]));
+                    Vector3 eje = mundoALocal.MultiplyVector(t.TransformVector(Vector3.up));
 
-                registroTecho.Publicar(local, eje, proveedor.IdParaTecho, i);
-                publicados++;
+                    registroTecho.Publicar(local, eje, proveedor.IdParaTecho, i);
+                    anclajes++;
+                }
+            }
+
+            // Coronamiento: TODOS los sectores, sostengan o no el techo.
+            IReadOnlyList<Vector3> borde = proveedor.CoronamientoLocal;
+            for (int i = 0; borde != null && i < borde.Count; i++)
+            {
+                Vector3 local = mundoALocal.MultiplyPoint3x4(t.TransformPoint(borde[i]));
+                registroCoronamientos.Publicar(local, proveedor.IdParaTecho);
+                coronamiento++;
             }
         }
 
-        Debug.Log($"[Techo] {publicados} anclajes recolectados de {perfil.sectoresActivos.Count} sectores.");
+        Debug.Log($"[Techo] {anclajes} anclajes y {coronamiento} puntos de coronamiento " +
+                  $"recolectados de {perfil.sectoresActivos.Count} sectores.");
     }
 
 }
