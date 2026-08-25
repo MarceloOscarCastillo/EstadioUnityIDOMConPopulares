@@ -40,6 +40,14 @@ namespace Estadio.Techo
         [Tooltip("Caida minima del faldon donde la tribuna casi llega al techo.")]
         public float caidaMinimaFaldon;
 
+        [Header("Emparejamiento del pano")]
+        [Tooltip("Cuartos de vuelta que se desplaza el borde interior respecto del perimetro " +
+         "del techo. Ajustar hasta que los lados largos del vano queden emparejados con " +
+         "las vigas longitudinales.")]
+        [Range(0, 3)] public int desplazamientoArcoBorde;
+
+
+
         public static ParametrosMembrana PorDefecto => new ParametrosMembrana
         {
             divisionesPerimetrales = 192,
@@ -147,7 +155,7 @@ namespace Estadio.Techo
         {
             int columnas = _parametros.divisionesPerimetrales;
             int filas = _parametros.anillosPano + 1;
-
+                
             var rejilla = new RejillaSuperficie
             {
                 filas = filas,
@@ -155,7 +163,7 @@ namespace Estadio.Techo
                 vertices = new Vector3[filas * columnas],
                 uv = new Vector2[filas * columnas]
             };
-            
+                
             float area = 0f;
 
             for (int c = 0; c < columnas; c++)
@@ -405,17 +413,67 @@ namespace Estadio.Techo
             sb.AppendLine($"Faldon: caida de {CaidaFaldonMinima:F2} a {CaidaFaldonMaxima:F2} m " +
                           $"(solape {_parametros.solapeFaldon:F2} m)");
 
+            sb.AppendLine("Emparejamiento del pano (columna: interior -> exterior):");
+            int paso = Mathf.Max(1, _rejillaPano.columnas / 16);
+            for (int c = 0; c < _rejillaPano.columnas; c += paso)
+            {
+                Vector3 interior = _rejillaPano.Vertice(0, c);
+                Vector3 exterior = _rejillaPano.Vertice(_rejillaPano.filas - 1, c);
+                sb.AppendLine($"  col {c,4}: ({interior.x,7:F1}, {interior.z,7:F1}) -> " +
+                              $"({exterior.x,7:F1}, {exterior.z,7:F1})");
+            }
+
+
             return sb.ToString();
         }
 
+        //private Vector3 PuntoBordePorCuartos(float sigma)
+        //{
+        //    // Se invierte el recorrido completo y se desplaza la fase, en vez de invertir dentro
+        //    // de cada arco: hacerlo por arco rompe el empalme entre uno y el siguiente, y produce
+        //    // un salto al lado opuesto del vano en cada cambio de arco.
+        //    float sigmaBorde = Mathf.Repeat(_parametros.desplazamientoArcoBorde * 0.25f - sigma, 1f);
+
+        //    float t = sigmaBorde * 4f;
+        //    int arco = Mathf.Min(3, Mathf.FloorToInt(t));
+        //    float u = Mathf.Repeat(t, 1f);
+
+        //    float tInicio = (0.25f + 0.5f * arco) * Mathf.PI;
+        //    return _borde.PuntoEnT(tInicio + u * 0.5f * Mathf.PI);
+        //}
+
         private Vector3 PuntoBordePorCuartos(float sigma)
         {
-            float t = Mathf.Repeat(sigma, 1f) * 4f;
-            int arco = (Mathf.Min(3, Mathf.FloorToInt(t)) + 1) % 4;
-            float u = t - Mathf.Floor(t);
+            float sigmaBorde = Mathf.Repeat(_parametros.desplazamientoArcoBorde * 0.25f - sigma, 1f);
 
-            float tInicio = (0.25f + 0.5f * arco) * Mathf.PI;
-            return _borde.PuntoEnT(tInicio + u * 0.5f * Mathf.PI);
+            float t = sigmaBorde * 4f;
+            int arco = Mathf.Min(3, Mathf.FloorToInt(t));
+            float u = Mathf.Repeat(t, 1f);
+
+            // Reparto por longitud de arco y no por parametro: con exponente 16 el borde recorre
+            // casi todo su largo en la parte recta y gira la esquina en un tramo minimo. Repartir
+            // por parametro concentra columnas en las esquinas y las abre en abanico.
+            Vector3[] muestras = _borde.MuestrearArco(arco, 64);
+
+            float total = 0f;
+            var acumulado = new float[muestras.Length];
+            for (int i = 1; i < muestras.Length; i++)
+            {
+                total += Vector2.Distance(new Vector2(muestras[i - 1].x, muestras[i - 1].z),
+                                          new Vector2(muestras[i].x, muestras[i].z));
+                acumulado[i] = total;
+            }
+
+            float objetivo = u * total;
+            for (int i = 1; i < muestras.Length; i++)
+            {
+                if (acumulado[i] < objetivo) continue;
+                float f = (objetivo - acumulado[i - 1]) / Mathf.Max(1e-4f, acumulado[i] - acumulado[i - 1]);
+                return Vector3.Lerp(muestras[i - 1], muestras[i], f);
+            }
+
+            return muestras[muestras.Length - 1];
         }
+
     }
 }

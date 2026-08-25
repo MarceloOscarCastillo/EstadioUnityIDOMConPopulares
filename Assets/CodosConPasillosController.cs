@@ -215,7 +215,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public RolEstructuralTecho RolEnElTecho => RolEstructuralTecho.Codo;
     public string IdParaTecho => idSectorParaTecho;
     public IReadOnlyList<Vector3> CabezasTensoresLocales => System.Array.Empty<Vector3>();
-    public IReadOnlyList<Vector3> CoronamientoLocal => coronamiento;
+    public IReadOnlyList<Vector3> CoronamientoLocal =>
+publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.Empty<Vector3>();
+
     public Transform TransformSector => transform;
 
 
