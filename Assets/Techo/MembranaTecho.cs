@@ -46,6 +46,9 @@ namespace Estadio.Techo
          "las vigas longitudinales.")]
         [Range(0, 3)] public int desplazamientoArcoBorde;
 
+        [Tooltip("Cuanto baja la tela despues de pasar sobre el tensor, donde la grada llega " +
+         "hasta el techo y no hay hueco que cerrar.")]
+        public float remateSobreAnclaje;
 
 
         public static ParametrosMembrana PorDefecto => new ParametrosMembrana
@@ -55,7 +58,8 @@ namespace Estadio.Techo
             anillosFaldon = 2,
             festonRelativo = 0.022f,
             solapeFaldon = 1.5f,
-            caidaMinimaFaldon = 0.5f
+            caidaMinimaFaldon = 0.5f,
+            remateSobreAnclaje = 1.5f
         };
     }
 
@@ -82,6 +86,9 @@ namespace Estadio.Techo
         private BordeInteriorTecho _borde;
 
         private Cable[] _transversalesPorZ;
+
+        private Cable _cierreNegativo;
+        private Cable _cierrePositivo;
 
         private RejillaSuperficie _rejillaPano;
         private RejillaSuperficie _rejillaFaldon;
@@ -137,6 +144,9 @@ namespace Estadio.Techo
 
             _transversalesPorZ = new List<Cable>(tendido.Transversales).ToArray();
             Array.Sort(_transversalesPorZ, (a, b) => a.coordenada.CompareTo(b.coordenada));
+
+            _cierreNegativo = tendido.CierreZNegativo;
+            _cierrePositivo = tendido.CierreZPositivo;
 
             ConstruirPano();
             ConstruirFaldon();
@@ -232,8 +242,17 @@ namespace Estadio.Techo
                 Vector3 arriba = PuntoPerimetroTecho(sigma);
                 float muro = _coronamientos.AlturaBajoPunto(new Vector2(arriba.x, arriba.z));
 
-                float caida = Mathf.Max(_parametros.caidaMinimaFaldon,
-                                        arriba.y - muro + _parametros.solapeFaldon);
+                bool hayAnclajes = !_perimetroTecho.EsZonaCodo(arriba.x > 0f, arriba.z);
+
+                float caida = hayAnclajes
+                    ? _parametros.remateSobreAnclaje
+                    : Mathf.Max(_parametros.caidaMinimaFaldon,
+                                arriba.y - muro + _parametros.solapeFaldon);
+
+
+
+                //float caida = Mathf.Max(_parametros.caidaMinimaFaldon,
+                //                        arriba.y - muro + _parametros.solapeFaldon);
 
                 CaidaFaldonMaxima = Mathf.Max(CaidaFaldonMaxima, caida);
                 CaidaFaldonMinima = Mathf.Min(CaidaFaldonMinima, caida);
@@ -283,6 +302,17 @@ namespace Estadio.Techo
 
         /// <summary>Punto sobre una viga longitudinal a la cota Z dada, tomando la altura de
         /// la tela ahi.</summary>
+        //private Vector3 PuntoEnViga(bool ladoPositivo, float z)
+        //{
+        //    RectaViga recta = ladoPositivo
+        //        ? _perimetroTecho.RectaXPositivo
+        //        : _perimetroTecho.RectaXNegativo;
+
+        //    float x = recta.XenZ(z);
+        //    if (!TryAlturaTela(x, z, out float y)) y = 0f;
+        //    return new Vector3(x, y, z);
+        //}
+
         private Vector3 PuntoEnViga(bool ladoPositivo, float z)
         {
             RectaViga recta = ladoPositivo
@@ -290,11 +320,19 @@ namespace Estadio.Techo
                 : _perimetroTecho.RectaXNegativo;
 
             float x = recta.XenZ(z);
-            if (!TryAlturaTela(x, z, out float y)) y = 0f;
+
+            // No se pasa por TryAlturaTela: el punto de la viga ES el extremo de los cables
+            // transversales, y evaluar ahi cae justo en el limite del rango de TryPuntoEnEje.
+            // Se interpola directamente entre los extremos de los dos cables que flanquean z.
+            float y = AlturaExtremoEntreCables(z, ladoPositivo);
+
             return new Vector3(x, y, z);
         }
 
+
         /// <summary>Punto sobre un cable de cierre, a la fraccion u de su recorrido en X.</summary>
+
+
         private Vector3 PuntoEnCierre(bool ladoPositivo, float u)
         {
             float z = ladoPositivo ? _perimetroTecho.ZCierrePositivo : _perimetroTecho.ZCierreNegativo;
@@ -303,9 +341,22 @@ namespace Estadio.Techo
             float xPos = _perimetroTecho.RectaXPositivo.XenZ(z);
             float x = Mathf.Lerp(xNeg, xPos, Mathf.Clamp01(u));
 
-            if (!TryAlturaTela(x, z, out float y)) y = 0f;
+            // Igual que en PuntoEnViga: en los extremos, evaluar cae justo en el limite del rango
+            // de TryPuntoEnEje. Se toma el cable de cierre directamente.
+            Cable cierre = ladoPositivo ? _cierrePositivo : _cierreNegativo;
+
+            float y;
+            if (cierre != null && cierre.TryPuntoEnEje(x, out Vector3 punto)) y = punto.y;
+            else if (cierre != null)
+                y = Mathf.Lerp(cierre.apoyos[0].posicion.y,
+                               cierre.apoyos[cierre.apoyos.Length - 1].posicion.y, Mathf.Clamp01(u));
+            else if (!TryAlturaTela(x, z, out y)) y = 0f;
+
             return new Vector3(x, y, z);
         }
+
+
+
 
         /// <summary>
         /// Altura de la tela en (x, z): se interpola entre los dos cables transversales que
@@ -423,6 +474,13 @@ namespace Estadio.Techo
                               $"({exterior.x,7:F1}, {exterior.z,7:F1})");
             }
 
+            sb.AppendLine("Columnas del perimetro con altura sospechosa:");
+            for (int c = 0; c < _rejillaPano.columnas; c++)
+            {
+                Vector3 p = _rejillaPano.Vertice(_rejillaPano.filas - 1, c);
+                if (p.y > 5f) continue;   // el techo esta a 26-33 m: cualquier cosa cerca de cero es error
+                sb.AppendLine($"  col {c,4}: ({p.x,7:F1}, {p.y,6:F1}, {p.z,7:F1})");
+            }
 
             return sb.ToString();
         }
@@ -474,6 +532,34 @@ namespace Estadio.Techo
 
             return muestras[muestras.Length - 1];
         }
+
+        private float AlturaExtremoEntreCables(float z, bool ladoPositivo)
+        {
+            if (_transversalesPorZ == null || _transversalesPorZ.Length == 0) return 0f;
+
+            int siguiente = -1;
+            for (int i = 0; i < _transversalesPorZ.Length; i++)
+                if (_transversalesPorZ[i].coordenada >= z) { siguiente = i; break; }
+
+            if (siguiente < 0) return AlturaExtremo(_transversalesPorZ[_transversalesPorZ.Length - 1], ladoPositivo);
+            if (siguiente == 0) return AlturaExtremo(_transversalesPorZ[0], ladoPositivo);
+
+            Cable a = _transversalesPorZ[siguiente - 1];
+            Cable b = _transversalesPorZ[siguiente];
+
+            float span = b.coordenada - a.coordenada;
+            if (span < 1e-4f) return AlturaExtremo(a, ladoPositivo);
+
+            float u = Mathf.Clamp01((z - a.coordenada) / span);
+            return Mathf.Lerp(AlturaExtremo(a, ladoPositivo), AlturaExtremo(b, ladoPositivo), u);
+        }
+
+        private static float AlturaExtremo(Cable cable, bool ladoPositivo)
+        {
+            ApoyoCable[] apoyos = cable.apoyos;
+            return ladoPositivo ? apoyos[apoyos.Length - 1].posicion.y : apoyos[0].posicion.y;
+        }
+
 
     }
 }

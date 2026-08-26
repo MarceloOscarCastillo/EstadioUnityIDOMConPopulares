@@ -19,10 +19,21 @@ namespace Estadio.Techo
         [SerializeField] private GameObject prefabTubular;
         [SerializeField] private float longitudModuloTubular = 2.0f;
 
-        [Tooltip("Modulo del puente de cabecera. Si queda vacio se usa el mismo que las " +
-                 "tubulares.")]
+        [Tooltip("Modulo del puente de cabecera. Solo se usa si el puente se genera con " +
+                 "prefab; si esta vacio se genera procedural con cables.")]
         [SerializeField] private GameObject prefabPuente;
         [SerializeField] private float longitudModuloPuente = 2.0f;
+
+        [Header("Puente de cables (Diseno 1)")]
+        [Tooltip("En el Diseno 1 el puente son dos cables paralelos separados el canto del " +
+                 "elemento, unidos por pendolas verticales. No lleva prefab: la forma sale " +
+                 "de la panza, que a su vez depende de la tension de la membrana.")]
+        [SerializeField] private bool puenteConCables = true;
+        [SerializeField] private float diametroCablePuente = 0.12f;
+        [SerializeField] private int pendolasPorPuente = 10;
+        [SerializeField] private float diametroPendola = 0.08f;
+        [SerializeField, Range(4, 12)] private int ladosCilindro = 6;
+        [SerializeField] private Material materialCables;
 
         [Header("Esquinas del vano")]
         [Tooltip("Giro a partir del cual se corta el barrido y se deja el hueco de la " +
@@ -103,13 +114,23 @@ namespace Estadio.Techo
             if (eje == null || eje.Length < 2) return;
 
             bool esPuente = elemento.tipo == TipoElementoBorde.PuenteCabecera;
+
+            var contenedor = new GameObject($"Borde_{elemento.id}");
+            contenedor.transform.SetParent(_raiz.transform, false);
+
+            // El puente del Diseno 1 no es un reticulado: son dos cables paralelos con
+            // pendolas. Su forma sale de la panza del eje, que depende de la tension de la
+            // membrana, asi que no puede venir de un prefab rigido.
+            if (esPuente && puenteConCables)
+            {
+                GenerarPuenteDeCables(elemento, contenedor.transform);
+                return;
+            }
+
             GameObject prefab = esPuente && prefabPuente != null ? prefabPuente : prefabTubular;
             float longitudModulo = esPuente && prefabPuente != null
                 ? longitudModuloPuente
                 : longitudModuloTubular;
-
-            var contenedor = new GameObject($"Borde_{elemento.id}");
-            contenedor.transform.SetParent(_raiz.transform, false);
 
             // Se acumulan segmentos consecutivos mientras la direccion se mantenga estable.
             var tramo = new List<Vector3> { eje[0] };
@@ -172,6 +193,98 @@ namespace Estadio.Techo
 
                 ModulosInstanciados++;
             }
+        }
+
+        // ------------------------------------------------------------------
+        //  Puente de cables
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Dos cables paralelos separados el canto del elemento, unidos por pendolas
+        /// verticales. El superior corre por el eje —a la altura de los cables que sostienen
+        /// la membrana— y el inferior a la cota del cordon inferior de las tubulares.
+        /// </summary>
+        private void GenerarPuenteDeCables(ElementoBordeConstruido elemento, Transform padre)
+        {
+            Vector3[] superior = elemento.eje;
+
+            var inferior = new Vector3[superior.Length];
+            for (int i = 0; i < superior.Length; i++)
+                inferior[i] = superior[i] - Vector3.up * elemento.canto;
+
+            CrearTuboPorPolilinea(superior, diametroCablePuente, $"{elemento.id}_cable_sup", padre);
+            CrearTuboPorPolilinea(inferior, diametroCablePuente, $"{elemento.id}_cable_inf", padre);
+
+            int pendolas = Mathf.Max(2, pendolasPorPuente);
+            for (int p = 0; p <= pendolas; p++)
+            {
+                float u = (float)p / pendolas;
+                int i = Mathf.Clamp(Mathf.RoundToInt(u * (superior.Length - 1)), 0, superior.Length - 1);
+
+                CrearTuboPorPolilinea(new[] { superior[i], inferior[i] },
+                                      diametroPendola, $"{elemento.id}_pendola_{p}", padre);
+            }
+
+            ModulosInstanciados += 2 + pendolas + 1;
+        }
+
+        /// <summary>
+        /// Barre una seccion circular a lo largo de una polilinea. Se genera procedural en
+        /// vez de instanciar prefabs porque la directriz cambia con la tension de la membrana.
+        /// </summary>
+        private void CrearTuboPorPolilinea(Vector3[] eje, float diametro, string nombre, Transform padre)
+        {
+            if (eje == null || eje.Length < 2) return;
+
+            int lados = Mathf.Max(4, ladosCilindro);
+            float radio = diametro * 0.5f;
+
+            var vertices = new List<Vector3>(eje.Length * lados);
+            var triangulos = new List<int>(eje.Length * lados * 6);
+
+            for (int i = 0; i < eje.Length; i++)
+            {
+                Vector3 tangente = i == 0
+                    ? (eje[1] - eje[0]).normalized
+                    : (eje[i] - eje[i - 1]).normalized;
+
+                Vector3 normal = Vector3.Cross(tangente, Vector3.up);
+                if (normal.sqrMagnitude < 1e-6f) normal = Vector3.right;
+                normal.Normalize();
+
+                Vector3 binormal = Vector3.Cross(tangente, normal).normalized;
+
+                for (int l = 0; l < lados; l++)
+                {
+                    float ang = 2f * Mathf.PI * l / lados;
+                    vertices.Add(eje[i] + (normal * Mathf.Cos(ang) + binormal * Mathf.Sin(ang)) * radio);
+                }
+            }
+
+            for (int i = 0; i < eje.Length - 1; i++)
+            {
+                int a = i * lados;
+                int b = (i + 1) * lados;
+
+                for (int l = 0; l < lados; l++)
+                {
+                    int l1 = l;
+                    int l2 = (l + 1) % lados;
+                    triangulos.AddRange(new[] { a + l1, a + l2, b + l1, a + l2, b + l2, b + l1 });
+                }
+            }
+
+            var mesh = new Mesh();
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = triangulos.ToArray();
+            mesh.RecalculateNormals();
+
+            var go = new GameObject(nombre);
+            go.transform.SetParent(padre, false);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.AddComponent<MeshFilter>().mesh = mesh;
+            go.AddComponent<MeshRenderer>().sharedMaterial = materialCables;
         }
 
         private static Vector3 PuntoEnPolilinea(List<Vector3> puntos, float longitudTotal, float u)
