@@ -181,6 +181,34 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     private readonly List<Vector3> _cabezasTensores = new List<Vector3>();
 
     public bool PublicaAnclajesTecho => publicarAnclajesTecho;
+
+    public GeometriaSoporte GeometriaDelSoporte
+    {
+        get
+        {
+            if (!generarSoportes) return default;
+
+            float zBorde = ZBordeExteriorGrada(numFilas, 1f);
+
+            float zExterior = filaVigaVerticalExterior * profundidadEscalon;
+            float zInterior = filaVigaVerticalInterior * profundidadEscalon;
+
+            float zArranque = filaArranqueDiagonal * profundidadEscalon;
+            float yArranque = CalcularAlturaAcumuladaCabecera(filaArranqueDiagonal);
+            float yFinal = CalcularAlturaAcumuladaCabecera(numFilas - 1);
+
+            float avance = Mathf.Abs(zBorde - zArranque);
+            float pendiente = avance > 1e-3f ? (yFinal - yArranque) / avance : 0f;
+
+            return new GeometriaSoporte
+            {
+                distanciaVerticalExterior = Mathf.Abs(zBorde - zExterior),
+                distanciaVerticalInterior = Mathf.Abs(zBorde - zInterior),
+                pendienteDiagonal = pendiente
+            };
+        }
+    }
+
     public RolEstructuralTecho RolEnElTecho => rolEnElTecho;
     public string IdParaTecho => idTribunaParaTecho;
     public IReadOnlyList<Vector3> CabezasTensoresLocales => _cabezasTensores;

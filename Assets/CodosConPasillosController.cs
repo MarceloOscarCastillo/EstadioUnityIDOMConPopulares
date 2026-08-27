@@ -212,6 +212,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     private readonly List<Vector3> coronamiento = new List<Vector3>();
 
     public bool PublicaAnclajesTecho => false;
+
+    public GeometriaSoporte GeometriaDelSoporte => default;
+
     public RolEstructuralTecho RolEnElTecho => RolEstructuralTecho.Codo;
     public string IdParaTecho => idSectorParaTecho;
     public IReadOnlyList<Vector3> CabezasTensoresLocales => System.Array.Empty<Vector3>();

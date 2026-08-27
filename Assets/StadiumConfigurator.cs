@@ -82,6 +82,13 @@ public class EstadioConfigurator : MonoBehaviour
     private readonly RegistroCoronamientos registroCoronamientos = new RegistroCoronamientos();
     public RegistroCoronamientos RegistroCoronamientos => registroCoronamientos;
 
+    private GeometriaSoporte geometriaSoporteXNegativo;
+    private GeometriaSoporte geometriaSoporteXPositivo;
+
+    public GeometriaSoporte GeometriaSoporteXNegativo => geometriaSoporteXNegativo;
+    public GeometriaSoporte GeometriaSoporteXPositivo => geometriaSoporteXPositivo;
+
+
 
     [ContextMenu("Aplicar Configuración Seleccionada")]
 public void AplicarConfiguracionEstadio()
@@ -530,6 +537,9 @@ public void AplicarConfiguracionEstadio()
         registroTecho.Limpiar();
         registroCoronamientos.Limpiar();
 
+        geometriaSoporteXNegativo = default;
+        geometriaSoporteXPositivo = default;
+
         Matrix4x4 mundoALocal = MatrizTecho;
         int anclajes = 0;
         int coronamiento = 0;
@@ -552,6 +562,15 @@ public void AplicarConfiguracionEstadio()
                     registroTecho.Publicar(local, eje, proveedor.IdParaTecho, i);
                     anclajes++;
                 }
+
+                GeometriaSoporte geo = proveedor.GeometriaDelSoporte;
+                if (geo.EsValida && cabezas.Count > 0)
+                {
+                    Vector3 muestra = mundoALocal.MultiplyPoint3x4(t.TransformPoint(cabezas[0]));
+                    if (muestra.x > 0f) geometriaSoporteXPositivo = geo;
+                    else geometriaSoporteXNegativo = geo;
+                }
+
             }
 
             // Coronamiento: TODOS los sectores, sostengan o no el techo.

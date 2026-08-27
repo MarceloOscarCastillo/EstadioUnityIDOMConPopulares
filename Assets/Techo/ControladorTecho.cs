@@ -41,7 +41,7 @@ namespace Estadio.Techo
 
         [Header("Anclajes sinteticos (mientras no publiquen las tribunas)")]
         [SerializeField] private bool usarAnclajesSinteticos = false;
-        [SerializeField] private float separacionVigas =    5f;
+        [SerializeField] private float separacionVigas = 5f;
         [SerializeField] private float alturaCoronamientoLateral = 44f;
         [SerializeField] private float alturaCoronamientoCabecera = 30f;
 
@@ -73,6 +73,7 @@ namespace Estadio.Techo
         private MembranaTecho _membrana;
 
         private GeneradorMallasTecho _generador;
+        private SoportesTechoCodo _soportesCodo;
 
         private bool _geometriaLista;
         private string _ultimoError;
@@ -292,13 +293,29 @@ namespace Estadio.Techo
             else
             {
                 _generador.Generar(_marco);
+                GenerarSoportesCodo();
                 TechoCambio?.Invoke(true);
             }
+        }
+
+        /// <summary>
+        /// Los soportes de codo son del techo, no del estadio: sostienen la viga longitudinal
+        /// donde ya no hay platea abajo. Por eso aparecen y desaparecen con el.
+        /// </summary>
+        private void GenerarSoportesCodo()
+        {
+            if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
+            if (_soportesCodo == null) return;
+
+            _soportesCodo.Generar(origenTecho, configurador);
         }
 
         [ContextMenu("Ocultar techo")]
         public void Ocultar()
         {
+            if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
+            _soportesCodo?.Descartar();
+
             if (_generador == null) _generador = GetComponent<GeneradorMallasTecho>();
             if (_generador == null) return;
 
@@ -310,6 +327,9 @@ namespace Estadio.Techo
         {
             yield return null;
             _generador.Generar(_marco);
+
+            yield return null;
+            GenerarSoportesCodo();
 
             yield return null;
             TechoCambio?.Invoke(true);

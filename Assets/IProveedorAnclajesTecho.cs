@@ -17,29 +17,31 @@ public enum RolEstructuralTecho
 /// Lo unico que el techo necesita saber de un sector. El techo no conoce StandGenerator
 /// ni SeatedStandGenerator: solo pide cabezas de tensor y un rol.
 /// </summary>
+
 public interface IProveedorAnclajesTecho
 {
     bool PublicaAnclajesTecho { get; }
     RolEstructuralTecho RolEnElTecho { get; }
     string IdParaTecho { get; }
-
-    /// <summary>
-    /// Cabezas de tensor en coordenadas locales del sector, cacheadas DURANTE la
-    /// generacion. Se cachean y no se recalculan porque los overrides por variante
-    /// restauran numFilas despues de generar: recalcular mas tarde daria alturas
-    /// equivocadas justo en las variantes con override.
-    /// </summary>
     IReadOnlyList<Vector3> CabezasTensoresLocales { get; }
-
-    /// <summary>
-    /// Borde superior de la grada, en coordenadas locales del sector. Lo publican TODOS
-    /// los sectores, sostengan o no el techo: el faldon recorre el perimetro entero y
-    /// necesita saber hasta donde bajar en cada punto. Como el coronamiento varia dentro
-    /// de una misma seccion —recorte de filas, una o dos bandejas— hace falta la
-    /// polilinea completa y no un valor unico.
-    /// </summary>
     IReadOnlyList<Vector3> CoronamientoLocal { get; }
 
+    /// <summary>Geometria del soporte de este sector. Solo tiene sentido en los que
+    /// publican anclajes; el resto devuelve default.</summary>
+    GeometriaSoporte GeometriaDelSoporte { get; }
+
     Transform TransformSector { get; }
+}
+
+public struct GeometriaSoporte
+{
+    public float distanciaVerticalExterior;
+    public float distanciaVerticalInterior;
+
+    /// <summary>Pendiente de la viga diagonal: metros que sube por metro que avanza hacia
+    /// afuera. Los soportes de codo la continuan para que no haya quiebre.</summary>
+    public float pendienteDiagonal;
+
+    public bool EsValida => distanciaVerticalInterior > distanciaVerticalExterior;
 }
 
