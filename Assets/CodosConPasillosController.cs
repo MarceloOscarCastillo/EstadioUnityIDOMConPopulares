@@ -55,6 +55,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     [Header("Materiales")]
     public Material Material;
     public Material GrisCemento;
+    public Material Rojo;
+    public Material Azul;
+
 
     [Header("Es codo de platea")]
     public bool esCodoPlatea = true;
@@ -69,6 +72,18 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
 
     [Tooltip("Si true usa forma personalizada (sigmoide) para el recorte de filas. Si false usa recorte circular puro.")]
     public bool usarFormaPersonalizada = true;
+
+
+    [Header("Recorte por Deciles")]
+    [Tooltip("Si true usa la funcion de deciles en lugar de la sigmoide")]
+    public bool usarRecortePorDeciles = false;
+
+    [Tooltip("Porcentaje del recorte total completado al final de cada decil del arco. Debe ser creciente y terminar en 1.")]
+    public float[] porcentajeRecortePorDecil = new float[10]
+        { 0f, 0f, 0.05f, 0.15f, 0.30f, 0.50f, 0.70f, 0.85f, 0.95f, 1f };
+    [Tooltip("Colorea cada decil alternando materiales para facilitar la calibracion")]
+    public bool colorearDecilesParaCalibrar = false;
+
 
     [Header("Recorte por Lineas Limite")]
     public bool recortarPorLineasLimite = false;
@@ -344,6 +359,17 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                 ConfigurarEscalon(bloqueObj, w1, w2, w3, w4, celda.fila);
 
                 Material matAUsar = celda.tipo == TipoCelda.BloqueLibre ? GrisCemento : Material;
+
+
+                if (colorearDecilesParaCalibrar)
+                {
+                    float tCelda = ((celda.angStart + celda.angEnd) / 2f) / anguloTotal;
+                    if (invertirSentido) tCelda = 1f - tCelda;
+                    int decil = Mathf.Clamp(Mathf.FloorToInt(tCelda * 10f), 0, 9);
+                    matAUsar = (decil % 2 == 0) ? Rojo : Azul;
+                }
+
+
                 AplicarMaterialATodo(bloqueObj, matAUsar);
             }
         }
@@ -639,22 +665,27 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
     
     int FilasEnAngulo(float angulo)
     {
-        float t = angulo / anguloTotal;
-        if (invertirSentido) t = 1f - t;
+        //float t = angulo / anguloTotal;
 
-        float tCurvado;
-        if (usarFormaPersonalizada)
-        {
-            float tSigmoide = Mathf.Pow(t, exponente) /
-                              (Mathf.Pow(t, exponente) + Mathf.Pow(1f - t, exponente));
-            tCurvado = Mathf.Lerp(tSigmoide, t, mezclaLineal);
-        }
-        else
-        {
-            tCurvado = t; // circular puro
-        }
+        //if (invertirSentido) t = 1f - t;
 
-        return Mathf.RoundToInt(Mathf.Lerp(filasMaximas, filasMinimas, tCurvado));
+        //float tCurvado;
+        //if (usarFormaPersonalizada)
+        //{
+        //    float tSigmoide = Mathf.Pow(t, exponente) /
+        //                      (Mathf.Pow(t, exponente) + Mathf.Pow(1f - t, exponente));
+        //    tCurvado = Mathf.Lerp(tSigmoide, t, mezclaLineal);
+        //}
+        //else
+        //{
+        //    tCurvado = t; // circular puro
+        //}
+
+        //return Mathf.RoundToInt(Mathf.Lerp(filasMaximas, filasMinimas, tCurvado));
+
+        return Mathf.RoundToInt(FilasEnAnguloFloat(angulo));
+
+
     }
     
     void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor, int fila, int columna, int asiento)
@@ -1386,11 +1417,32 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
     float FilasEnAnguloFloat(float angulo)
     {
+        //float t = angulo / anguloTotal;
+        //if (invertirSentido) t = 1f - t;
+
+        //float tCurvado;
+        //if (usarFormaPersonalizada)
+        //{
+        //    float tSigmoide = Mathf.Pow(t, exponente) /
+        //                      (Mathf.Pow(t, exponente) + Mathf.Pow(1f - t, exponente));
+        //    tCurvado = Mathf.Lerp(tSigmoide, t, mezclaLineal);
+        //}
+        //else
+        //{
+        //    tCurvado = t;
+        //}
+
+        //return Mathf.Lerp(filasMaximas, filasMinimas, tCurvado);
+
         float t = angulo / anguloTotal;
         if (invertirSentido) t = 1f - t;
 
         float tCurvado;
-        if (usarFormaPersonalizada)
+        if (usarRecortePorDeciles)
+        {
+            tCurvado = RecorteEnT(t);
+        }
+        else if (usarFormaPersonalizada)
         {
             float tSigmoide = Mathf.Pow(t, exponente) /
                               (Mathf.Pow(t, exponente) + Mathf.Pow(1f - t, exponente));
@@ -1402,6 +1454,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         }
 
         return Mathf.Lerp(filasMaximas, filasMinimas, tCurvado);
+
     }
 
     void GenerarSoportesCodo(GameObject contenedor)
@@ -2261,7 +2314,44 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         }
     }
 
+    float[] ObtenerDecilesValidados()
+    {
+        float[] d = new float[10];
 
+        // Copiar lo que haya, completando si el array esta mal dimensionado
+        for (int i = 0; i < 10; i++)
+            d[i] = (porcentajeRecortePorDecil != null && i < porcentajeRecortePorDecil.Length)
+                 ? Mathf.Clamp01(porcentajeRecortePorDecil[i])
+                 : 1f;
+
+        // Forzar monotonia creciente
+        for (int i = 1; i < 10; i++)
+            if (d[i] < d[i - 1]) d[i] = d[i - 1];
+
+        // El ultimo decil siempre completa el recorte
+        d[9] = 1f;
+
+        return d;
+    }
+
+    float RecorteEnT(float t)
+    {
+        float[] d = ObtenerDecilesValidados();
+        t = Mathf.Clamp01(t);
+
+        // Posicion dentro de la grilla de deciles: 0 -> inicio, 10 -> fin
+        float pos = t * 10f;
+        int idx = Mathf.FloorToInt(pos);
+        float frac = pos - idx;
+
+        if (idx >= 10) return 1f;
+
+        // El valor al inicio del decil 0 es 0; el de cualquier otro es el decil anterior
+        float valorInicio = (idx == 0) ? 0f : d[idx - 1];
+        float valorFin = d[idx];
+
+        return Mathf.Lerp(valorInicio, valorFin, frac);
+    }
 
 
 }
