@@ -74,6 +74,7 @@ namespace Estadio.Techo
 
         private GeneradorMallasTecho _generador;
         private SoportesTechoCodo _soportesCodo;
+        private VigasFinalesTecho _vigasFinales;
 
         private bool _geometriaLista;
         private string _ultimoError;
@@ -308,6 +309,9 @@ namespace Estadio.Techo
             if (_soportesCodo == null) return;
 
             _soportesCodo.Generar(origenTecho, configurador);
+
+            if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
+            _vigasFinales?.Generar(origenTecho);
         }
 
         [ContextMenu("Ocultar techo")]
@@ -315,6 +319,9 @@ namespace Estadio.Techo
         {
             if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
             _soportesCodo?.Descartar();
+
+            if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
+            _vigasFinales?.Descartar();
 
             if (_generador == null) _generador = GetComponent<GeneradorMallasTecho>();
             if (_generador == null) return;
