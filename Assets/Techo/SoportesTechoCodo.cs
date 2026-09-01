@@ -46,6 +46,11 @@ namespace Estadio.Techo
                  "afinar el empalme si la linea no coincide exacto con la platea vecina.")]
         [SerializeField] private float corrimientoVerticales = 0f;
 
+
+        [Tooltip("Deja libre el ultimo lugar de cada codo para la viga final, que ocupa ese mismo " +
+         "punto. Desmarcar si no se generan vigas finales.")]
+        [SerializeField] private bool reservarExtremoParaVigaFinal = true;
+
         private ControladorTecho _controlador;
         private GameObject _raiz;
 
@@ -126,22 +131,43 @@ namespace Estadio.Techo
                 ? c.PerimetroTecho.RectaXPositivo
                 : c.PerimetroTecho.RectaXNegativo;
 
-            float alturaViga = AlturaVigaLongitudinal(c, ladoPositivo);
+            //float alturaViga = AlturaVigaLongitudinal(c, ladoPositivo);
             float yPiso = NivelPiso(c);
 
             // Direccion en planta hacia el campo. Es hacia donde se separan las verticales.
             Vector2 haciaElCampo = new Vector2(ladoPositivo ? -1f : 1f, 0f);
             Vector2 tangente = recta.Direccion;
 
+            float semiLargo = c.PerimetroTecho.SemiLargo;
+
             foreach (Vector2 posicion in posiciones)
             {
+                float alturaViga = AlturaVigaLongitudinal(c, ladoPositivo, posicion.y > 0f);
+
                 if (!c.PerimetroTecho.EsZonaCodo(ladoPositivo, posicion.y, margenAlUltimoAnclaje))
                     continue;
 
-                GenerarSoporte(posicion, haciaElCampo, tangente, geometria,
-                               alturaViga, yPiso);
+                // El extremo del techo lo ocupa la viga final: si tambien pusieramos un soporte de
+                // codo ahi, quedarian superpuestos en el mismo punto.
+
+                if (reservarExtremoParaVigaFinal &&
+    Mathf.Abs(Mathf.Abs(posicion.y) - semiLargo) < 0.5f)
+                {
+                    // La viga final ocupa este punto, pero el tensor sigue haciendo falta: de el nace
+                    // el cable de cierre.
+                    if (generarTensor)
+                    {
+                        var cabeza = new Vector3(posicion.x, alturaViga, posicion.y);
+                        CrearCaja(cabeza, cabeza + Vector3.up * alturaTensor,
+                                  grosorTensor, profundidadTensor, tangente, "Tensor");
+                    }
+                    continue;
+                }
+
+                GenerarSoporte(posicion, haciaElCampo, tangente, geometria, alturaViga, yPiso);
                 SoportesGenerados++;
             }
+
         }
 
         private void GenerarSoporte(Vector2 posicion, Vector2 haciaElCampo, Vector2 tangente,
@@ -190,7 +216,31 @@ namespace Estadio.Techo
         /// Altura de la viga longitudinal en la zona del codo: la del ultimo anclaje
         /// publicado de ese lado. No baja acompañando la grada del codo.
         /// </summary>
-        private static float AlturaVigaLongitudinal(ControladorTecho c, bool ladoPositivo)
+        //private static float AlturaVigaLongitudinal(ControladorTecho c, bool ladoPositivo)
+        //{
+        //    IReadOnlyList<AnclajeTecho> anclajes = c.Registro.Anclajes;
+
+        //    float mejorZ = float.NegativeInfinity;
+        //    float altura = 0f;
+
+        //    for (int i = 0; i < anclajes.Count; i++)
+        //    {
+        //        Vector3 p = anclajes[i].posicion;
+        //        if ((p.x > 0f) != ladoPositivo) continue;
+
+        //        float distancia = Mathf.Abs(p.z);
+        //        if (distancia <= mejorZ) continue;
+
+        //        mejorZ = distancia;
+        //        altura = p.y;
+        //    }
+
+        //    return altura;
+        //}
+
+
+        private static float AlturaVigaLongitudinal(ControladorTecho c, bool ladoPositivoX,
+                                            bool ladoPositivoZ)
         {
             IReadOnlyList<AnclajeTecho> anclajes = c.Registro.Anclajes;
 
@@ -200,8 +250,11 @@ namespace Estadio.Techo
             for (int i = 0; i < anclajes.Count; i++)
             {
                 Vector3 p = anclajes[i].posicion;
-                if ((p.x > 0f) != ladoPositivo) continue;
+                if ((p.x > 0f) != ladoPositivoX) continue;
+                if ((p.z > 0f) != ladoPositivoZ) continue;
 
+                // El anclaje mas alejado del centro de ESTE extremo: con rampa, los dos extremos
+                // de una misma platea estan a alturas distintas.
                 float distancia = Mathf.Abs(p.z);
                 if (distancia <= mejorZ) continue;
 

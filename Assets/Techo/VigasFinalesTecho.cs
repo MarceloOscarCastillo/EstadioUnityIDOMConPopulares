@@ -128,9 +128,10 @@ namespace Estadio.Techo
                 : c.PerimetroTecho.ZCierreNegativo;
 
             // Extremo alto: el ultimo anclaje de techo de esta viga longitudinal.
+
             var superior = new Vector3(recta.XenZ(zExtremo),
-                                       AlturaVigaLongitudinal(c, ladoPositivoX),
-                                       zExtremo);
+                           AlturaVigaLongitudinal(c, ladoPositivoX, ladoPositivoZ),
+                           zExtremo);
 
             // Extremo bajo en X: el fin del codo. Se toma del perimetro del estadio en esa
             // cota Z, que es donde la grada deja de existir.
@@ -259,7 +260,8 @@ namespace Estadio.Techo
 
         // ------------------------------------------------------------------
 
-        private static float AlturaVigaLongitudinal(ControladorTecho c, bool ladoPositivo)
+        private static float AlturaVigaLongitudinal(ControladorTecho c, bool ladoPositivoX,
+                                            bool ladoPositivoZ)
         {
             IReadOnlyList<AnclajeTecho> anclajes = c.Registro.Anclajes;
 
@@ -269,7 +271,8 @@ namespace Estadio.Techo
             for (int i = 0; i < anclajes.Count; i++)
             {
                 Vector3 p = anclajes[i].posicion;
-                if ((p.x > 0f) != ladoPositivo) continue;
+                if ((p.x > 0f) != ladoPositivoX) continue;
+                if ((p.z > 0f) != ladoPositivoZ) continue;
 
                 float distancia = Mathf.Abs(p.z);
                 if (distancia <= mejorZ) continue;
