@@ -75,6 +75,7 @@ namespace Estadio.Techo
         private GeneradorMallasTecho _generador;
         private SoportesTechoCodo _soportesCodo;
         private VigasFinalesTecho _vigasFinales;
+        private VigaLongitudinalTecho _vigaLongitudinal;
 
         private bool _geometriaLista;
         private string _ultimoError;
@@ -308,6 +309,11 @@ namespace Estadio.Techo
             if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
             if (_soportesCodo == null) return;
 
+            // La viga longitudinal va primero: los soportes de codo y las vigas finales
+            // consultan su altura para saber donde apoyar.
+            if (_vigaLongitudinal == null) _vigaLongitudinal = GetComponent<VigaLongitudinalTecho>();
+            _vigaLongitudinal?.Generar(origenTecho);
+
             _soportesCodo.Generar(origenTecho, configurador);
 
             if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
@@ -322,6 +328,9 @@ namespace Estadio.Techo
 
             if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
             _vigasFinales?.Descartar();
+
+            if (_vigaLongitudinal == null) _vigaLongitudinal = GetComponent<VigaLongitudinalTecho>();
+            _vigaLongitudinal?.Descartar();
 
             if (_generador == null) _generador = GetComponent<GeneradorMallasTecho>();
             if (_generador == null) return;

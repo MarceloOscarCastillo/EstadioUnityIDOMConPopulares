@@ -46,12 +46,16 @@ namespace Estadio.Techo
                  "afinar el empalme si la linea no coincide exacto con la platea vecina.")]
         [SerializeField] private float corrimientoVerticales = 0f;
 
+        [Tooltip("Cuanto por debajo del muro del codo arranca la diagonal, para que quede " +
+                 "sosteniendolo desde abajo y no atravesandolo.")]
+        [SerializeField] private float holguraBajoCoronamiento = 1f;
 
-        [Tooltip("Deja libre el ultimo lugar de cada codo para la viga final, que ocupa ese mismo " +
-         "punto. Desmarcar si no se generan vigas finales.")]
+        [Tooltip("Deja libre el ultimo lugar de cada codo para la viga final, que ocupa ese " +
+                 "mismo punto. Desmarcar si no se generan vigas finales.")]
         [SerializeField] private bool reservarExtremoParaVigaFinal = true;
 
         private ControladorTecho _controlador;
+        private VigaLongitudinalTecho _viga;
         private GameObject _raiz;
 
         public bool Generado => _raiz != null;
@@ -131,138 +135,95 @@ namespace Estadio.Techo
                 ? c.PerimetroTecho.RectaXPositivo
                 : c.PerimetroTecho.RectaXNegativo;
 
-            //float alturaViga = AlturaVigaLongitudinal(c, ladoPositivo);
             float yPiso = NivelPiso(c);
+            float semiLargo = c.PerimetroTecho.SemiLargo;
 
             // Direccion en planta hacia el campo. Es hacia donde se separan las verticales.
             Vector2 haciaElCampo = new Vector2(ladoPositivo ? -1f : 1f, 0f);
             Vector2 tangente = recta.Direccion;
 
-            float semiLargo = c.PerimetroTecho.SemiLargo;
-
             foreach (Vector2 posicion in posiciones)
             {
-                float alturaViga = AlturaVigaLongitudinal(c, ladoPositivo, posicion.y > 0f);
-
                 if (!c.PerimetroTecho.EsZonaCodo(ladoPositivo, posicion.y, margenAlUltimoAnclaje))
                     continue;
 
-                // El extremo del techo lo ocupa la viga final: si tambien pusieramos un soporte de
-                // codo ahi, quedarian superpuestos en el mismo punto.
+                // La altura se consulta por posicion: la viga no es horizontal, sigue las
+                // cabezas de tensor de la platea de ese lado.
+                float alturaViga = AlturaViga(c, ladoPositivo, posicion.y);
 
+                // El extremo del techo lo ocupa la viga final. Ahi solo va el tensor: el
+                // cable de cierre nace de el.
                 if (reservarExtremoParaVigaFinal &&
-    Mathf.Abs(Mathf.Abs(posicion.y) - semiLargo) < 0.5f)
+                    Mathf.Abs(Mathf.Abs(posicion.y) - semiLargo) < 0.5f)
                 {
-                    // La viga final ocupa este punto, pero el tensor sigue haciendo falta: de el nace
-                    // el cable de cierre.
                     if (generarTensor)
                     {
-                        var cabeza = new Vector3(posicion.x, alturaViga, posicion.y);
-                        CrearCaja(cabeza, cabeza + Vector3.up * alturaTensor,
+                        var soloCabeza = new Vector3(posicion.x, alturaViga, posicion.y);
+                        CrearCaja(soloCabeza - Vector3.up * alturaTensor, soloCabeza,
                                   grosorTensor, profundidadTensor, tangente, "Tensor");
                     }
                     continue;
                 }
 
-                GenerarSoporte(posicion, haciaElCampo, tangente, geometria, alturaViga, yPiso);
+                GenerarSoporte(c, posicion, haciaElCampo, tangente, geometria,
+                               alturaViga, yPiso);
                 SoportesGenerados++;
             }
-
         }
 
-        private void GenerarSoporte(Vector2 posicion, Vector2 haciaElCampo, Vector2 tangente,
-                                    GeometriaSoporte geometria, float alturaViga, float yPiso)
+        private void GenerarSoporte(ControladorTecho c, Vector2 posicion, Vector2 haciaElCampo,
+                                    Vector2 tangente, GeometriaSoporte geometria,
+                                    float alturaViga, float yPiso)
         {
-            // La cabeza del tensor esta sobre la linea de la viga longitudinal; las verticales
-            // hacia el campo, a las distancias que publico la platea de este lado.
             float dExterior = geometria.distanciaVerticalExterior + corrimientoVerticales;
             float dInterior = geometria.distanciaVerticalInterior + corrimientoVerticales;
 
             Vector2 xzExterior = posicion + haciaElCampo * dExterior;
             Vector2 xzInterior = posicion + haciaElCampo * dInterior;
 
-            Vector3 cabeza = new Vector3(posicion.x, alturaViga, posicion.y);
+            // La cabeza esta en la viga, y el tensor es lo ultimo: la diagonal muere donde
+            // arranca el tensor, no en la viga. Asi los soportes de codo quedan igual que los
+            // de la platea, donde la viga se apoya sobre la arista del tensor.
+            var cabeza = new Vector3(posicion.x, alturaViga, posicion.y);
+            var baseTensor = new Vector3(posicion.x, alturaViga - alturaTensor, posicion.y);
 
             CrearCaja(new Vector3(xzExterior.x, yPiso, xzExterior.y),
-                      new Vector3(xzExterior.x, alturaViga, xzExterior.y),
+                      new Vector3(xzExterior.x, baseTensor.y, xzExterior.y),
                       anchoViga, altoViga, tangente, "Vertical_Exterior");
 
-            // La diagonal continua la pendiente de la platea vecina, asi que su altura de
-            // arranque no se elige: sale de restar el desnivel que produce esa pendiente a lo
-            // largo del tramo que la separa de la cabeza. Se corta en la vertical interior
-            // para no chocar contra el codo.
-            float avance = Mathf.Abs(dInterior);
-            float yArranque = alturaViga - geometria.pendienteDiagonal * avance;
+            // El arranque de la diagonal sale del coronamiento real del codo en este punto,
+            // no de la pendiente de la platea: el codo baja mucho mas rapido por el recorte
+            // de filas, y heredar esa pendiente dejaba la diagonal sobre los escalones.
+            float yCoronamiento = c.Coronamientos.AlturaBajoPunto(xzInterior);
+            float yArranque = Mathf.Max(yCoronamiento - holguraBajoCoronamiento, yPiso + 0.5f);
 
             CrearCaja(new Vector3(xzInterior.x, yPiso, xzInterior.y),
-                      new Vector3(xzInterior.x, Mathf.Max(yArranque, yPiso + 0.5f), xzInterior.y),
+                      new Vector3(xzInterior.x, yArranque, xzInterior.y),
                       anchoViga, altoViga, tangente, "Vertical_Interior");
 
-            CrearCaja(new Vector3(xzInterior.x, yArranque, xzInterior.y), cabeza,
+            CrearCaja(new Vector3(xzInterior.x, yArranque, xzInterior.y), baseTensor,
                       anchoVigaDiagonal, altoVigaDiagonal, tangente, "Diagonal");
 
             if (generarTensor)
-            {
-                CrearCaja(cabeza, cabeza + Vector3.up * alturaTensor,
-                          grosorTensor, profundidadTensor, tangente, "Tensor");
-            }
+                CrearCaja(baseTensor, cabeza, grosorTensor, profundidadTensor, tangente, "Tensor");
         }
 
-        // ------------------------------------------------------------------
-        //  Datos derivados
-        // ------------------------------------------------------------------
-
         /// <summary>
-        /// Altura de la viga longitudinal en la zona del codo: la del ultimo anclaje
-        /// publicado de ese lado. No baja acompañando la grada del codo.
+        /// Altura de la viga longitudinal a esa cota Z. No se recalcula aca: la provee
+        /// VigaLongitudinalTecho, que es la unica fuente de verdad. Antes cada componente la
+        /// deducia por su cuenta y tenian que coincidir por casualidad.
         /// </summary>
-        //private static float AlturaVigaLongitudinal(ControladorTecho c, bool ladoPositivo)
-        //{
-        //    IReadOnlyList<AnclajeTecho> anclajes = c.Registro.Anclajes;
-
-        //    float mejorZ = float.NegativeInfinity;
-        //    float altura = 0f;
-
-        //    for (int i = 0; i < anclajes.Count; i++)
-        //    {
-        //        Vector3 p = anclajes[i].posicion;
-        //        if ((p.x > 0f) != ladoPositivo) continue;
-
-        //        float distancia = Mathf.Abs(p.z);
-        //        if (distancia <= mejorZ) continue;
-
-        //        mejorZ = distancia;
-        //        altura = p.y;
-        //    }
-
-        //    return altura;
-        //}
-
-
-        private static float AlturaVigaLongitudinal(ControladorTecho c, bool ladoPositivoX,
-                                            bool ladoPositivoZ)
+        private float AlturaViga(ControladorTecho c, bool ladoPositivo, float z)
         {
-            IReadOnlyList<AnclajeTecho> anclajes = c.Registro.Anclajes;
+            if (_viga == null) _viga = GetComponent<VigaLongitudinalTecho>();
 
-            float mejorZ = float.NegativeInfinity;
-            float altura = 0f;
-
-            for (int i = 0; i < anclajes.Count; i++)
+            if (_viga == null)
             {
-                Vector3 p = anclajes[i].posicion;
-                if ((p.x > 0f) != ladoPositivoX) continue;
-                if ((p.z > 0f) != ladoPositivoZ) continue;
-
-                // El anclaje mas alejado del centro de ESTE extremo: con rampa, los dos extremos
-                // de una misma platea estan a alturas distintas.
-                float distancia = Mathf.Abs(p.z);
-                if (distancia <= mejorZ) continue;
-
-                mejorZ = distancia;
-                altura = p.y;
+                Debug.LogError("[Techo] Falta el componente VigaLongitudinalTecho.", this);
+                return 0f;
             }
 
-            return altura;
+            return _viga.AlturaEnZ(c, ladoPositivo, z);
         }
 
         private float NivelPiso(ControladorTecho c)

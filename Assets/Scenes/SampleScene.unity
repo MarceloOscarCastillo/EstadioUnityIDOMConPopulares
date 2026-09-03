@@ -13726,6 +13726,7 @@ GameObject:
   - component: {fileID: 671784517}
   - component: {fileID: 671784520}
   - component: {fileID: 671784521}
+  - component: {fileID: 671784522}
   m_Layer: 0
   m_Name: RoofController
   m_TagString: Untagged
@@ -13871,6 +13872,7 @@ MonoBehaviour:
   profundidadTensor: 1
   margenAlUltimoAnclaje: 8
   corrimientoVerticales: 0
+  holguraBajoCoronamiento: 16
   reservarExtremoParaVigaFinal: 1
 --- !u!114 &671784521
 MonoBehaviour:
@@ -13897,6 +13899,23 @@ MonoBehaviour:
   posicionVerticalA: 0.35
   posicionVerticalB: 0.7
   retiroDelFinDelCodo: 1
+--- !u!114 &671784522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671784515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af64f54e576626f48a8f7d4e755646dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Estadio.Techo.VigaLongitudinalTecho
+  materialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+  ancho: 0.25
+  alto: 0.35
+  elevacionSobreTensor: 0
+  segmentosPorLado: 64
 --- !u!1 &672258533
 GameObject:
   m_ObjectHideFlags: 0
@@ -29991,6 +30010,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: generarVigaLongitudinalTensores
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: vigaDiagonalTerminaConSoportesDeTecho
       value: 1
       objectReference: {fileID: 0}
@@ -35991,6 +36014,10 @@ PrefabInstance:
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: curvaAlzada.m_Curve.Array.size
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: generarVigaLongitudinalTensores
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: vigaDiagonalTerminaConSoportesDeTecho
@@ -47887,6 +47914,10 @@ PrefabInstance:
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: overridesNumFilas.Array.size
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: generarVigaLongitudinalTensores
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: vigaDiagonalTerminaConSoportesDeTecho

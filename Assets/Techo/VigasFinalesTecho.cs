@@ -59,6 +59,7 @@ namespace Estadio.Techo
         [SerializeField] private float retiroDelFinDelCodo = 1f;
 
         private ControladorTecho _controlador;
+        private VigaLongitudinalTecho _viga;
         private GameObject _raiz;
 
         public bool Generado => _raiz != null;
@@ -127,11 +128,18 @@ namespace Estadio.Techo
                 ? c.PerimetroTecho.ZCierrePositivo
                 : c.PerimetroTecho.ZCierreNegativo;
 
-            // Extremo alto: el ultimo anclaje de techo de esta viga longitudinal.
+            // Extremo alto: donde la viga longitudinal termina, en su cota real. La provee
+            // VigaLongitudinalTecho para que los dos usen la misma fuente.
+            if (_viga == null) _viga = GetComponent<VigaLongitudinalTecho>();
+            if (_viga == null)
+            {
+                Debug.LogError("[Techo] Falta el componente VigaLongitudinalTecho.", this);
+                return;
+            }
 
             var superior = new Vector3(recta.XenZ(zExtremo),
-                           AlturaVigaLongitudinal(c, ladoPositivoX, ladoPositivoZ),
-                           zExtremo);
+                                       _viga.AlturaEnZ(c, ladoPositivoX, zExtremo),
+                                       zExtremo);
 
             // Extremo bajo en X: el fin del codo. Se toma del perimetro del estadio en esa
             // cota Z, que es donde la grada deja de existir.
@@ -259,30 +267,6 @@ namespace Estadio.Techo
         }
 
         // ------------------------------------------------------------------
-
-        private static float AlturaVigaLongitudinal(ControladorTecho c, bool ladoPositivoX,
-                                            bool ladoPositivoZ)
-        {
-            IReadOnlyList<AnclajeTecho> anclajes = c.Registro.Anclajes;
-
-            float mejorZ = float.NegativeInfinity;
-            float altura = 0f;
-
-            for (int i = 0; i < anclajes.Count; i++)
-            {
-                Vector3 p = anclajes[i].posicion;
-                if ((p.x > 0f) != ladoPositivoX) continue;
-                if ((p.z > 0f) != ladoPositivoZ) continue;
-
-                float distancia = Mathf.Abs(p.z);
-                if (distancia <= mejorZ) continue;
-
-                mejorZ = distancia;
-                altura = p.y;
-            }
-
-            return altura;
-        }
 
         private float NivelPiso(ControladorTecho c)
         {
