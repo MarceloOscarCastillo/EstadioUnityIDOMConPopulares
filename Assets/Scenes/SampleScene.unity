@@ -13846,6 +13846,13 @@ MonoBehaviour:
   ladosCilindro: 6
   materialCables: {fileID: 2100000, guid: bd0960370a045934182be5c0ebd83b75, type: 2}
   anguloMaximoEntreModulos: 12
+  generarCables: 1
+  diametroCableTransversal: 0.06
+  diametroCableLongitudinal: 0.05
+  segmentosPorTramoCable: 8
+  generarMembrana: 1
+  materialMembrana: {fileID: 0}
+  materialFaldon: {fileID: 0}
   origenTecho: {fileID: 12055150}
   combinarEstatico: 1
 --- !u!114 &671784520

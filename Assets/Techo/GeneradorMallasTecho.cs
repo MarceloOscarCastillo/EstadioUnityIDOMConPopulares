@@ -40,6 +40,14 @@ namespace Estadio.Techo
                  "esquina. Con el vano casi rectangular el giro se concentra en pocos metros.")]
         [SerializeField] private float anguloMaximoEntreModulos = 20f;
 
+        [Header("Cables")]
+        [SerializeField] private bool generarCables = true;
+        [SerializeField] private float diametroCableTransversal = 0.06f;
+        [SerializeField] private float diametroCableLongitudinal = 0.05f;
+        [Tooltip("Segmentos por tramo al muestrear cada cable. Mas segmentos, mas suave la " +
+                 "panza; los longitudinales van casi rectos y necesitan menos.")]
+        [SerializeField, Range(2, 24)] private int segmentosPorTramoCable = 8;
+
         [Header("Membrana")]
         [SerializeField] private bool generarMembrana = true;
         [Tooltip("Material del pano. Conviene un shader Lit en modo Transparent con Render " +
@@ -79,7 +87,8 @@ namespace Estadio.Techo
             if (_raiz != null) _raiz.SetActive(visible);
         }
 
-        public void Generar(MarcoRigidoTecho marco, MembranaTecho membrana)
+        public void Generar(MarcoRigidoTecho marco, MembranaTecho membrana,
+                            TendidoCables tendido)
         {
             if (!Application.isPlaying)
             {
@@ -115,6 +124,9 @@ namespace Estadio.Techo
             // dos colas de render.
             if (generarMembrana && membrana != null && membrana.Construida)
                 GenerarMembrana(membrana);
+
+            if (generarCables && tendido != null && tendido.Construido)
+                GenerarCables(tendido);
 
             Debug.Log($"[Techo] {ModulosInstanciados} modulos instanciados, " +
                       $"{EsquinasSalteadas} tramos de esquina salteados.", this);
@@ -301,6 +313,38 @@ namespace Estadio.Techo
             go.transform.localRotation = Quaternion.identity;
             go.AddComponent<MeshFilter>().mesh = mesh;
             go.AddComponent<MeshRenderer>().sharedMaterial = materialCables;
+        }
+
+        // ------------------------------------------------------------------
+        //  Cables
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Barre un tubo a lo largo de cada cable. La panza ya esta resuelta en la geometria:
+        /// Muestrear devuelve la polilinea con la parabola de cada tramo aplicada.
+        /// </summary>
+        private void GenerarCables(TendidoCables tendido)
+        {
+            var contenedor = new GameObject("Cables");
+            contenedor.transform.SetParent(_raiz.transform, false);
+
+            var transversales = new GameObject("Transversales");
+            transversales.transform.SetParent(contenedor.transform, false);
+
+            foreach (Cable cable in tendido.Transversales)
+                CrearTuboPorPolilinea(cable.Muestrear(segmentosPorTramoCable),
+                                      diametroCableTransversal,
+                                      $"Transversal_{cable.indice}", transversales.transform);
+
+            var longitudinales = new GameObject("Longitudinales");
+            longitudinales.transform.SetParent(contenedor.transform, false);
+
+            foreach (Cable cable in tendido.Longitudinales)
+                CrearTuboPorPolilinea(cable.Muestrear(segmentosPorTramoCable),
+                                      diametroCableLongitudinal,
+                                      $"Longitudinal_{cable.indice}", longitudinales.transform);
+
+            ModulosInstanciados += tendido.Transversales.Count + tendido.Longitudinales.Count;
         }
 
         // ------------------------------------------------------------------
