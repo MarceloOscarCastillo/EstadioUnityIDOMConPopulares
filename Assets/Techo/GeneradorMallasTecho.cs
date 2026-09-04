@@ -40,8 +40,18 @@ namespace Estadio.Techo
                  "esquina. Con el vano casi rectangular el giro se concentra en pocos metros.")]
         [SerializeField] private float anguloMaximoEntreModulos = 20f;
 
+        [Header("Membrana")]
+        [SerializeField] private bool generarMembrana = true;
+        [Tooltip("Material del pano. Conviene un shader Lit en modo Transparent con Render " +
+                 "Face en Both: asi se ve de los dos lados sin duplicar geometria.")]
+        [SerializeField] private Material materialMembrana;
+        [Tooltip("Material del faldon, mas transparente que el del pano.")]
+        [SerializeField] private Material materialFaldon;
+
         [Header("Salida")]
         [SerializeField] private Transform origenTecho;
+        [Tooltip("El batching estatico no se aplica a la membrana: al combinarla con el resto " +
+                 "se pierde el orden de dibujo que necesitan los materiales transparentes.")]
         [SerializeField] private bool combinarEstatico = true;
 
         private GameObject _raiz;
@@ -69,7 +79,7 @@ namespace Estadio.Techo
             if (_raiz != null) _raiz.SetActive(visible);
         }
 
-        public void Generar(MarcoRigidoTecho marco)
+        public void Generar(MarcoRigidoTecho marco, MembranaTecho membrana)
         {
             if (!Application.isPlaying)
             {
@@ -99,6 +109,12 @@ namespace Estadio.Techo
 
                 StaticBatchingUtility.Combine(_raiz);
             }
+
+            // La membrana va despues del batching y fuera de el: es transparente, y Unity
+            // ordena el dibujo por objeto. Combinarla con la estructura opaca mezclaria las
+            // dos colas de render.
+            if (generarMembrana && membrana != null && membrana.Construida)
+                GenerarMembrana(membrana);
 
             Debug.Log($"[Techo] {ModulosInstanciados} modulos instanciados, " +
                       $"{EsquinasSalteadas} tramos de esquina salteados.", this);
@@ -285,6 +301,79 @@ namespace Estadio.Techo
             go.transform.localRotation = Quaternion.identity;
             go.AddComponent<MeshFilter>().mesh = mesh;
             go.AddComponent<MeshRenderer>().sharedMaterial = materialCables;
+        }
+
+        // ------------------------------------------------------------------
+        //  Membrana
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Triangula las dos rejillas que calcula MembranaTecho. No hay geometria que
+        /// inventar: los vertices y las UV ya estan resueltos, y aca solo se arman las caras.
+        /// </summary>
+        private void GenerarMembrana(MembranaTecho membrana)
+        {
+            var contenedor = new GameObject("Membrana");
+            contenedor.transform.SetParent(_raiz.transform, false);
+
+            CrearMallaDeRejilla(membrana.RejillaPano, materialMembrana, "Pano",
+                                contenedor.transform);
+
+            CrearMallaDeRejilla(membrana.RejillaFaldon, materialFaldon, "Faldon",
+                                contenedor.transform);
+        }
+
+        /// <summary>
+        /// Arma una malla a partir de una rejilla de filas x columnas. Las columnas cierran
+        /// sobre si mismas —el anillo da la vuelta completa—, asi que la ultima se une con la
+        /// primera sin costura.
+        /// </summary>
+        private static void CrearMallaDeRejilla(RejillaSuperficie rejilla, Material material,
+                                                string nombre, Transform padre)
+        {
+            if (rejilla.vertices == null || rejilla.vertices.Length == 0) return;
+            if (rejilla.filas < 2 || rejilla.columnas < 3) return;
+
+            int filas = rejilla.filas;
+            int columnas = rejilla.columnas;
+
+            var triangulos = new List<int>(filas * columnas * 6);
+
+            for (int c = 0; c < columnas; c++)
+            {
+                int cSiguiente = (c + 1) % columnas;
+
+                for (int f = 0; f < filas - 1; f++)
+                {
+                    int a = rejilla.Indice(f, c);
+                    int b = rejilla.Indice(f, cSiguiente);
+                    int d = rejilla.Indice(f + 1, c);
+                    int e = rejilla.Indice(f + 1, cSiguiente);
+
+                    triangulos.Add(a); triangulos.Add(b); triangulos.Add(d);
+                    triangulos.Add(b); triangulos.Add(e); triangulos.Add(d);
+                }
+            }
+
+            var mesh = new Mesh();
+
+            // 2496 vertices entran de sobra en 16 bits, pero con resoluciones altas del pano
+            // se pasa el limite y la malla sale vacia sin avisar.
+            if (rejilla.vertices.Length > 65000)
+                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+
+            mesh.vertices = rejilla.vertices;
+            mesh.uv = rejilla.uv;
+            mesh.triangles = triangulos.ToArray();
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+
+            var go = new GameObject(nombre);
+            go.transform.SetParent(padre, false);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.AddComponent<MeshFilter>().mesh = mesh;
+            go.AddComponent<MeshRenderer>().sharedMaterial = material;
         }
 
         private static Vector3 PuntoEnPolilinea(List<Vector3> puntos, float longitudTotal, float u)

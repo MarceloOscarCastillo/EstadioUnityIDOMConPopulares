@@ -13899,6 +13899,7 @@ MonoBehaviour:
   posicionVerticalA: 0.35
   posicionVerticalB: 0.7
   retiroDelFinDelCodo: 1
+  alturaTensorEnExtremo: 5
 --- !u!114 &671784522
 MonoBehaviour:
   m_ObjectHideFlags: 0

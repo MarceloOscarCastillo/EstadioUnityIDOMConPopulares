@@ -294,7 +294,7 @@ namespace Estadio.Techo
             if (generarPorEtapas) StartCoroutine(GenerarPorEtapas());
             else
             {
-                _generador.Generar(_marco);
+                _generador.Generar(_marco, _membrana);
                 GenerarSoportesCodo();
                 TechoCambio?.Invoke(true);
             }
@@ -342,7 +342,7 @@ namespace Estadio.Techo
         private IEnumerator GenerarPorEtapas()
         {
             yield return null;
-            _generador.Generar(_marco);
+            _generador.Generar(_marco, _membrana);
 
             yield return null;
             GenerarSoportesCodo();

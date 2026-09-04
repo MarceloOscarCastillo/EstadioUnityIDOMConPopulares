@@ -187,22 +187,42 @@ namespace Estadio.Techo
             var cabeza = new Vector3(posicion.x, alturaViga, posicion.y);
             var baseTensor = new Vector3(posicion.x, alturaViga - alturaTensor, posicion.y);
 
-            CrearCaja(new Vector3(xzExterior.x, yPiso, xzExterior.y),
-                      new Vector3(xzExterior.x, baseTensor.y, xzExterior.y),
-                      anchoViga, altoViga, tangente, "Vertical_Exterior");
+            //CrearCaja(new Vector3(xzExterior.x, yPiso, xzExterior.y),
+            //          new Vector3(xzExterior.x, baseTensor.y, xzExterior.y),
+            //          anchoViga, altoViga, tangente, "Vertical_Exterior");
 
-            // El arranque de la diagonal sale del coronamiento real del codo en este punto,
-            // no de la pendiente de la platea: el codo baja mucho mas rapido por el recorte
-            // de filas, y heredar esa pendiente dejaba la diagonal sobre los escalones.
+            //// El arranque de la diagonal sale del coronamiento real del codo en este punto,
+            //// no de la pendiente de la platea: el codo baja mucho mas rapido por el recorte
+            //// de filas, y heredar esa pendiente dejaba la diagonal sobre los escalones.
+            //float yCoronamiento = c.Coronamientos.AlturaBajoPunto(xzInterior);
+            //float yArranque = Mathf.Max(yCoronamiento - holguraBajoCoronamiento, yPiso + 0.5f);
+
+            //CrearCaja(new Vector3(xzInterior.x, yPiso, xzInterior.y),
+            //          new Vector3(xzInterior.x, yArranque, xzInterior.y),
+            //          anchoViga, altoViga, tangente, "Vertical_Interior");
+
+            //CrearCaja(new Vector3(xzInterior.x, yArranque, xzInterior.y), baseTensor,
+            //          anchoVigaDiagonal, altoVigaDiagonal, tangente, "Diagonal");
+
             float yCoronamiento = c.Coronamientos.AlturaBajoPunto(xzInterior);
             float yArranque = Mathf.Max(yCoronamiento - holguraBajoCoronamiento, yPiso + 0.5f);
 
-            CrearCaja(new Vector3(xzInterior.x, yPiso, xzInterior.y),
-                      new Vector3(xzInterior.x, yArranque, xzInterior.y),
+            var arranque = new Vector3(xzInterior.x, yArranque, xzInterior.y);
+
+            // La vertical exterior termina en el punto de la diagonal que tiene encima: si llegara
+            // mas arriba la atravesaria.
+            float uExterior = Mathf.InverseLerp(dInterior, 0f, dExterior);
+            float yTopeExterior = Mathf.Lerp(yArranque, baseTensor.y, uExterior);
+
+            CrearCaja(new Vector3(xzExterior.x, yPiso, xzExterior.y),
+                      new Vector3(xzExterior.x, yTopeExterior, xzExterior.y),
+                      anchoViga, altoViga, tangente, "Vertical_Exterior");
+
+            CrearCaja(new Vector3(xzInterior.x, yPiso, xzInterior.y), arranque,
                       anchoViga, altoViga, tangente, "Vertical_Interior");
 
-            CrearCaja(new Vector3(xzInterior.x, yArranque, xzInterior.y), baseTensor,
-                      anchoVigaDiagonal, altoVigaDiagonal, tangente, "Diagonal");
+            CrearCaja(arranque, baseTensor, anchoVigaDiagonal, altoVigaDiagonal, tangente, "Diagonal");
+
 
             if (generarTensor)
                 CrearCaja(baseTensor, cabeza, grosorTensor, profundidadTensor, tangente, "Tensor");

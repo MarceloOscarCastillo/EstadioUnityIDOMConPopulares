@@ -58,6 +58,13 @@ namespace Estadio.Techo
                  "quede justo al borde.")]
         [SerializeField] private float retiroDelFinDelCodo = 1f;
 
+        [Header("Encuentro con el tensor")]
+        [Tooltip("Altura del tensor en el extremo. La viga termina en su base, no en la viga " +
+         "longitudinal: es el tensor el que llega hasta ella. Debe coincidir con el " +
+         "alturaTensor de SoportesTechoCodo.")]
+        [SerializeField] private float alturaTensorEnExtremo = 2f;
+
+
         private ControladorTecho _controlador;
         private VigaLongitudinalTecho _viga;
         private GameObject _raiz;
@@ -137,9 +144,14 @@ namespace Estadio.Techo
                 return;
             }
 
+            //var superior = new Vector3(recta.XenZ(zExtremo),
+            //                           _viga.AlturaEnZ(c, ladoPositivoX, zExtremo),
+            //                           zExtremo);
+
             var superior = new Vector3(recta.XenZ(zExtremo),
-                                       _viga.AlturaEnZ(c, ladoPositivoX, zExtremo),
-                                       zExtremo);
+                           _viga.AlturaEnZ(c, ladoPositivoX, zExtremo) - alturaTensorEnExtremo,
+                           zExtremo);
+
 
             // Extremo bajo en X: el fin del codo. Se toma del perimetro del estadio en esa
             // cota Z, que es donde la grada deja de existir.
