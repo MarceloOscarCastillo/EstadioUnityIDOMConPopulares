@@ -232,6 +232,30 @@ namespace Estadio.Techo
         /// verticales. El superior corre por el eje —a la altura de los cables que sostienen
         /// la membrana— y el inferior a la cota del cordon inferior de las tubulares.
         /// </summary>
+        //private void GenerarPuenteDeCables(ElementoBordeConstruido elemento, Transform padre)
+        //{
+        //    Vector3[] superior = elemento.eje;
+
+        //    var inferior = new Vector3[superior.Length];
+        //    for (int i = 0; i < superior.Length; i++)
+        //        inferior[i] = superior[i] - Vector3.up * elemento.canto;
+
+        //    CrearTuboPorPolilinea(superior, diametroCablePuente, $"{elemento.id}_cable_sup", padre);
+        //    CrearTuboPorPolilinea(inferior, diametroCablePuente, $"{elemento.id}_cable_inf", padre);
+
+        //    int pendolas = Mathf.Max(2, pendolasPorPuente);
+        //    for (int p = 0; p <= pendolas; p++)
+        //    {
+        //        float u = (float)p / pendolas;
+        //        int i = Mathf.Clamp(Mathf.RoundToInt(u * (superior.Length - 1)), 0, superior.Length - 1);
+
+        //        CrearTuboPorPolilinea(new[] { superior[i], inferior[i] },
+        //                              diametroPendola, $"{elemento.id}_pendola_{p}", padre);
+        //    }
+
+        //    ModulosInstanciados += 2 + pendolas + 1;
+        //}
+
         private void GenerarPuenteDeCables(ElementoBordeConstruido elemento, Transform padre)
         {
             Vector3[] superior = elemento.eje;
@@ -243,16 +267,42 @@ namespace Estadio.Techo
             CrearTuboPorPolilinea(superior, diametroCablePuente, $"{elemento.id}_cable_sup", padre);
             CrearTuboPorPolilinea(inferior, diametroCablePuente, $"{elemento.id}_cable_inf", padre);
 
+            // Por longitud y no por indice: el eje viene muestreado por parametro, que con el vano
+            // casi rectangular concentra la mitad de las muestras en las esquinas.
+            float total = 0f;
+            var acumulado = new float[superior.Length];
+            for (int i = 1; i < superior.Length; i++)
+            {
+                total += Vector3.Distance(superior[i - 1], superior[i]);
+                acumulado[i] = total;
+            }
+
             int pendolas = Mathf.Max(2, pendolasPorPuente);
             for (int p = 0; p <= pendolas; p++)
             {
-                float u = (float)p / pendolas;
-                int i = Mathf.Clamp(Mathf.RoundToInt(u * (superior.Length - 1)), 0, superior.Length - 1);
+                float objetivo = (float)p / pendolas * total;
 
-                CrearTuboPorPolilinea(new[] { superior[i], inferior[i] },
-                                      diametroPendola, $"{elemento.id}_pendola_{p}", padre);
+                // Interpolando y no eligiendo el indice mas cercano: el eje viene con las muestras
+                // muy desparejas, y quedarse con el indice amontona las pendolas donde hay muchas
+                // muestras juntas.
+                Vector3 arriba = superior[superior.Length - 1];
+
+                for (int k = 1; k < superior.Length; k++)
+                {
+                    if (acumulado[k] < objetivo) continue;
+
+                    float tramo = acumulado[k] - acumulado[k - 1];
+                    float f = tramo > 1e-4f ? (objetivo - acumulado[k - 1]) / tramo : 0f;
+                    arriba = Vector3.Lerp(superior[k - 1], superior[k], f);
+                    break;
+                }
+
+                Vector3 abajo = arriba - Vector3.up * elemento.canto;
+
+                CrearTuboPorPolilinea(new[] { arriba, abajo },
+                                      diametroPendola, $"{elemento.id}_pendola_{p}", padre);                
             }
-
+            
             ModulosInstanciados += 2 + pendolas + 1;
         }
 

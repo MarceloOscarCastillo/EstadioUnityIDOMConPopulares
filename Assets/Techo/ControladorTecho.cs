@@ -268,6 +268,34 @@ namespace Estadio.Techo
             else Mostrar();
         }
 
+        /// <summary>
+        /// Cambia de diseno y regenera. Si el techo esta visible, se reemplaza en el acto: el
+        /// usuario elige el otro techo y lo ve, sin tener que ocultar primero.
+        /// </summary>
+        public void CambiarDiseno(DisenoTecho nuevo)
+        {
+            bool estabaVisible = TechoVisible;
+            if (estabaVisible) Ocultar();
+
+            diseno = nuevo;
+            ConstruirGeometria();
+
+            if (estabaVisible) Mostrar();
+        }
+
+        /// <summary>Muestra el techo con el diseno indicado, este visible o no.</summary>
+        public void MostrarDiseno(DisenoTecho cual)
+        {
+            if (diseno != cual)
+            {
+                if (TechoVisible) Ocultar();
+                diseno = cual;
+                ConstruirGeometria();
+            }
+
+            Mostrar();
+        }
+
         [ContextMenu("Mostrar techo")]
         public void Mostrar()
         {
