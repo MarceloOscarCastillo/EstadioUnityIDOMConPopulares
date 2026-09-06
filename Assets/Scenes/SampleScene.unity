@@ -2180,7 +2180,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &76535727
 Transform:
   m_ObjectHideFlags: 0
@@ -14190,6 +14190,8 @@ MonoBehaviour:
   materialFaldon: {fileID: 2100000, guid: 3eb757ed18b96da49a1f01c4a069fc6a, type: 2}
   origenTecho: {fileID: 12055150}
   combinarEstatico: 1
+  bajadaTubularEnCantos: 1.108
+  corrimientoTubularExtra: 1
 --- !u!114 &671784520
 MonoBehaviour:
   m_ObjectHideFlags: 0

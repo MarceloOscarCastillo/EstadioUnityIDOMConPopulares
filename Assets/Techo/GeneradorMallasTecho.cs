@@ -62,14 +62,22 @@ namespace Estadio.Techo
                  "se pierde el orden de dibujo que necesitan los materiales transparentes.")]
         [SerializeField] private bool combinarEstatico = true;
 
+        [Tooltip("Cuanto baja el tubular respecto del eje del borde, en fracciones de su canto. " +
+         "Ajustar hasta que los cables pasen por sus dos tubos superiores.")]
+        [SerializeField, Range(0f, 2f)] private float bajadaTubularEnCantos = 1f;
+
+        [Tooltip("Corrimiento extra hacia afuera del vano, por encima de medio ancho de seccion.")]
+        [SerializeField] private float corrimientoTubularExtra = 0f;
+
         private GameObject _raiz;
 
         public bool Generado => _raiz != null;
+
         public int ModulosInstanciados { get; private set; }
+
         public int EsquinasSalteadas { get; private set; }
 
-        // ------------------------------------------------------------------
-
+       
         public void Descartar()
         {
             if (_raiz == null) return;
@@ -131,11 +139,7 @@ namespace Estadio.Techo
             Debug.Log($"[Techo] {ModulosInstanciados} modulos instanciados, " +
                       $"{EsquinasSalteadas} tramos de esquina salteados.", this);
         }
-
-        // ------------------------------------------------------------------
-        //  Barrido
-        // ------------------------------------------------------------------
-
+        
         private void BarrerElemento(ElementoBordeConstruido elemento)
         {
             Vector3[] eje = elemento.eje;
@@ -154,6 +158,34 @@ namespace Estadio.Techo
                 GenerarPuenteDeCables(elemento, contenedor.transform);
                 return;
             }
+
+            //var ejeDesplazado = new Vector3[eje.Length];
+            //for (int i = 0; i < eje.Length; i++)
+            //    ejeDesplazado[i] = eje[i] - Vector3.up * elemento.canto;
+
+            //eje = ejeDesplazado;
+
+            var ejeDesplazado = new Vector3[eje.Length];
+            Vector3 centroVano = Vector3.zero;
+
+            for (int i = 0; i < eje.Length; i++)
+            {
+                Vector3 p = eje[i];
+
+                Vector2 haciaAfuera = new Vector2(p.x - centroVano.x, p.z - centroVano.z);
+                haciaAfuera = haciaAfuera.sqrMagnitude > 1e-6f ? haciaAfuera.normalized : Vector2.right;
+
+                float corrimiento = elemento.ancho * 0.5f + corrimientoTubularExtra;
+
+                ejeDesplazado[i] = new Vector3(
+                    p.x + haciaAfuera.x * corrimiento,
+                    p.y - elemento.canto * bajadaTubularEnCantos,
+                    p.z + haciaAfuera.y * corrimiento);
+            }
+
+            eje = ejeDesplazado;
+
+
 
             GameObject prefab = esPuente && prefabPuente != null ? prefabPuente : prefabTubular;
             float longitudModulo = esPuente && prefabPuente != null
