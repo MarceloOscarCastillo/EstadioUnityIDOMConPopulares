@@ -361,8 +361,7 @@ namespace Estadio.Techo
             _vigaLongitudinal?.Descartar();
 
             if (_generador == null) _generador = GetComponent<GeneradorMallasTecho>();
-            if (_generador == null) return;
-
+            //if (_generador == null) return;
             _generador.Descartar();
             TechoCambio?.Invoke(false);
         }

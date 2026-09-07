@@ -84,6 +84,7 @@ public class UIEstadioController : MonoBehaviour
             
 
         ActualizarTextos();
+        ActualizarBotonesTecho();
     }
 
     public void ActualizarTextos()

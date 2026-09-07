@@ -44036,6 +44036,7 @@ MonoBehaviour:
     - {fileID: 1778285680}
     - {fileID: 33234914}
   origenTecho: {fileID: 12055150}
+  controladorTecho: {fileID: 671784518}
 --- !u!1 &2014812531
 GameObject:
   m_ObjectHideFlags: 0

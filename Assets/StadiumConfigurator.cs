@@ -70,7 +70,8 @@ public class EstadioConfigurator : MonoBehaviour
     [Header("Techo")]
     [Tooltip("Objeto que define el origen y la orientacion del sistema del techo: " +
          "centro del campo, ejes alineados. Si queda vacio se usa el mundo.")]
-    public Transform origenTecho;
+    public Transform origenTecho;    
+    public Estadio.Techo.ControladorTecho controladorTecho;
 
     private readonly RegistroAnclajesTecho registroTecho = new RegistroAnclajesTecho();
     public RegistroAnclajesTecho RegistroTecho => registroTecho;
@@ -118,8 +119,10 @@ public void AplicarConfiguracionEstadio()
         return;
     }
 
-    // En modo diseño, regenerar primero los sectores del perfil
-    if (!Application.isPlaying)
+        if (controladorTecho != null) controladorTecho.Ocultar();
+
+        // En modo diseño, regenerar primero los sectores del perfil
+        if (!Application.isPlaying)
     {
         foreach (MonoBehaviour sector in perfilElegido.sectoresActivos)
         {
@@ -226,6 +229,8 @@ public void AplicarConfiguracionEstadio()
         }
 
         RecolectarAnclajesTecho(perfilElegido);
+
+        if (controladorTecho != null) controladorTecho.ConstruirGeometria();
 
         Debug.Log($"[EstadioConfigurator] Se aplicó la variante '{varianteAActivar}'. Se encendieron {perfilElegido.sectoresActivos.Count} controladores.");
 }
