@@ -485,20 +485,7 @@ namespace Estadio.Techo
             return sb.ToString();
         }
 
-        //private Vector3 PuntoBordePorCuartos(float sigma)
-        //{
-        //    // Se invierte el recorrido completo y se desplaza la fase, en vez de invertir dentro
-        //    // de cada arco: hacerlo por arco rompe el empalme entre uno y el siguiente, y produce
-        //    // un salto al lado opuesto del vano en cada cambio de arco.
-        //    float sigmaBorde = Mathf.Repeat(_parametros.desplazamientoArcoBorde * 0.25f - sigma, 1f);
 
-        //    float t = sigmaBorde * 4f;
-        //    int arco = Mathf.Min(3, Mathf.FloorToInt(t));
-        //    float u = Mathf.Repeat(t, 1f);
-
-        //    float tInicio = (0.25f + 0.5f * arco) * Mathf.PI;
-        //    return _borde.PuntoEnT(tInicio + u * 0.5f * Mathf.PI);
-        //}
 
         private Vector3 PuntoBordePorCuartos(float sigma)
         {

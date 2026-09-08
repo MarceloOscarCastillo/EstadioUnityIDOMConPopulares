@@ -14121,8 +14121,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Estadio.Techo.ControladorTecho
   origenTecho: {fileID: 12055150}
   configurador: {fileID: 2008406058}
-  semiejeX: 88.5
-  semiejeZ: 88.5
+  semiejeX: 89
+  semiejeZ: 89
   exponenteCodos: 5
   usarAnclajesSinteticos: 0
   separacionVigas: 7.9
@@ -14130,7 +14130,7 @@ MonoBehaviour:
   alturaCoronamientoCabecera: 16.5
   diseno: 0
   parametrosPerimetroTecho:
-    semiLargoTecho: 87.5
+    semiLargoTecho: 89
     separacionAnclajes: 7.9
   parametrosBorde:
     semiLongitudCampo: 52.5
