@@ -86,6 +86,7 @@ namespace Estadio.Techo
         private BordeInteriorTecho _borde;
 
         private Cable[] _transversalesPorZ;
+        private float _perimetroMetros;
 
         private Cable _cierreNegativo;
         private Cable _cierrePositivo;
@@ -176,6 +177,11 @@ namespace Estadio.Techo
                 
             float area = 0f;
 
+            // Las UV van en METROS y no normalizadas: una textura de costuras tiene que dar
+            // cuadros del mismo tamano en todo el pano, y con UV de 0 a 1 se estiran donde el
+            // recorrido es mas largo.
+            float perimetroTecho = MedirPerimetroTecho(columnas);
+
             for (int c = 0; c < columnas; c++)
             {
                 float sigma = (float)c / columnas;
@@ -183,6 +189,7 @@ namespace Estadio.Techo
                 Vector3 interior = PuntoBordePorCuartos(sigma);
 
                 Vector3 exterior = PuntoPerimetroTecho(sigma);
+                float anchoRadial = Vector3.Distance(interior, exterior);
 
                 for (int f = 0; f < filas; f++)
                 {
@@ -201,7 +208,7 @@ namespace Estadio.Techo
 
                     int i = rejilla.Indice(f, c);
                     rejilla.vertices[i] = new Vector3(x, y, z);
-                    rejilla.uv[i] = new Vector2(sigma, w);
+                    rejilla.uv[i] = new Vector2(sigma * perimetroTecho, w * anchoRadial);
                 }
             }
 
@@ -235,6 +242,9 @@ namespace Estadio.Techo
             CaidaFaldonMaxima = 0f;
             CaidaFaldonMinima = float.PositiveInfinity;
 
+            // Igual que en el pano: UV en metros para que las costuras no se estiren.
+            _perimetroMetros = MedirPerimetroTecho(columnas);
+
             for (int c = 0; c < columnas; c++)
             {
                 float sigma = (float)c / columnas;
@@ -263,7 +273,7 @@ namespace Estadio.Techo
 
                     int i = rejilla.Indice(f, c);
                     rejilla.vertices[i] = new Vector3(arriba.x, arriba.y - caida * w, arriba.z);
-                    rejilla.uv[i] = new Vector2(sigma, w * caida);
+                    rejilla.uv[i] = new Vector2(sigma * _perimetroMetros, w * caida);
                 }
             }
 
@@ -388,6 +398,23 @@ namespace Estadio.Techo
                    - 4f * _parametros.festonRelativo * separacion * u * (1f - u);
 
             return true;
+        }
+
+        /// <summary>Largo del perimetro del techo en metros, para expresar las UV en escala
+        /// real y que las costuras no se estiren donde el recorrido es mas largo.</summary>
+        private float MedirPerimetroTecho(int columnas)
+        {
+            float total = 0f;
+            Vector3 anterior = PuntoPerimetroTecho(0f);
+
+            for (int k = 1; k <= columnas; k++)
+            {
+                Vector3 actual = PuntoPerimetroTecho((float)k / columnas);
+                total += Vector3.Distance(anterior, actual);
+                anterior = actual;
+            }
+
+            return total;
         }
 
         private static float AreaCelda(RejillaSuperficie rejilla, int fila, int columna)

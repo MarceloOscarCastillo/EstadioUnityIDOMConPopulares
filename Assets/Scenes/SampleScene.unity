@@ -9293,7 +9293,7 @@ Transform:
   m_GameObject: {fileID: 447081487}
   serializedVersion: 2
   m_LocalRotation: {x: 3.5550167e-18, y: 0.9999957, z: -1.4691494e-17, w: 0.0029273478}
-  m_LocalPosition: {x: 206, y: 66.4, z: -592}
+  m_LocalPosition: {x: 206, y: 66.4, z: -592.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14233,15 +14233,15 @@ MonoBehaviour:
   ground0Level: {fileID: 1730792205}
   materialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   forma: 1
-  orientacionCurvatura: -0.5
-  sesgoSinusoidal: 0.5
+  orientacionCurvatura: -0.351
+  sesgoSinusoidal: 0.328
   segmentosDiagonal: 32
   anchoVigaDiagonal: 0.4
   altoVigaDiagonal: 2
-  anchoVigaVertical: 0.3
-  altoVigaVertical: 0.3
-  posicionVerticalA: 0.35
-  posicionVerticalB: 0.7
+  anchoVigaVertical: 0.6
+  altoVigaVertical: 0.6
+  posicionVerticalA: 0.37
+  posicionVerticalB: 0.679
   retiroDelFinDelCodo: 1
   alturaTensorEnExtremo: 5
 --- !u!114 &671784522
@@ -19426,7 +19426,7 @@ Transform:
   m_GameObject: {fileID: 888807056}
   serializedVersion: 2
   m_LocalRotation: {x: -7.212566e-25, y: -0.9999951, z: 6.042048e-26, w: 0.0031293773}
-  m_LocalPosition: {x: 206.7, y: 66.4, z: -420.37}
+  m_LocalPosition: {x: 206.7, y: 66.4, z: -419}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

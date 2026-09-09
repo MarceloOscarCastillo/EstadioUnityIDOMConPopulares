@@ -48,10 +48,9 @@ namespace Estadio.Techo
         [SerializeField] private float altoVigaVertical = 0.3f;
 
         [Header("Verticales de apoyo")]
-        [Tooltip("Posicion de cada vertical como fraccion del desarrollo horizontal de la " +
-                 "viga, medido desde el extremo alto.")]
-        [SerializeField, Range(0f, 1f)] private float posicionVerticalA = 0.35f;
-        [SerializeField, Range(0f, 1f)] private float posicionVerticalB = 0.7f;
+        [Tooltip("Posicion de cada vertical como fraccion del desarrollo horizontal de la viga, " +
+         "medida desde el extremo alto. Agregar o quitar entradas cambia la cantidad.")]
+        [SerializeField] private float[] posicionesVerticales = { 0.2f, 0.4f, 0.6f, 0.8f };
 
         [Header("Ajustes")]
         [Tooltip("Retiro del extremo inferior respecto del fin del codo, para que la viga no " +
@@ -155,20 +154,23 @@ namespace Estadio.Techo
 
             // Extremo bajo en X: el fin del codo. Se toma del perimetro del estadio en esa
             // cota Z, que es donde la grada deja de existir.
-            if (!c.PerimetroEstadio.IntersectarZ(zExtremo, out float xPositivo, out float xNegativo))
+            
+
+            float xFinCodo = BuscarFinDelCodo(c, zExtremo, ladoPositivoX);
+
+            if (float.IsNaN(xFinCodo))
             {
-                Debug.LogWarning($"[Techo] La viga final en z={zExtremo:F1} no encuentra el fin " +
-                                 "del codo: esa cota cae fuera del perimetro del estadio.", this);
+                Debug.LogWarning($"[Techo] La viga final en z={zExtremo:F1} no encuentra coronamientos " +
+                                 "cerca: no se genera.", this);
                 return;
             }
 
-            float xFinCodo = ladoPositivoX ? xPositivo : xNegativo;
             float xInferior = xFinCodo - Mathf.Sign(xFinCodo) * retiroDelFinDelCodo;
 
             // Extremo bajo en Y: el muro superior de lo que haya debajo. El registro de
             // coronamientos ya se quedo con el mas alto donde se solapan dos sectores, asi
             // que si hay dos bandejas devuelve la de arriba.
-            float yInferior = c.Coronamientos.AlturaBajoPunto(new Vector2(xInferior, zExtremo));
+            float yInferior = c.Coronamientos.AlturaBajoPunto(new Vector2(0f, zExtremo));
 
             if (yInferior >= superior.y)
             {
@@ -188,6 +190,13 @@ namespace Estadio.Techo
                                  "vertical. Revisar el largo del techo o el fin del codo.", this);
             }
 
+
+            Debug.Log($"[VigaFinal] {(ladoPositivoX ? "X+" : "X-")}/{(ladoPositivoZ ? "Z+" : "Z-")}: " +
+          $"superior ({superior.x:F1}, {superior.y:F1}, {superior.z:F1}) -> " +
+          $"inferior ({inferior.x:F1}, {inferior.y:F1}, {inferior.z:F1}) | " +
+          $"desarrollo {desarrollo:F1} m");
+
+
             Vector3[] eje = MuestrearDiagonal(superior, inferior);
 
             var contenedor = new GameObject(
@@ -199,8 +208,9 @@ namespace Estadio.Techo
                           contenedor.transform, $"Tramo_{i}");
 
             float yPiso = NivelPiso(c);
-            CrearVerticalEn(eje, posicionVerticalA, yPiso, contenedor.transform, "Vertical_A");
-            CrearVerticalEn(eje, posicionVerticalB, yPiso, contenedor.transform, "Vertical_B");
+            
+            for (int v = 0; v < posicionesVerticales.Length; v++)
+                CrearVerticalEn(eje, posicionesVerticales[v], yPiso, contenedor.transform, $"Vertical_{v}");
 
             VigasGeneradas++;
         }
@@ -333,5 +343,29 @@ namespace Estadio.Techo
             go.AddComponent<MeshFilter>().mesh = mesh;
             go.AddComponent<MeshRenderer>().sharedMaterial = materialVigas;
         }
+
+        /// <summary>
+        /// Cota X mas alejada de los coronamientos publicados cerca de esa Z, del lado indicado.
+        /// Es donde termina realmente la grada en esta variante.
+        /// </summary>
+        private static float BuscarFinDelCodo(ControladorTecho c, float z, bool ladoPositivo,float franja = 12f)
+        {
+            float mejor = float.NaN;
+
+            IReadOnlyList<PuntoCoronamiento> puntos = c.Coronamientos.Puntos;
+            for (int i = 0; i < puntos.Count; i++)
+            {
+                Vector3 p = puntos[i].posicion;
+                if ((p.x > 0f) != ladoPositivo) continue;
+                if (Mathf.Abs(p.z - z) > franja) continue;
+                if ((p.z > 0f) != (z > 0f)) continue;
+
+                if (float.IsNaN(mejor) || Mathf.Abs(p.x) < Mathf.Abs(mejor)) mejor = p.x;
+            }
+
+            return mejor;
+        }
+
+
     }
 }
