@@ -309,20 +309,7 @@ namespace Estadio.Techo
                 default: return PuntoEnCierre(true, Mathf.Lerp(0f, 1f, u));
             }
         }
-
-        /// <summary>Punto sobre una viga longitudinal a la cota Z dada, tomando la altura de
-        /// la tela ahi.</summary>
-        //private Vector3 PuntoEnViga(bool ladoPositivo, float z)
-        //{
-        //    RectaViga recta = ladoPositivo
-        //        ? _perimetroTecho.RectaXPositivo
-        //        : _perimetroTecho.RectaXNegativo;
-
-        //    float x = recta.XenZ(z);
-        //    if (!TryAlturaTela(x, z, out float y)) y = 0f;
-        //    return new Vector3(x, y, z);
-        //}
-
+        
         private Vector3 PuntoEnViga(bool ladoPositivo, float z)
         {
             RectaViga recta = ladoPositivo

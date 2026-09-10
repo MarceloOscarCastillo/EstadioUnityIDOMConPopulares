@@ -69,6 +69,34 @@ namespace Estadio.Techo
         [Tooltip("Corrimiento extra hacia afuera del vano, por encima de medio ancho de seccion.")]
         [SerializeField] private float corrimientoTubularExtra = 0f;
 
+
+        [Header("Viguetas del pano")]
+        [Tooltip("Perfiles que corren del borde exterior al vano, por debajo de la tela. Los cables " +
+         "las sostienen y la membrana apoya sobre ellas.")]
+        [SerializeField] private bool generarViguetas = true;
+        [SerializeField] private float separacionViguetas = 4f;
+        [SerializeField] private float altoVigueta = 0.20f;
+        [SerializeField] private float grosorVigueta = 0.08f;
+        [SerializeField] private Material materialViguetas;
+
+        [Header("Cables del faldon")]
+        [Tooltip("Cables horizontales que recorren el faldon dando la vuelta al estadio, separados " +
+                 "en altura. Donde el faldon es minimo entra uno solo; donde cae veinte metros, diez.")]
+        [SerializeField] private bool generarCablesFaldon = true;
+        [SerializeField] private float separacionCablesFaldon = 2f;
+        [SerializeField] private float diametroCableFaldon = 0.05f;
+
+        private ControladorTecho _controlador;
+
+        private ControladorTecho Controlador
+        {
+            get
+            {
+                if (_controlador == null) _controlador = GetComponent<ControladorTecho>();
+                return _controlador;
+            }
+        }
+
         private GameObject _raiz;
 
         public bool Generado => _raiz != null;
@@ -132,6 +160,12 @@ namespace Estadio.Techo
             // dos colas de render.
             if (generarMembrana && membrana != null && membrana.Construida)
                 GenerarMembrana(membrana);
+
+            if (membrana != null && membrana.Construida)
+            {
+                if (generarViguetas) GenerarViguetas(membrana);
+                if (generarCablesFaldon) GenerarCablesFaldon(membrana);
+            }
 
             if (generarCables && tendido != null && tendido.Construido)
                 GenerarCables(tendido);
@@ -520,5 +554,258 @@ namespace Estadio.Techo
 
             return puntos[puntos.Count - 1];
         }
+
+        ///// <summary>
+        ///// Perfiles que van del borde exterior al vano, por debajo de la tela. Se toman columnas de
+        ///// la rejilla del pano: cada columna ya es exactamente ese recorrido radial, asi que la
+        ///// vigueta sigue la superficie sin recalcular nada.
+        ///// </summary>
+        //private void GenerarViguetas(MembranaTecho membrana)
+        //{
+        //    RejillaSuperficie rejilla = membrana.RejillaPano;
+        //    if (rejilla.vertices == null || rejilla.columnas < 3) return;
+
+        //    var contenedor = new GameObject("Viguetas");
+        //    contenedor.transform.SetParent(_raiz.transform, false);
+
+        //    float perimetro = 0f;
+        //    for (int c = 0; c < rejilla.columnas; c++)
+        //        perimetro += Vector3.Distance(rejilla.Vertice(rejilla.filas - 1, c),
+        //                                      rejilla.Vertice(rejilla.filas - 1, c + 1));
+
+        //    float separacionColumna = perimetro / rejilla.columnas;
+        //    int paso = Mathf.Max(1, Mathf.RoundToInt(separacionViguetas / Mathf.Max(0.01f, separacionColumna)));
+
+        //    for (int c = 0; c < rejilla.columnas; c += paso)
+        //    {
+        //        var eje = new Vector3[rejilla.filas];
+        //        for (int f = 0; f < rejilla.filas; f++)
+        //            eje[f] = rejilla.Vertice(f, c) - Vector3.up * (altoVigueta * 0.5f);
+
+        //        CrearPerfilPorPolilinea(eje, grosorVigueta, altoVigueta,
+        //                                $"Vigueta_{c}", contenedor.transform, materialViguetas);
+        //        ModulosInstanciados++;
+        //    }
+        //}
+
+        /// <summary>
+        /// Perfiles que corren por debajo de la tela y por encima de los cables. Siguen la
+        /// orientacion de los cables de su zona: transversales donde hay anclajes —plateas y
+        /// codos— y longitudinales en las cabeceras, donde los cables corren a lo largo.
+        ///
+        /// No se toman de la rejilla del pano: ese recorrido es radial y en las esquinas queda
+        /// oblicuo. Se generan sobre la superficie de la tela a su propia separacion.
+        /// </summary>
+        private void GenerarViguetas(MembranaTecho membrana)
+        {
+            ControladorTecho c = Controlador;
+            if (c == null || !c.GeometriaLista) return;
+
+            PerimetroTecho perimetro = c.PerimetroTecho;
+            BordeInteriorTecho borde = c.Borde;
+
+
+            var contenedor = new GameObject("Viguetas");
+            contenedor.transform.SetParent(_raiz.transform, false);
+
+            float semiLargo = perimetro.SemiLargo;
+            float semiVanoX = borde.Parametros.SemiVanoX;
+            float semiVanoZ = borde.Parametros.SemiVanoZ;
+
+            // --- Transversales: a Z constante, de una viga longitudinal a la otra ---
+            int pasosZ = Mathf.FloorToInt(semiLargo / separacionViguetas);
+
+            for (int k = -pasosZ; k <= pasosZ; k++)
+            {
+                float z = k * separacionViguetas;
+
+                bool sobrePlatea = !perimetro.EsZonaCodo(true, z) || !perimetro.EsZonaCodo(false, z);
+                if (!sobrePlatea) continue;
+
+                //perimetro.ExtremosTransversal(z, out Vector2 xzNeg, out Vector2 xzPos);
+                //CrearViguetaSobreTela(membrana, xzNeg.x, xzPos.x, z, true, contenedor.transform);
+
+                perimetro.ExtremosTransversal(z, out Vector2 xzNeg, out Vector2 xzPos);
+
+                // La vigueta no cruza el vano: solo los cables lo hacen. Se parte en dos tramos, uno por
+                // cada lado del borde del vano.
+                if (borde.IntersectarZ(z, out Vector3 bordeXNeg, out Vector3 bordeXPos))
+                {
+                    CrearViguetaSobreTela(membrana, xzNeg.x, bordeXNeg.x, z, true, contenedor.transform);
+                    CrearViguetaSobreTela(membrana, bordeXPos.x, xzPos.x, z, true, contenedor.transform);
+                }
+                else
+                {
+                    CrearViguetaSobreTela(membrana, xzNeg.x, xzPos.x, z, true, contenedor.transform);
+                }
+
+
+
+            }
+
+            // --- Longitudinales: a X constante, en las cabeceras ---
+            int pasosX = Mathf.FloorToInt(semiVanoX * 2f / separacionViguetas);
+
+            for (int k = -pasosX; k <= pasosX; k++)
+            {
+                float x = k * separacionViguetas;
+
+                foreach (int signo in new[] { -1, 1 })
+                {
+                    float zBorde = signo * semiVanoZ;
+                    float zCierre = signo * semiLargo;
+
+                    // Solo donde no hay anclajes: en las plateas ya pusimos las transversales.
+                    if (!perimetro.EsZonaCodo(x > 0f, zCierre)) continue;
+
+                    CrearViguetaSobreTela(membrana, zBorde, zCierre, x, false, contenedor.transform);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Una vigueta entre dos coordenadas, siguiendo la superficie de la tela. Se ubica
+        /// altoVigueta por debajo de ella: el orden vertical es tela, vigueta, cable.
+        /// </summary>
+        private void CrearViguetaSobreTela(MembranaTecho membrana, float desde, float hasta,
+                                           float fija, bool transversal, Transform padre)
+        {
+            const int segmentos = 24;
+            var eje = new List<Vector3>(segmentos + 1);
+
+            for (int i = 0; i <= segmentos; i++)
+            {
+                float t = Mathf.Lerp(desde, hasta, (float)i / segmentos);
+
+                float x = transversal ? t : fija;
+                float z = transversal ? fija : t;
+
+                if (!membrana.TryAlturaTela(x, z, out float y)) continue;
+
+                eje.Add(new Vector3(x, y - altoVigueta * 0.5f, z));
+            }
+
+            if (eje.Count < 2) return;
+
+            CrearPerfilPorPolilinea(eje.ToArray(), grosorVigueta, altoVigueta,
+                                    $"Vigueta_{(transversal ? "T" : "L")}_{fija:F0}",
+                                    padre, materialViguetas);
+
+            ModulosInstanciados++;
+        }
+
+
+
+
+
+
+
+        /// <summary>
+        /// Cables horizontales del faldon. La rejilla tiene solo dos filas, asi que cada cable se
+        /// arma interpolando entre ellas. Como la caida varia mucho a lo largo del perimetro, cada
+        /// cable se corta donde el faldon deja de llegar a esa profundidad.
+        /// </summary>
+        private void GenerarCablesFaldon(MembranaTecho membrana)
+        {
+            RejillaSuperficie rejilla = membrana.RejillaFaldon;
+            if (rejilla.vertices == null || rejilla.columnas < 3) return;
+
+            var contenedor = new GameObject("Cables_Faldon");
+            contenedor.transform.SetParent(_raiz.transform, false);
+
+            int filas = rejilla.filas;
+            int niveles = Mathf.Max(1, Mathf.CeilToInt(membrana.CaidaFaldonMaxima / separacionCablesFaldon));
+
+            for (int n = 1; n <= niveles; n++)
+            {
+                float profundidad = n * separacionCablesFaldon;
+                var tramo = new List<Vector3>();
+
+                for (int c = 0; c <= rejilla.columnas; c++)
+                {
+                    Vector3 arriba = rejilla.Vertice(0, c);
+                    Vector3 abajo = rejilla.Vertice(filas - 1, c);
+
+                    if (arriba.y - abajo.y >= profundidad)
+                    {
+                        tramo.Add(new Vector3(arriba.x, arriba.y - profundidad, arriba.z));
+                        continue;
+                    }
+
+                    if (tramo.Count >= 2)
+                    {
+                        CrearTuboPorPolilinea(tramo.ToArray(), diametroCableFaldon,
+                                              $"CableFaldon_{n}_{c}", contenedor.transform);
+                        ModulosInstanciados++;
+                    }
+                    tramo.Clear();
+                }
+
+                if (tramo.Count >= 2)
+                {
+                    CrearTuboPorPolilinea(tramo.ToArray(), diametroCableFaldon,
+                                          $"CableFaldon_{n}_fin", contenedor.transform);
+                    ModulosInstanciados++;
+                }
+            }
+        }
+
+        /// <summary>Barre una seccion rectangular a lo largo de una polilinea.</summary>
+        private static void CrearPerfilPorPolilinea(Vector3[] eje, float grosor, float alto,
+                                                    string nombre, Transform padre, Material material)
+        {
+            if (eje == null || eje.Length < 2) return;
+
+            var vertices = new List<Vector3>(eje.Length * 4);
+            var triangulos = new List<int>(eje.Length * 24);
+
+            float g = grosor * 0.5f;
+            float h = alto * 0.5f;
+
+            for (int i = 0; i < eje.Length; i++)
+            {
+                Vector3 direccion = i == 0
+                    ? (eje[1] - eje[0]).normalized
+                    : (eje[i] - eje[i - 1]).normalized;
+
+                Vector3 lateral = Vector3.Cross(direccion, Vector3.up);
+                if (lateral.sqrMagnitude < 1e-6f) lateral = Vector3.right;
+                lateral = lateral.normalized * g;
+
+                Vector3 vertical = Vector3.up * h;
+
+                vertices.Add(eje[i] - lateral - vertical);
+                vertices.Add(eje[i] - lateral + vertical);
+                vertices.Add(eje[i] + lateral + vertical);
+                vertices.Add(eje[i] + lateral - vertical);
+            }
+
+            for (int i = 0; i < eje.Length - 1; i++)
+            {
+                int a = i * 4;
+                int b = (i + 1) * 4;
+
+                for (int k = 0; k < 4; k++)
+                {
+                    int k1 = k;
+                    int k2 = (k + 1) % 4;
+                    triangulos.AddRange(new[] { a + k1, a + k2, b + k1, a + k2, b + k2, b + k1 });
+                }
+            }
+
+            var mesh = new Mesh();
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = triangulos.ToArray();
+            mesh.RecalculateNormals();
+
+            var go = new GameObject(nombre);
+            go.transform.SetParent(padre, false);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.AddComponent<MeshFilter>().mesh = mesh;
+            go.AddComponent<MeshRenderer>().sharedMaterial = material;
+        }
+
+
     }
 }
