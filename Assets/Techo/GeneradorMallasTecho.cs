@@ -86,6 +86,24 @@ namespace Estadio.Techo
         [SerializeField] private float separacionCablesFaldon = 2f;
         [SerializeField] private float diametroCableFaldon = 0.05f;
 
+
+        [Header("Costuras del pano")]
+        [SerializeField] private bool generarCosturasPano = true;
+        [Tooltip("Lado de los cuadros que forman las costuras.")]
+        [SerializeField] private float separacionCosturasPano = 4f;
+        [SerializeField] private float anchoCostura = 0.05f;
+        [SerializeField] private float espesorCostura = 0.02f;
+        [SerializeField] private Material materialCosturas;
+
+        [Header("Costuras del faldon")]
+        [SerializeField] private bool generarCosturasFaldon = true;
+        [Tooltip("Separacion de las costuras verticales del faldon.")]
+        [SerializeField] private float separacionCosturasFaldon = 2f;
+
+
+
+
+
         private ControladorTecho _controlador;
 
         private ControladorTecho Controlador
@@ -169,6 +187,11 @@ namespace Estadio.Techo
 
             if (generarCables && tendido != null && tendido.Construido)
                 GenerarCables(tendido);
+
+            if (generarCosturasPano) GenerarCosturasPano(membrana);
+            if (generarCosturasFaldon) GenerarCosturasFaldon(membrana);
+
+
 
             Debug.Log($"[Techo] {ModulosInstanciados} modulos instanciados, " +
                       $"{EsquinasSalteadas} tramos de esquina salteados.", this);
@@ -555,39 +578,7 @@ namespace Estadio.Techo
             return puntos[puntos.Count - 1];
         }
 
-        ///// <summary>
-        ///// Perfiles que van del borde exterior al vano, por debajo de la tela. Se toman columnas de
-        ///// la rejilla del pano: cada columna ya es exactamente ese recorrido radial, asi que la
-        ///// vigueta sigue la superficie sin recalcular nada.
-        ///// </summary>
-        //private void GenerarViguetas(MembranaTecho membrana)
-        //{
-        //    RejillaSuperficie rejilla = membrana.RejillaPano;
-        //    if (rejilla.vertices == null || rejilla.columnas < 3) return;
-
-        //    var contenedor = new GameObject("Viguetas");
-        //    contenedor.transform.SetParent(_raiz.transform, false);
-
-        //    float perimetro = 0f;
-        //    for (int c = 0; c < rejilla.columnas; c++)
-        //        perimetro += Vector3.Distance(rejilla.Vertice(rejilla.filas - 1, c),
-        //                                      rejilla.Vertice(rejilla.filas - 1, c + 1));
-
-        //    float separacionColumna = perimetro / rejilla.columnas;
-        //    int paso = Mathf.Max(1, Mathf.RoundToInt(separacionViguetas / Mathf.Max(0.01f, separacionColumna)));
-
-        //    for (int c = 0; c < rejilla.columnas; c += paso)
-        //    {
-        //        var eje = new Vector3[rejilla.filas];
-        //        for (int f = 0; f < rejilla.filas; f++)
-        //            eje[f] = rejilla.Vertice(f, c) - Vector3.up * (altoVigueta * 0.5f);
-
-        //        CrearPerfilPorPolilinea(eje, grosorVigueta, altoVigueta,
-        //                                $"Vigueta_{c}", contenedor.transform, materialViguetas);
-        //        ModulosInstanciados++;
-        //    }
-        //}
-
+       
         /// <summary>
         /// Perfiles que corren por debajo de la tela y por encima de los cables. Siguen la
         /// orientacion de los cables de su zona: transversales donde hay anclajes —plateas y
@@ -693,11 +684,6 @@ namespace Estadio.Techo
 
             ModulosInstanciados++;
         }
-
-
-
-
-
 
 
         /// <summary>
@@ -806,6 +792,117 @@ namespace Estadio.Techo
             go.AddComponent<MeshRenderer>().sharedMaterial = material;
         }
 
+        private void GenerarCosturasPano(MembranaTecho membrana)
+        {
+            ControladorTecho c = Controlador;
+            if (c == null || !c.GeometriaLista) return;
 
+            PerimetroTecho perimetro = c.PerimetroTecho;
+            BordeInteriorTecho borde = c.Borde;
+
+            var contenedor = new GameObject("Costuras_Pano");
+            contenedor.transform.SetParent(_raiz.transform, false);
+
+            float semiLargo = perimetro.SemiLargo;
+            float semiVanoX = borde.Parametros.SemiVanoX;
+            float semiVanoZ = borde.Parametros.SemiVanoZ;
+
+            // --- A Z constante: sobre plateas y codos, cortadas por el vano ---
+            int pasosZ = Mathf.FloorToInt(semiLargo / separacionCosturasPano);
+
+            for (int k = -pasosZ; k <= pasosZ; k++)
+            {
+                float z = k * separacionCosturasPano;
+
+                perimetro.ExtremosTransversal(z, out Vector2 xzNeg, out Vector2 xzPos);
+
+                if (borde.IntersectarZ(z, out Vector3 bNeg, out Vector3 bPos))
+                {
+                    CrearCosturaSobreTela(membrana, xzNeg.x, bNeg.x, z, true, contenedor.transform);
+                    CrearCosturaSobreTela(membrana, bPos.x, xzPos.x, z, true, contenedor.transform);
+                }
+                else
+                {
+                    CrearCosturaSobreTela(membrana, xzNeg.x, xzPos.x, z, true, contenedor.transform);
+                }
+            }
+
+            // --- A X constante: cruzan las anteriores para cerrar los cuadros ---
+            float xLimite = Mathf.Max(Mathf.Abs(perimetro.RectaXNegativo.XenZ(0f)),
+                                      Mathf.Abs(perimetro.RectaXPositivo.XenZ(0f)));
+            int pasosX = Mathf.FloorToInt(xLimite / separacionCosturasPano);
+
+            for (int k = -pasosX; k <= pasosX; k++)
+            {
+                float x = k * separacionCosturasPano;
+
+                foreach (int signo in new[] { -1, 1 })
+                {
+                    float zInterior = Mathf.Abs(x) < semiVanoX ? signo * semiVanoZ : 0f;
+                    float zExterior = signo * semiLargo;
+
+                    CrearCosturaSobreTela(membrana, zInterior, zExterior, x, false, contenedor.transform);
+                }
+            }
+        }
+
+        private void CrearCosturaSobreTela(MembranaTecho membrana, float desde, float hasta,
+                                           float fija, bool transversal, Transform padre)
+        {
+            const int segmentos = 32;
+            var eje = new List<Vector3>(segmentos + 1);
+
+            for (int i = 0; i <= segmentos; i++)
+            {
+                float t = Mathf.Lerp(desde, hasta, (float)i / segmentos);
+
+                float x = transversal ? t : fija;
+                float z = transversal ? fija : t;
+
+                if (!membrana.TryAlturaTela(x, z, out float y)) continue;
+
+                eje.Add(new Vector3(x, y + espesorCostura * 0.5f, z));
+            }
+
+            if (eje.Count < 2) return;
+
+            CrearPerfilPorPolilinea(eje.ToArray(), anchoCostura, espesorCostura,
+                                    $"Costura_{(transversal ? "T" : "L")}_{fija:F0}",
+                                    padre, materialCosturas);
+
+            ModulosInstanciados++;
+        }
+
+
+
+        /// <summary>Costuras verticales del faldon, de su borde superior al inferior.</summary>
+        private void GenerarCosturasFaldon(MembranaTecho membrana)
+        {
+            RejillaSuperficie rejilla = membrana.RejillaFaldon;
+            if (rejilla.vertices == null || rejilla.columnas < 3) return;
+
+            var contenedor = new GameObject("Costuras_Faldon");
+            contenedor.transform.SetParent(_raiz.transform, false);
+
+            float perimetro = 0f;
+            for (int col = 0; col < rejilla.columnas; col++)
+                perimetro += Vector3.Distance(rejilla.Vertice(0, col), rejilla.Vertice(0, col + 1));
+
+            float separacionColumna = perimetro / rejilla.columnas;
+            int paso = Mathf.Max(1, Mathf.RoundToInt(separacionCosturasFaldon / Mathf.Max(0.01f, separacionColumna)));
+
+            for (int col = 0; col < rejilla.columnas; col += paso)
+            {
+                var eje = new List<Vector3>(rejilla.filas);
+                for (int f = 0; f < rejilla.filas; f++)
+                    eje.Add(rejilla.Vertice(f, col));
+
+                if (Vector3.Distance(eje[0], eje[eje.Count - 1]) < 0.3f) continue;
+
+                CrearPerfilPorPolilinea(eje.ToArray(), anchoCostura, espesorCostura,
+                                        $"CosturaFaldon_{col}", contenedor.transform, materialCosturas);
+                ModulosInstanciados++;
+            }
+        }
     }
 }
