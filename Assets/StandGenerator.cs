@@ -59,6 +59,7 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public int frecuenciaFilasPara = 10;
     public float distanciaEntrePares = 4.0f;
     public float anchoDelPar = 4f;
+    public float ajusteAlturaParaavalancha = 0.2f;
 
     [Header("Alambrado")]
     public bool generarAlambrado = false;
@@ -326,7 +327,7 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
                             Vector3 posParaLocal = new Vector3(
                         e * anchoDeUnaPieza + off,
-                        alturaAcumulada + (altoEscalon * ObtenerFactorParaFila(f)),          // altura del escalón en espacio local
+                        alturaAcumulada + (altoEscalon * ObtenerFactorParaFila(f) + ajusteAlturaParaavalancha),          // altura del escalón en espacio local
                         f * profundidadEscalon * multiplicadorZ  // misma Z que el escalón
             );
                             if (distribuirVomitosHomogeneamente && EsHuecoVomito(posicionXMetros, posicionesVomitos1)) continue;

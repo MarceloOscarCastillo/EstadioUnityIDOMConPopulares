@@ -115,6 +115,7 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public int frecuenciaFilasPara = 10;
     public float distanciaEntrePares = 4.0f;
     public float anchoDelPar = 4f;
+    public float ajusteAlturaParaavalancha = 0.45f;
 
 
     [Header("Muros")]
@@ -458,9 +459,9 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                             if (generarBocaLogistica && EsZonaBocaLogistica(anguloPara - 0.1f, anguloPara + 0.1f, f)) continue;
 
                             Vector3 posPara = transform.TransformPoint(CalcularPunto(anguloPara, radioCentro, f));
-                            posPara.y += altoEscalonFila;
 
-
+                            //ACA AGREGUE EL AJUSTE ALTURA
+                            posPara.y += altoEscalonFila + ajusteAlturaParaavalancha;
 
                             // Orientacion perpendicular al arco (misma que el escalon)
                             Vector3 pInt = transform.TransformPoint(CalcularPunto(anguloPara, radioInferior, f));
@@ -485,7 +486,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                             GameObject para = Instantiate(PrefabParaavalanchas, contenedor.transform);
 
                             para.transform.position = posPara;
-
+                            
                             para.transform.rotation = Quaternion.LookRotation(dirRadial, Vector3.up);
 
                             AplicarMaterialATodo(para, matPara);
