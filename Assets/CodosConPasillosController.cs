@@ -1,3 +1,4 @@
+using Estadio.Techo;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.ProBuilder;
@@ -1456,6 +1457,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         return Mathf.Lerp(filasMaximas, filasMinimas, tCurvado);
 
     }
+
 
     void GenerarSoportesCodo(GameObject contenedor)
     {

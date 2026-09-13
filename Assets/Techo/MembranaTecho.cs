@@ -50,6 +50,12 @@ namespace Estadio.Techo
          "hasta el techo y no hay hueco que cerrar.")]
         public float remateSobreAnclaje;
 
+        [Tooltip("Pendiente maxima del borde inferior del faldon, en metros de caida por metro de " +
+         "recorrido. Suaviza el escalon donde el codo se encuentra con una cabecera baja. " +
+         "0 desactiva el limite.")]
+        public float pendienteMaximaFaldon;
+
+
 
         public static ParametrosMembrana PorDefecto => new ParametrosMembrana
         {
@@ -59,7 +65,8 @@ namespace Estadio.Techo
             festonRelativo = 0.022f,
             solapeFaldon = 1.5f,
             caidaMinimaFaldon = 0.5f,
-            remateSobreAnclaje = 1.5f
+            remateSobreAnclaje = 1.5f,
+            pendienteMaximaFaldon= 0.5f
         };
     }
 
@@ -226,6 +233,62 @@ namespace Estadio.Techo
         /// tela y ese muro, mas el solape: minima en los laterales, maxima en el medio de las
         /// cabeceras. No hay que darle forma.
         /// </summary>
+        //private void ConstruirFaldon()
+        //{
+        //    int columnas = _parametros.divisionesPerimetrales;
+        //    int filas = _parametros.anillosFaldon + 1;
+
+        //    var rejilla = new RejillaSuperficie
+        //    {
+        //        filas = filas,
+        //        columnas = columnas,
+        //        vertices = new Vector3[filas * columnas],
+        //        uv = new Vector2[filas * columnas]
+        //    };
+
+        //    CaidaFaldonMaxima = 0f;
+        //    CaidaFaldonMinima = float.PositiveInfinity;
+
+        //    // Igual que en el pano: UV en metros para que las costuras no se estiren.
+        //    _perimetroMetros = MedirPerimetroTecho(columnas);
+
+        //    for (int c = 0; c < columnas; c++)
+        //    {
+        //        float sigma = (float)c / columnas;
+
+        //        Vector3 arriba = PuntoPerimetroTecho(sigma);
+        //        float muro = _coronamientos.AlturaBajoPunto(new Vector2(arriba.x, arriba.z));
+
+        //        bool hayAnclajes = !_perimetroTecho.EsZonaCodo(arriba.x > 0f, arriba.z);
+
+        //        float caida = hayAnclajes
+        //            ? _parametros.remateSobreAnclaje
+        //            : Mathf.Max(_parametros.caidaMinimaFaldon,
+        //                        arriba.y - muro + _parametros.solapeFaldon);
+
+
+
+        //        //float caida = Mathf.Max(_parametros.caidaMinimaFaldon,
+        //        //                        arriba.y - muro + _parametros.solapeFaldon);
+
+        //        CaidaFaldonMaxima = Mathf.Max(CaidaFaldonMaxima, caida);
+        //        CaidaFaldonMinima = Mathf.Min(CaidaFaldonMinima, caida);
+
+        //        for (int f = 0; f < filas; f++)
+        //        {
+        //            float w = (float)f / (filas - 1);
+
+        //            int i = rejilla.Indice(f, c);
+        //            rejilla.vertices[i] = new Vector3(arriba.x, arriba.y - caida * w, arriba.z);
+        //            rejilla.uv[i] = new Vector2(sigma * _perimetroMetros, w * caida);
+        //        }
+        //    }
+
+        //    if (CaidaFaldonMinima > CaidaFaldonMaxima) CaidaFaldonMinima = 0f;
+
+        //    _rejillaFaldon = rejilla;
+        //}
+
         private void ConstruirFaldon()
         {
             int columnas = _parametros.divisionesPerimetrales;
@@ -245,6 +308,10 @@ namespace Estadio.Techo
             // Igual que en el pano: UV en metros para que las costuras no se estiren.
             _perimetroMetros = MedirPerimetroTecho(columnas);
 
+            // --- Primera pasada: la caida cruda de cada columna ---
+            var caidas = new float[columnas];
+            var puntosArriba = new Vector3[columnas];
+
             for (int c = 0; c < columnas; c++)
             {
                 float sigma = (float)c / columnas;
@@ -254,15 +321,45 @@ namespace Estadio.Techo
 
                 bool hayAnclajes = !_perimetroTecho.EsZonaCodo(arriba.x > 0f, arriba.z);
 
-                float caida = hayAnclajes
+                puntosArriba[c] = arriba;
+                caidas[c] = hayAnclajes
                     ? _parametros.remateSobreAnclaje
                     : Mathf.Max(_parametros.caidaMinimaFaldon,
                                 arriba.y - muro + _parametros.solapeFaldon);
+            }
 
+            // --- Segunda pasada: se limita la pendiente del borde inferior ---
+            // Donde el codo se encuentra con una cabecera de una bandeja, el coronamiento tiene un
+            // escalon vertical y sin esto el faldon lo copia tal cual. Se propaga hacia atras: cada
+            // columna baja al menos lo que su vecina menos el salto permitido, asi el faldon empieza
+            // a caer antes y llega en rampa. Como solo se permite bajar de MAS, nunca deja de cubrir.
+            if (_parametros.pendienteMaximaFaldon > 0f)
+            {
+                float paso = _perimetroMetros / columnas;
+                float saltoMaximo = _parametros.pendienteMaximaFaldon * paso;
 
+                for (int vuelta = 0; vuelta < 2; vuelta++)
+                {
+                    for (int c = 0; c < columnas; c++)
+                    {
+                        int anterior = (c - 1 + columnas) % columnas;
+                        caidas[c] = Mathf.Max(caidas[c], caidas[anterior] - saltoMaximo);
+                    }
 
-                //float caida = Mathf.Max(_parametros.caidaMinimaFaldon,
-                //                        arriba.y - muro + _parametros.solapeFaldon);
+                    for (int c = columnas - 1; c >= 0; c--)
+                    {
+                        int siguiente = (c + 1) % columnas;
+                        caidas[c] = Mathf.Max(caidas[c], caidas[siguiente] - saltoMaximo);
+                    }
+                }
+            }
+
+            // --- Tercera pasada: armar la rejilla ---
+            for (int c = 0; c < columnas; c++)
+            {
+                float sigma = (float)c / columnas;
+                Vector3 arriba = puntosArriba[c];
+                float caida = caidas[c];
 
                 CaidaFaldonMaxima = Mathf.Max(CaidaFaldonMaxima, caida);
                 CaidaFaldonMinima = Mathf.Min(CaidaFaldonMinima, caida);
@@ -281,10 +378,6 @@ namespace Estadio.Techo
 
             _rejillaFaldon = rejilla;
         }
-
-        // ------------------------------------------------------------------
-        //  Geometria
-        // ------------------------------------------------------------------
 
         /// <summary>
         /// Punto del perimetro del techo a la fraccion sigma del recorrido. Es el rectangulo

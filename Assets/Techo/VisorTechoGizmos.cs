@@ -7,12 +7,12 @@ namespace Estadio.Techo
     /// Superficie horizontal a cota fija. El Diseno 2 no tiene cables de los que derivar el
     /// borde, asi que hasta modelar su parrilla reticulada se usa esto.
     /// </summary>
-    public sealed class SuperficiePlana : ISuperficieCables
-    {
-        private readonly float _altura;
-        public SuperficiePlana(float altura) { _altura = altura; }
-        public bool TryAltura(float x, float z, out float altura) { altura = _altura; return true; }
-    }
+    //public sealed class SuperficiePlana : ISuperficieCables
+    //{
+    //    private readonly float _altura;
+    //    public SuperficiePlana(float altura) { _altura = altura; }
+    //    public bool TryAltura(float x, float z, out float altura) { altura = _altura; return true; }
+    //}
 
     /// <summary>
     /// Dibuja con Gizmos la geometria que calcula ControladorTecho. No calcula nada por su

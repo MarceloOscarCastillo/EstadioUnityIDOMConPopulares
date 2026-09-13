@@ -101,6 +101,15 @@ namespace Estadio.Techo
         [SerializeField] private float separacionCosturasFaldon = 2f;
 
 
+        [Header("Tubulares del Diseno 2")]
+        [Tooltip("Material propio de las tubulares cuando corren por encima de la tela. Si queda " +
+                 "vacio se usa el mismo prefab sin cambiarle el material.")]
+        [SerializeField] private Material materialTubularDiseno2;
+        [Tooltip("Cuanto suben las tubulares respecto del eje del borde en el Diseno 2. Ahi van por " +
+                 "ENCIMA de la tela, al reves que en el Diseno 1.")]
+        [SerializeField] private float subidaTubularDiseno2 = 1.5f;
+        [Tooltip("Cuanto se retiran las tubulares hacia las cabeceras respecto del borde del vano.")]
+        [SerializeField] private float retiroTubularDiseno2 = 2.5f;
 
 
 
@@ -150,6 +159,8 @@ namespace Estadio.Techo
                 return;
             }
 
+
+
             if (marco == null) throw new ArgumentNullException(nameof(marco));
             if (prefabTubular == null)
             {
@@ -185,20 +196,23 @@ namespace Estadio.Techo
                 if (generarCablesFaldon) GenerarCablesFaldon(membrana);
             }
 
-            if (generarCables && tendido != null && tendido.Construido)
+            bool esDiseno1 = Controlador != null && Controlador.Diseno == DisenoTecho.Diseno1Membrana;
+
+            if (generarCables && esDiseno1 && tendido != null && tendido.Construido)
                 GenerarCables(tendido);
+
+            //if (generarCables && tendido != null && tendido.Construido)
+            //    GenerarCables(tendido);
 
             if (generarCosturasPano) GenerarCosturasPano(membrana);
             if (generarCosturasFaldon) GenerarCosturasFaldon(membrana);
-
-
-
-            Debug.Log($"[Techo] {ModulosInstanciados} modulos instanciados, " +
-                      $"{EsquinasSalteadas} tramos de esquina salteados.", this);
+           
         }
         
         private void BarrerElemento(ElementoBordeConstruido elemento)
         {
+            bool esDiseno1 = Controlador != null && Controlador.Diseno == DisenoTecho.Diseno1Membrana;
+
             Vector3[] eje = elemento.eje;
             if (eje == null || eje.Length < 2) return;
 
@@ -210,17 +224,46 @@ namespace Estadio.Techo
             // El puente del Diseno 1 no es un reticulado: son dos cables paralelos con
             // pendolas. Su forma sale de la panza del eje, que depende de la tension de la
             // membrana, asi que no puede venir de un prefab rigido.
-            if (esPuente && puenteConCables)
-            {
-                GenerarPuenteDeCables(elemento, contenedor.transform);
-                return;
-            }
+            //if (esPuente && puenteConCables)
+            //{
+            //    GenerarPuenteDeCables(elemento, contenedor.transform);
+            //    return;
+            //}
 
             //var ejeDesplazado = new Vector3[eje.Length];
+
+
+            //Vector3 centroVano = Vector3.zero;
+
             //for (int i = 0; i < eje.Length; i++)
-            //    ejeDesplazado[i] = eje[i] - Vector3.up * elemento.canto;
+            //{
+            //    Vector3 p = eje[i];
+
+            //    Vector2 haciaAfuera = new Vector2(p.x - centroVano.x, p.z - centroVano.z);
+            //    haciaAfuera = haciaAfuera.sqrMagnitude > 1e-6f ? haciaAfuera.normalized : Vector2.right;
+
+            //    float corrimiento = elemento.ancho * 0.5f + corrimientoTubularExtra;
+
+            //    ejeDesplazado[i] = new Vector3(
+            //        p.x + haciaAfuera.x * corrimiento,
+            //        p.y - elemento.canto * bajadaTubularEnCantos,
+            //        p.z + haciaAfuera.y * corrimiento);
+            //}
 
             //eje = ejeDesplazado;
+
+            if (esPuente)
+            {
+                // En el Diseno 2 los puentes son rigidos y con volumen: los genera su propio
+                // componente. Aca solo se resuelve el puente de cables del Diseno 1.
+                if (!esDiseno1) return;
+
+                if (puenteConCables)
+                {
+                    GenerarPuenteDeCables(elemento, contenedor.transform);
+                    return;
+                }
+            }
 
             var ejeDesplazado = new Vector3[eje.Length];
             Vector3 centroVano = Vector3.zero;
@@ -232,17 +275,23 @@ namespace Estadio.Techo
                 Vector2 haciaAfuera = new Vector2(p.x - centroVano.x, p.z - centroVano.z);
                 haciaAfuera = haciaAfuera.sqrMagnitude > 1e-6f ? haciaAfuera.normalized : Vector2.right;
 
-                float corrimiento = elemento.ancho * 0.5f + corrimientoTubularExtra;
+                // Diseno 1: la tubular cuelga de los cables y queda bajo la tela. Diseno 2: va por
+                // encima y algo mas retirada hacia las cabeceras.
+                float corrimiento = esDiseno1
+                    ? elemento.ancho * 0.5f + corrimientoTubularExtra
+                    : elemento.ancho * 0.5f + retiroTubularDiseno2;
+
+                float desplazamientoY = esDiseno1
+                    ? -elemento.canto * bajadaTubularEnCantos
+                    : +subidaTubularDiseno2;
 
                 ejeDesplazado[i] = new Vector3(
                     p.x + haciaAfuera.x * corrimiento,
-                    p.y - elemento.canto * bajadaTubularEnCantos,
+                    p.y + desplazamientoY,
                     p.z + haciaAfuera.y * corrimiento);
             }
 
             eje = ejeDesplazado;
-
-
 
             GameObject prefab = esPuente && prefabPuente != null ? prefabPuente : prefabTubular;
             float longitudModulo = esPuente && prefabPuente != null
@@ -270,10 +319,48 @@ namespace Estadio.Techo
 
             BarrerTramoRecto(tramo, contenedor.transform, prefab, longitudModulo);
         }
+        
+        //private void BarrerTramoRecto(List<Vector3> puntos, Transform padre,
+        //                              GameObject prefab, float longitudModulo)
+        //{
+        //    if (puntos.Count < 2) return;
+
+        //    float longitud = 0f;
+        //    for (int i = 1; i < puntos.Count; i++)
+        //        longitud += Vector3.Distance(puntos[i - 1], puntos[i]);
+
+        //    if (longitud < longitudModulo * 0.5f) return;
+
+        //    int cantidad = Mathf.Max(1, Mathf.RoundToInt(longitud / longitudModulo));
+        //    float escalaX = (longitud / cantidad) / longitudModulo;
+
+        //    for (int i = 0; i < cantidad; i++)
+        //    {
+        //        Vector3 inicio = PuntoEnPolilinea(puntos, longitud, (float)i / cantidad);
+        //        Vector3 fin = PuntoEnPolilinea(puntos, longitud, (float)(i + 1) / cantidad);
+
+        //        Vector3 direccion = fin - inicio;
+        //        if (direccion.sqrMagnitude < 1e-6f) continue;
+
+        //        GameObject modulo = Instantiate(prefab, padre);
+        //        modulo.transform.localPosition = inicio;
+
+        //        // LookRotation fija tambien el giro alrededor del eje: FromToRotation deja el
+        //        // roll indeterminado y los modulos no empalman.
+        //        Vector3 dir = direccion.normalized;
+        //        modulo.transform.localRotation = Quaternion.LookRotation(dir, Vector3.up)
+        //                                       * Quaternion.Euler(0f, -90f, 0f);
+
+        //        modulo.transform.localScale = new Vector3(escalaX, 1f, 1f);
+
+        //        ModulosInstanciados++;
+        //    }
+        //}
+
 
         /// <summary>
-        /// La cantidad de modulos se calcula por tramo y la escala en X se ajusta levemente
-        /// para que cierre exacto: es mucho menos visible que dejar un resto sin cubrir.
+        /// La cantidad de modulos se calcula por tramo y la escala en X se ajusta levemente para
+        /// que cierre exacto: es mucho menos visible que dejar un resto sin cubrir.
         /// </summary>
         private void BarrerTramoRecto(List<Vector3> puntos, Transform padre,
                                       GameObject prefab, float longitudModulo)
@@ -289,6 +376,10 @@ namespace Estadio.Techo
             int cantidad = Mathf.Max(1, Mathf.RoundToInt(longitud / longitudModulo));
             float escalaX = (longitud / cantidad) / longitudModulo;
 
+            // En el Diseno 2 las tubulares corren por encima de la tela y llevan material propio.
+            bool esDiseno1 = Controlador == null || Controlador.Diseno == DisenoTecho.Diseno1Membrana;
+            bool cambiarMaterial = !esDiseno1 && materialTubularDiseno2 != null;
+
             for (int i = 0; i < cantidad; i++)
             {
                 Vector3 inicio = PuntoEnPolilinea(puntos, longitud, (float)i / cantidad);
@@ -300,17 +391,22 @@ namespace Estadio.Techo
                 GameObject modulo = Instantiate(prefab, padre);
                 modulo.transform.localPosition = inicio;
 
-                // LookRotation fija tambien el giro alrededor del eje: FromToRotation deja el
-                // roll indeterminado y los modulos no empalman.
+                // LookRotation fija tambien el giro alrededor del eje: FromToRotation deja el roll
+                // indeterminado y los modulos no empalman.
                 Vector3 dir = direccion.normalized;
                 modulo.transform.localRotation = Quaternion.LookRotation(dir, Vector3.up)
                                                * Quaternion.Euler(0f, -90f, 0f);
 
                 modulo.transform.localScale = new Vector3(escalaX, 1f, 1f);
 
+                if (cambiarMaterial)
+                    foreach (Renderer r in modulo.GetComponentsInChildren<Renderer>())
+                        r.sharedMaterial = materialTubularDiseno2;
+
                 ModulosInstanciados++;
             }
         }
+
 
         // ------------------------------------------------------------------
         //  Puente de cables

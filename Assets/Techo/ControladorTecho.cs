@@ -103,6 +103,10 @@ namespace Estadio.Techo
             ? origenTecho.localToWorldMatrix
             : Matrix4x4.identity;
 
+
+        private PuentesRigidosTecho _puentesRigidos;
+
+
         public bool TechoVisible => _generador != null && _generador.Generado;
 
         /// <summary>Se dispara cuando el techo aparece o desaparece. El modo de visibilidad
@@ -137,8 +141,9 @@ namespace Estadio.Techo
 
                 _borde = new BordeInteriorTecho(parametrosBorde);
 
-                if (diseno == DisenoTecho.Diseno1Membrana)
-                {
+                //if (diseno == DisenoTecho.Diseno1Membrana)
+                //{
+                   
                     _tendido = new TendidoCables(parametrosTendido);
                     _tendido.ConstruirTransversales(_perimetroTecho, _registro);
 
@@ -153,21 +158,9 @@ namespace Estadio.Techo
                     _membrana = new MembranaTecho(parametrosMembrana);
                     _membrana.Construir(_perimetroEstadio, _perimetroTecho, _coronamientos,
                                         _borde, _tendido);
-                }
-                else
-                {
-                    // El Diseno 2 tiene parrilla reticulada, no cables. Hasta modelarla, el
-                    // borde se apoya en una superficie plana provisoria.
-                    _tendido = null;
-                    _membrana = null;
 
-                    _borde.Construir(new SuperficiePlana(_registro.AlturaMaxima));
-
-                    _marco = new MarcoRigidoTecho(
-                        DescriptorMarco.Diseno1(cantoTubular, anchoTubular, cantoPuente, anchoPuente));
-                    _marco.Construir(_borde);
-                }
-
+                //}
+                
                 _geometriaLista = true;
                 _versionGeometria++;
             }
@@ -323,7 +316,7 @@ namespace Estadio.Techo
             else
             {
                 _generador.Generar(_marco, _membrana, _tendido);
-                GenerarSoportesCodo();
+                GenerarElementosPropios();
                 TechoCambio?.Invoke(true);
             }
         }
@@ -332,20 +325,43 @@ namespace Estadio.Techo
         /// Los soportes de codo son del techo, no del estadio: sostienen la viga longitudinal
         /// donde ya no hay platea abajo. Por eso aparecen y desaparecen con el.
         /// </summary>
-        private void GenerarSoportesCodo()
-        {
-            if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
-            if (_soportesCodo == null) return;
+        //private void GenerarSoportesCodo()
+        //{
+        //    if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
+        //    if (_soportesCodo == null) return;
 
-            // La viga longitudinal va primero: los soportes de codo y las vigas finales
-            // consultan su altura para saber donde apoyar.
+        //    // La viga longitudinal va primero: los soportes de codo y las vigas finales
+        //    // consultan su altura para saber donde apoyar.
+        //    if (_vigaLongitudinal == null) _vigaLongitudinal = GetComponent<VigaLongitudinalTecho>();
+        //    _vigaLongitudinal?.Generar(origenTecho);
+
+        //    _soportesCodo.Generar(origenTecho, configurador);
+
+        //    if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
+        //    _vigasFinales?.Generar(origenTecho);
+        //}
+
+
+        private void GenerarElementosPropios()
+        {
             if (_vigaLongitudinal == null) _vigaLongitudinal = GetComponent<VigaLongitudinalTecho>();
             _vigaLongitudinal?.Generar(origenTecho);
 
-            _soportesCodo.Generar(origenTecho, configurador);
+            if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
+            _soportesCodo?.Generar(origenTecho, configurador);
 
-            if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
-            _vigasFinales?.Generar(origenTecho);
+            if (diseno == DisenoTecho.Diseno1Membrana)
+            {
+                // Las vigas finales cierran la esquina en el Diseno 1. En el 2 ese lugar lo ocupan
+                // los puentes exteriores.
+                if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
+                _vigasFinales?.Generar(origenTecho);
+            }
+            else
+            {
+                if (_puentesRigidos == null) _puentesRigidos = GetComponent<PuentesRigidosTecho>();
+                _puentesRigidos?.Generar(origenTecho);
+            }
         }
 
         [ContextMenu("Ocultar techo")]
@@ -357,12 +373,15 @@ namespace Estadio.Techo
             if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
             _vigasFinales?.Descartar();
 
+            if (_puentesRigidos == null) _puentesRigidos = GetComponent<PuentesRigidosTecho>();
+            _puentesRigidos?.Descartar();
+
             if (_vigaLongitudinal == null) _vigaLongitudinal = GetComponent<VigaLongitudinalTecho>();
             _vigaLongitudinal?.Descartar();
 
             if (_generador == null) _generador = GetComponent<GeneradorMallasTecho>();
             //if (_generador == null) return;
-            _generador.Descartar();
+            _generador?.Descartar();
             TechoCambio?.Invoke(false);
         }
 
@@ -372,7 +391,7 @@ namespace Estadio.Techo
             _generador.Generar(_marco, _membrana, _tendido);
 
             yield return null;
-            GenerarSoportesCodo();
+            GenerarElementosPropios();
 
             yield return null;
             TechoCambio?.Invoke(true);
