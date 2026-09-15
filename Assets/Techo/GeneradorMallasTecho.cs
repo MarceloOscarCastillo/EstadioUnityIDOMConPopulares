@@ -110,8 +110,10 @@ namespace Estadio.Techo
         [SerializeField] private float subidaTubularDiseno2 = 1.5f;
         [Tooltip("Cuanto se retiran las tubulares hacia las cabeceras respecto del borde del vano.")]
         [SerializeField] private float retiroTubularDiseno2 = 2.5f;
-
-
+        [Tooltip("Giro a partir del cual se considera que el eje del vano empezo a doblar la " +
+         "esquina. Con vano casi rectangular la tubular corta ahi y sigue recta hasta el " +
+         "puente; con vano curvo nunca se supera y acompaña la curva entera.")]
+        [SerializeField, Range(1f, 30f)] private float anguloRectoTubularDiseno2 = 5f;
 
         private ControladorTecho _controlador;
 
@@ -214,6 +216,7 @@ namespace Estadio.Techo
             bool esDiseno1 = Controlador != null && Controlador.Diseno == DisenoTecho.Diseno1Membrana;
 
             Vector3[] eje = elemento.eje;
+
             if (eje == null || eje.Length < 2) return;
 
             bool esPuente = elemento.tipo == TipoElementoBorde.PuenteCabecera;
@@ -224,34 +227,7 @@ namespace Estadio.Techo
             // El puente del Diseno 1 no es un reticulado: son dos cables paralelos con
             // pendolas. Su forma sale de la panza del eje, que depende de la tension de la
             // membrana, asi que no puede venir de un prefab rigido.
-            //if (esPuente && puenteConCables)
-            //{
-            //    GenerarPuenteDeCables(elemento, contenedor.transform);
-            //    return;
-            //}
-
-            //var ejeDesplazado = new Vector3[eje.Length];
-
-
-            //Vector3 centroVano = Vector3.zero;
-
-            //for (int i = 0; i < eje.Length; i++)
-            //{
-            //    Vector3 p = eje[i];
-
-            //    Vector2 haciaAfuera = new Vector2(p.x - centroVano.x, p.z - centroVano.z);
-            //    haciaAfuera = haciaAfuera.sqrMagnitude > 1e-6f ? haciaAfuera.normalized : Vector2.right;
-
-            //    float corrimiento = elemento.ancho * 0.5f + corrimientoTubularExtra;
-
-            //    ejeDesplazado[i] = new Vector3(
-            //        p.x + haciaAfuera.x * corrimiento,
-            //        p.y - elemento.canto * bajadaTubularEnCantos,
-            //        p.z + haciaAfuera.y * corrimiento);
-            //}
-
-            //eje = ejeDesplazado;
-
+           
             if (esPuente)
             {
                 // En el Diseno 2 los puentes son rigidos y con volumen: los genera su propio
@@ -265,7 +241,14 @@ namespace Estadio.Techo
                 }
             }
 
+            //esto es para que los tubulares del diseño 2 lleguen hasta los puentes externos.
+            
+
+            if (!esDiseno1 && elemento.tipo == TipoElementoBorde.TubularLateral)
+                eje = ProlongarHastaLosExtremos(eje, Controlador.PerimetroTecho.SemiLargo, anguloRectoTubularDiseno2);
+
             var ejeDesplazado = new Vector3[eje.Length];
+            
             Vector3 centroVano = Vector3.zero;
 
             for (int i = 0; i < eje.Length; i++)
@@ -320,44 +303,7 @@ namespace Estadio.Techo
             BarrerTramoRecto(tramo, contenedor.transform, prefab, longitudModulo);
         }
         
-        //private void BarrerTramoRecto(List<Vector3> puntos, Transform padre,
-        //                              GameObject prefab, float longitudModulo)
-        //{
-        //    if (puntos.Count < 2) return;
-
-        //    float longitud = 0f;
-        //    for (int i = 1; i < puntos.Count; i++)
-        //        longitud += Vector3.Distance(puntos[i - 1], puntos[i]);
-
-        //    if (longitud < longitudModulo * 0.5f) return;
-
-        //    int cantidad = Mathf.Max(1, Mathf.RoundToInt(longitud / longitudModulo));
-        //    float escalaX = (longitud / cantidad) / longitudModulo;
-
-        //    for (int i = 0; i < cantidad; i++)
-        //    {
-        //        Vector3 inicio = PuntoEnPolilinea(puntos, longitud, (float)i / cantidad);
-        //        Vector3 fin = PuntoEnPolilinea(puntos, longitud, (float)(i + 1) / cantidad);
-
-        //        Vector3 direccion = fin - inicio;
-        //        if (direccion.sqrMagnitude < 1e-6f) continue;
-
-        //        GameObject modulo = Instantiate(prefab, padre);
-        //        modulo.transform.localPosition = inicio;
-
-        //        // LookRotation fija tambien el giro alrededor del eje: FromToRotation deja el
-        //        // roll indeterminado y los modulos no empalman.
-        //        Vector3 dir = direccion.normalized;
-        //        modulo.transform.localRotation = Quaternion.LookRotation(dir, Vector3.up)
-        //                                       * Quaternion.Euler(0f, -90f, 0f);
-
-        //        modulo.transform.localScale = new Vector3(escalaX, 1f, 1f);
-
-        //        ModulosInstanciados++;
-        //    }
-        //}
-
-
+        
         /// <summary>
         /// La cantidad de modulos se calcula por tramo y la escala en X se ajusta levemente para
         /// que cierre exacto: es mucho menos visible que dejar un resto sin cubrir.
@@ -417,29 +363,7 @@ namespace Estadio.Techo
         /// verticales. El superior corre por el eje —a la altura de los cables que sostienen
         /// la membrana— y el inferior a la cota del cordon inferior de las tubulares.
         /// </summary>
-        //private void GenerarPuenteDeCables(ElementoBordeConstruido elemento, Transform padre)
-        //{
-        //    Vector3[] superior = elemento.eje;
-
-        //    var inferior = new Vector3[superior.Length];
-        //    for (int i = 0; i < superior.Length; i++)
-        //        inferior[i] = superior[i] - Vector3.up * elemento.canto;
-
-        //    CrearTuboPorPolilinea(superior, diametroCablePuente, $"{elemento.id}_cable_sup", padre);
-        //    CrearTuboPorPolilinea(inferior, diametroCablePuente, $"{elemento.id}_cable_inf", padre);
-
-        //    int pendolas = Mathf.Max(2, pendolasPorPuente);
-        //    for (int p = 0; p <= pendolas; p++)
-        //    {
-        //        float u = (float)p / pendolas;
-        //        int i = Mathf.Clamp(Mathf.RoundToInt(u * (superior.Length - 1)), 0, superior.Length - 1);
-
-        //        CrearTuboPorPolilinea(new[] { superior[i], inferior[i] },
-        //                              diametroPendola, $"{elemento.id}_pendola_{p}", padre);
-        //    }
-
-        //    ModulosInstanciados += 2 + pendolas + 1;
-        //}
+       
 
         private void GenerarPuenteDeCables(ElementoBordeConstruido elemento, Transform padre)
         {
@@ -1000,5 +924,87 @@ namespace Estadio.Techo
                 ModulosInstanciados++;
             }
         }
+
+        /// <summary>
+        /// Prolonga la tubular hasta los puentes exteriores, en el extremo del techo.
+        ///
+        /// No se prolonga desde la punta del eje: ahi el borde del vano ya empezo a doblar la
+        /// esquina y la extension saldria curvada. Se recorta el eje donde el giro entre tramos
+        /// consecutivos supera el umbral, y desde ese punto se sigue recto.
+        ///
+        /// Con un vano curvo nunca se supera el umbral, asi que la tubular acompaña la curva entera
+        /// y solo se extiende en las puntas. Con un vano casi rectangular corta en la esquina y sale
+        /// recta hasta el puente. El mismo criterio sirve para los dos casos.
+        /// </summary>
+        private static Vector3[] ProlongarHastaLosExtremos(Vector3[] eje, float semiLargo,
+                                                           float anguloMaximoGiro)
+        {
+            if (eje == null || eje.Length < 4) return eje;
+
+            // Recortar el eje al tramo donde la direccion se mantiene estable.
+            int primero = 0;
+            int ultimo = eje.Length - 1;
+
+            Vector3 direccionMedia = (eje[eje.Length / 2 + 1] - eje[eje.Length / 2 - 1]).normalized;
+
+            for (int i = 1; i < eje.Length; i++)
+            {
+                Vector3 d = (eje[i] - eje[i - 1]).normalized;
+                if (Vector3.Angle(d, direccionMedia) <= anguloMaximoGiro) { primero = i - 1; break; }
+            }
+
+            for (int i = eje.Length - 1; i > 0; i--)
+            {
+                Vector3 d = (eje[i] - eje[i - 1]).normalized;
+                if (Vector3.Angle(d, direccionMedia) <= anguloMaximoGiro) { ultimo = i; break; }
+            }
+
+            if (ultimo - primero < 1) return eje;
+
+            var lista = new List<Vector3>();
+            for (int i = primero; i <= ultimo; i++) lista.Add(eje[i]);
+
+            if (Mathf.Abs(direccionMedia.z) < 1e-3f) return lista.ToArray();
+
+            // Extender cada punta siguiendo la direccion recta hasta alcanzar el extremo del techo.
+
+            //Vector3 p0 = lista[0];
+            //float faltaInicio = semiLargo - Mathf.Abs(p0.z);
+            //if (faltaInicio > 0.1f)
+            //{
+            //    Vector3 hacia = direccionMedia * -Mathf.Sign(direccionMedia.z * p0.z);
+            //    lista.Insert(0, p0 + hacia * (faltaInicio / Mathf.Abs(direccionMedia.z)));
+            //}
+
+            //Vector3 q0 = lista[lista.Count - 1];
+
+            //float faltaFin = semiLargo - Mathf.Abs(q0.z);
+
+            //if (faltaFin > 0.1f)
+            //{
+            //    Vector3 hacia = direccionMedia * Mathf.Sign(direccionMedia.z * q0.z);
+            //    lista.Add(q0 + hacia * (faltaFin / Mathf.Abs(direccionMedia.z)));
+            //}
+
+            //return lista.ToArray();
+
+            Vector3 p0 = lista[0];
+            if (semiLargo - Mathf.Abs(p0.z) > 0.1f)
+            {
+                float t = (Mathf.Sign(p0.z) * semiLargo - p0.z) / direccionMedia.z;
+                lista.Insert(0, p0 + direccionMedia * t);
+            }
+
+            Vector3 q0 = lista[lista.Count - 1];
+            if (semiLargo - Mathf.Abs(q0.z) > 0.1f)
+            {
+                float t = (Mathf.Sign(q0.z) * semiLargo - q0.z) / direccionMedia.z;
+                lista.Add(q0 + direccionMedia * t);
+            }
+
+            return lista.ToArray();
+
+        }
+
     }
 }
