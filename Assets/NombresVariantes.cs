@@ -24,7 +24,10 @@ public static class NombresVariantes
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "Sugerida Ampliada" },        
         { EstadioConfigurator.TipoConfiguracion.Recitales, "Recitales" },
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal, "Ampliación final" },
-        { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" }
+        { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" },
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Actual, "Estadio Pedro Bidegain actual" },
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado, "Estadio Pedro Bidegain terminado" },
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena, "Pedro Bidegain Arena" }
     };
 
     public static string ObtenerNombre(EstadioConfigurator.TipoConfiguracion variante)

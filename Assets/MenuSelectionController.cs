@@ -43,7 +43,8 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.Sugerida, "Sugerida" },
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "SugeridaAmpliada" },
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal, "Ampliación Final" },
-         { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" },             
+         { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" },
+         { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena, "Bidegain Arena" }
     };
 
     // Diccionario de descripciones (tooltips)
@@ -86,7 +87,9 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal,
             "Es la máxima ampliacíon posible y requiere la compra de propiedades sobre la calle Las Casas. Incluye la ampliación de los codos sobre José Marmol (ambos), del codo en Las Casas y Av. La Plata y de la segunda bandeja sobre Las Casas" },
         { EstadioConfigurator.TipoConfiguracion.TooMuch,
-            "Similar a Amplicación Final pero con más populares" },               
+            "Similar a Amplicación Final pero con más populares" },
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena,
+            "Estadio Pedro Bidegain reconvertido a Arena para eventos" }
     };
 
     void Start()
@@ -101,6 +104,8 @@ public class MenuSeleccionController : MonoBehaviour
     {
         foreach (var variante in nombresCortos)
         {
+            if (!ExisteEnConfigurador(variante.Key)) continue;
+
             GameObject cardGO = Instantiate(prefabCard, panelCards);
             TextMeshProUGUI texto = cardGO.GetComponentInChildren<TextMeshProUGUI>();
             texto.text = variante.Value;
@@ -129,6 +134,7 @@ public class MenuSeleccionController : MonoBehaviour
 
     void MostrarTooltip(EstadioConfigurator.TipoConfiguracion variante)
     {
+        if (!descripciones.ContainsKey(variante)) return;
         panelTooltip.SetActive(true);
         textTooltip.text = descripciones[variante];
     }
@@ -150,5 +156,15 @@ public class MenuSeleccionController : MonoBehaviour
         Debug.Log($"OnRecaudacionesClick, recaudacionesController={recaudacionesController}");
         canvasMenu.SetActive(false);
         recaudacionesController.MostrarPantalla();
+    }
+
+    bool ExisteEnConfigurador(EstadioConfigurator.TipoConfiguracion variante)
+    {
+        if (configurator == null) return true;
+
+        foreach (EstadioConfigurator.PerfilEstadio p in configurator.perfilesDeEstadio)
+            if (p.nombreVariante == variante) return true;
+
+        return false;
     }
 }

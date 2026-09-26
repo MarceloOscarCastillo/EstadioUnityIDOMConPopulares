@@ -129,45 +129,7 @@ public class FrontController : MonoBehaviour
         }
     }
 
-    //void GenerarBalconesEdificio(EdificioIDOM e, Transform padre)
-    //{
-    //    float mitadX = e.escala.x / 2f;
-    //    float mitadZ = e.escala.z / 2f;
-    //    float p = profundidadBalcon;
-    //    float eb = espesorBaranda;
-    //    Quaternion rot = RotacionEdificio(e);
-
-    //    float yCentro = PosicionEdificio(e).y;
-    //    float yBaseEdificio = yCentro - e.escala.y / 2f;
-    //    float yTopeEdificio = yCentro + e.escala.y / 2f;
-
-    //    float s = invertirLadoSinBalcon ? -1f : 1f;
-
-    //    foreach (float y in alturasPisos)
-    //    {
-    //        float yMundo = coordenadasEnMundo ? y : transform.TransformPoint(new Vector3(0f, y, 0f)).y;
-    //        if (yMundo < yBaseEdificio || yMundo >= yTopeEdificio - 0.01f) continue;
-
-    //        float yBaranda = y + espesorLosaBalcon / 2f + alturaBaranda / 2f;
-
-    //        // Losas (el lado de X menor queda sin balcon)
-    //        CrearLosa(padre, rot, PuntoBalcon(e, s*(mitadX + p / 2f), 0f, y),
-    //            new Vector3(p, espesorLosaBalcon, e.escala.z + p * 2f));
-    //        CrearLosa(padre, rot, PuntoBalcon(e, s*(p / 2f), -(mitadZ + p / 2f), y),
-    //            new Vector3(e.escala.x + p, espesorLosaBalcon, p));
-    //        CrearLosa(padre, rot, PuntoBalcon(e, s*(p / 2f), mitadZ + p / 2f, y),
-    //            new Vector3(e.escala.x + p, espesorLosaBalcon, p));
-
-    //        // Barandas
-    //        CrearLosa(padre, rot, PuntoBalcon(e, s * (mitadX + p - eb / 2f), 0f, yBaranda),
-    //            new Vector3(eb, alturaBaranda, e.escala.z + p * 2f));
-    //        CrearLosa(padre, rot, PuntoBalcon(e, s*(p / 2f), -(mitadZ + p - eb / 2f), yBaranda),
-    //            new Vector3(e.escala.x + p, alturaBaranda, eb));
-    //        CrearLosa(padre, rot, PuntoBalcon(e, s*(p / 2f), mitadZ + p - eb / 2f, yBaranda),
-    //            new Vector3(e.escala.x + p, alturaBaranda, eb));
-    //    }
-    //}
-
+    
     void CrearLosa(Transform padre, Quaternion rotacion, Vector3 posMundo, Vector3 escala)
     {
         CrearCubo(padre, rotacion, posMundo, escala, materialBalcon, "Balcon");
@@ -253,30 +215,24 @@ public class FrontController : MonoBehaviour
         Quaternion rot = RotacionEdificio(e);
         float s = invertirLadoSinBalcon ? -1f : 1f;
         float mitadX = e.escala.x / 2f;
-
-        //float yBase = e.posicionLocal.y - e.escala.y / 2f;
-        //float yTope = e.posicionLocal.y + e.escala.y / 2f;
-
+        
         float yBase = BaseEdificio(e);
         float yTope = TopeEdificio(e);
 
         Material matLosa = materialLosaInterior != null ? materialLosaInterior : materialBalcon;
-
-        // Losas interiores, una por piso dentro de la altura del edificio
+        
         foreach (float y in alturasPisos)
         {
-            //if (y < yBase || y >= yTope - 0.01f) continue;
-            if (y < yBase - 0.01f || y >= yTope - 0.01f) continue;
+            if (y < yBase - 0.01f || y > yTope + 0.01f) continue;
+
+            Debug.Log($"{e.nombre}: losa en Y={y} (yBase={yBase}, yTope={yTope})");
 
             CrearCubo(padre, rot, PuntoBalcon(e, 0f, 0f, y),
                 new Vector3(e.escala.x, espesorLosaBalcon, e.escala.z), matLosa, "Losa_Interior");
         }
 
-        // Losa de techo
-        //CrearCubo(padre, rot, PuntoBalcon(e, 0f, 0f, yTope - espesorLosaBalcon / 2f),
-        //    new Vector3(e.escala.x, espesorLosaBalcon, e.escala.z), matLosa, "Losa_Techo");
-
         float altoMuro = yTope - yBase;
+
         CrearCubo(padre, rot,
             PuntoBalcon(e, -s * (mitadX - espesorMuroInterior / 2f), 0f, yBase + altoMuro / 2f),
             new Vector3(espesorMuroInterior, altoMuro, e.escala.z),
@@ -322,34 +278,7 @@ public class FrontController : MonoBehaviour
                 Vector3.right, e.escala.x, Vector3.forward, yPanel);
         }
     }
-
-    //void GenerarFilaPaneles(EdificioIDOM e, Transform padre, Quaternion rotEdif,
-    //    float centroOx, float centroOz, Vector3 dirAvance, float largoCara,
-    //    Vector3 normal, float y)
-    //{
-    //    int cantidad = Mathf.FloorToInt(largoCara / anchoPanel);
-    //    if (cantidad <= 0) return;
-
-    //    float inicio = -(cantidad * anchoPanel) / 2f + anchoPanel / 2f;
-
-    //    Quaternion orient = rotEdif
-    //        * Quaternion.LookRotation(normal, Vector3.up)
-    //        * Quaternion.Euler(rotacionPanel); 
-
-    //    for (int i = 0; i < cantidad; i++)
-    //    {
-    //        float d = inicio + i * anchoPanel;
-    //        float ox = centroOx + dirAvance.x * d;
-    //        float oz = centroOz + dirAvance.z * d;
-
-    //        GameObject panel = Instantiate(prefabPanel, padre);
-    //        panel.name = "Panel_Vidrio";
-    //        panel.transform.position = PuntoBalcon(e, ox, oz, y);
-    //        panel.transform.rotation = orient;
-    //        panel.SetActive(true);
-    //    }
-    //}
-
+    
     void GenerarFilaPaneles(EdificioIDOM e, Transform padre, Quaternion rotEdif,
     float centroOx, float centroOz, Vector3 dirAvance, float largoCara,
     Vector3 normal, float y)
@@ -460,17 +389,25 @@ public class FrontController : MonoBehaviour
 
         return mejor;
     }
-
+    
     float TopeEdificio(EdificioIDOM e)
     {
         float topeCrudo = e.posicionLocal.y + e.escala.y / 2f;
-        if (!ajustarTopeANivel) return topeCrudo;
+        if (!ajustarTopeANivel || alturasPisos.Count == 0) return topeCrudo;
 
-        float mejor = float.MaxValue;
+        float mejor = topeCrudo;
+        float menorDistancia = float.MaxValue;
+
         foreach (float y in alturasPisos)
-            if (y >= topeCrudo - 0.05f && y < mejor)
+        {
+            float d = Mathf.Abs(y - topeCrudo);
+            if (d < menorDistancia)
+            {
+                menorDistancia = d;
                 mejor = y;
+            }
+        }
 
-        return mejor == float.MaxValue ? topeCrudo : mejor;
+        return mejor;
     }
 }
