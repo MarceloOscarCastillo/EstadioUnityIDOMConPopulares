@@ -13,11 +13,24 @@ public class ContadorDeCapacidad : MonoBehaviour
     public GameObject prefabAsientoPlatea;
     public GameObject prefabPalco;
 
+    [Header("Deteccion de asientos")]
+    public List<string> nombresPrefabsAsiento = new List<string>()
+    { "AsientoPlatea", "AsientoBidegain" };
+
     [Header("Filtros de Contenedores")]
     public string tagContenedores = "SectorEstadio";
 
     [Header("Anchos de pieza por sector")]
     public float anchoPiezaCabecera = 1.0f;
+
+
+    [Header("Piso para eventos")]
+    public bool esVersionParaEventos = false;
+    public GameObject pisoParaEventos;
+    public float espectadoresPorM2 = 3f;
+
+    [HideInInspector] public int capacidadPisoEventos = 0;
+    [HideInInspector] public float areaPisoEventos = 0f;
 
     [HideInInspector] public int capacidadTotal;
     [HideInInspector] public int capacidadPopulares;
@@ -83,13 +96,24 @@ public class ContadorDeCapacidad : MonoBehaviour
         // Asumimos una capacidad promedio por Palco (puedes ajustar este número)
         int aforoPalcos = totalPalcos * 8;
 
+
+        capacidadPisoEventos = 0;
+        areaPisoEventos = 0f;
+
+        if (esVersionParaEventos && pisoParaEventos != null)
+        {
+            areaPisoEventos = CalcularAreaHorizontal(pisoParaEventos);
+            capacidadPisoEventos = Mathf.FloorToInt(areaPisoEventos * espectadoresPorM2);
+        }
+
+
         foreach (GameObject contenedor in contenedores)
         {
             UnityEngine.Debug.Log($"Contenedor: {contenedor.name}, activo: {contenedor.activeSelf}, activoEnJerarquia: {contenedor.activeInHierarchy}");
         }
 
 
-        ImprimirReportePro(aforoPorMetros, aforoAsientos, totalPalcos, aforoPalcos, metrosLinealesTotales);        
+        ImprimirReporteDeCapacidades(aforoPorMetros, aforoAsientos, totalPalcos, aforoPalcos, metrosLinealesTotales);        
     }
 
 
@@ -107,40 +131,102 @@ public class ContadorDeCapacidad : MonoBehaviour
         return metros;
     }
 
+   
     private int ContarHijosPorNombre(GameObject padre, string fragmentoNombre)
     {
         int cuenta = 0;
-
         Transform[] todosLosHijos = padre.GetComponentsInChildren<Transform>(false);
 
         foreach (Transform hijo in todosLosHijos)
         {
             if (fragmentoNombre == "Asiento")
             {
-                if (hijo.name == "AsientoPlatea(Clone)") cuenta++;
+                foreach (string nombre in nombresPrefabsAsiento)
+                {
+                    if (hijo.name.StartsWith(nombre))
+                    {
+                        cuenta++;
+                        break;
+                    }
+                }
             }
             else
             {
                 if (hijo.name.Contains(fragmentoNombre)) cuenta++;
             }
         }
+
         return cuenta;
     }
 
-    private void ImprimirReportePro(int aforoMetros, int aforoAsientos, int palcos, int aforoPalcos, float metros)
+    //private void ImprimirReportePro(int aforoMetros, int aforoAsientos, int palcos, int aforoPalcos, float metros)
+    //{
+    //    int granTotal = aforoMetros + aforoAsientos + aforoPalcos;
+
+    //    capacidadPopulares = aforoMetros;
+    //    capacidadPlateas = aforoAsientos;
+    //    capacidadPalcos = aforoPalcos;
+    //    capacidadTotal = granTotal;
+
+    //    UnityEngine.Debug.Log($"<color=cyan><b>--- REPORTE TÉCNICO DE AFORO ---</b></color>");
+    //    UnityEngine.Debug.Log($"<b>Sectores Populares:</b> {aforoMetros} personas ({metros:F1} metros lineales)");
+    //    UnityEngine.Debug.Log($"<b>Sectores Plateas:</b> {aforoAsientos} asientos físicos");
+    //    UnityEngine.Debug.Log($"<b>Palcos:</b> {palcos} unidades (Est. {aforoPalcos} personas)");
+    //    UnityEngine.Debug.Log($"<color=yellow><b>CAPACIDAD TOTAL FINAL: {granTotal} espectadores</b></color>");
+    //    UnityEngine.Debug.Log($"-------------------------------------------");
+    //}
+
+
+    private void ImprimirReporteDeCapacidades(int aforoMetros, int aforoAsientos, int palcos, int aforoPalcos, float metros)
     {
-        int granTotal = aforoMetros + aforoAsientos + aforoPalcos;
+        int granTotal = aforoMetros + aforoAsientos + aforoPalcos + capacidadPisoEventos;
 
         capacidadPopulares = aforoMetros;
         capacidadPlateas = aforoAsientos;
         capacidadPalcos = aforoPalcos;
         capacidadTotal = granTotal;
 
-        UnityEngine.Debug.Log($"<color=cyan><b>--- REPORTE TÉCNICO DE AFORO (BOEDO) ---</b></color>");
+        UnityEngine.Debug.Log($"<color=cyan><b>--- REPORTE TÉCNICO DE AFORO ---</b></color>");
         UnityEngine.Debug.Log($"<b>Sectores Populares:</b> {aforoMetros} personas ({metros:F1} metros lineales)");
         UnityEngine.Debug.Log($"<b>Sectores Plateas:</b> {aforoAsientos} asientos físicos");
         UnityEngine.Debug.Log($"<b>Palcos:</b> {palcos} unidades (Est. {aforoPalcos} personas)");
+
+        if (esVersionParaEventos)
+            UnityEngine.Debug.Log($"<b>Piso para eventos:</b> {capacidadPisoEventos} personas ({areaPisoEventos:F1} m² a {espectadoresPorM2} pers/m²)");
+
         UnityEngine.Debug.Log($"<color=yellow><b>CAPACIDAD TOTAL FINAL: {granTotal} espectadores</b></color>");
         UnityEngine.Debug.Log($"-------------------------------------------");
+    }
+
+
+    float CalcularAreaHorizontal(GameObject obj)
+    {
+        if (obj == null) return 0f;
+
+        float area = 0f;
+
+        foreach (MeshFilter mf in obj.GetComponentsInChildren<MeshFilter>())
+        {
+            Mesh mesh = mf.sharedMesh;
+            if (mesh == null) continue;
+
+            Vector3[] v = mesh.vertices;
+            int[] tris = mesh.triangles;
+
+            for (int i = 0; i < tris.Length; i += 3)
+            {
+                Vector3 a = mf.transform.TransformPoint(v[tris[i]]);
+                Vector3 b = mf.transform.TransformPoint(v[tris[i + 1]]);
+                Vector3 c = mf.transform.TransformPoint(v[tris[i + 2]]);
+
+                // Proyeccion horizontal: ignoramos Y
+                float ax = b.x - a.x, az = b.z - a.z;
+                float bx = c.x - a.x, bz = c.z - a.z;
+
+                area += Mathf.Abs(ax * bz - az * bx) / 2f;
+            }
+        }
+
+        return area;
     }
 }

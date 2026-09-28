@@ -36,6 +36,33 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public float anchoPasilloEscalera = 2.0f;
     public bool invertir = true;
 
+    [Header("Vomitos con pasillo lateral")]
+    [Tooltip("Si true, el hueco va al centro y los pasillos a los costados")]
+    public bool vomitosConPasilloLateral = false;
+    public float anchoHuecoVomito = 4f;
+    public float anchoPasilloLateralVomito = 1.2f;
+
+    [Header("Posiciones de vomitos")]
+    [Tooltip("Si esta vacia, los vomitos se derivan de asientosEntrePasillos")]
+    public List<float> posicionesVomitos = new List<float>();
+
+    [Header("Pasillo horizontal de vomitos")]
+    public bool generarPasilloHorizontal = false;
+    [Tooltip("Filas sin butacas que arrancan en la fila de los vomitos")]
+    public int alturaPasilloHorizontal = 4;
+    public Material materialPasilloHorizontal;
+
+    [Header("Filas alternadas")]
+    [Tooltip("Si true, intercala filas con butacas y filas apoyapies")]
+    public bool usarFilasAlternadas = false;
+    [Tooltip("Con 1, la fila 0 es apoyapies y la fila 1 lleva butacas")]
+    public int offsetFilaConAsiento = 1;
+
+    [Header("Pasillos verticales sueltos")]
+    public List<float> posicionesPasillosSueltos = new List<float>();
+    public float anchoPasilloSuelto = 1.2f;
+    public Material materialPasilloSuelto;
+
     [Header("Configuración de Alzada (Pasos)")]
     // Aquí definís los saltos: Ej: Fila 0 -> 1.0 | Fila 20 -> 1.1 | Fila 35 -> 1.2
     public RangoAlzada[] rangosDeAlzada;
@@ -193,6 +220,8 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
     public bool PublicaAnclajesTecho => publicarAnclajesTecho;
 
+    private List<float> _centrosVomitosCache;
+
     public GeometriaSoporte GeometriaDelSoporte
     {
         get
@@ -245,6 +274,8 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         contenedor.transform.SetParent(this.transform, false);
         contenedor.tag = "SectorEstadio";
 
+        _centrosVomitosCache = CentrosVomitos();
+
         float multZ = invertir ? -1f : 1f;
         float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f;
 
@@ -253,7 +284,9 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
         while (xActual < largoMaximoTribuna)
         {
-            bool esPasillo = (colAsiento >= asientosEntrePasillos);
+            //bool esPasillo = (colAsiento >= asientosEntrePasillos);
+            bool esPasillo = !vomitosConPasilloLateral && (colAsiento >= asientosEntrePasillos);
+
             int filasEnEstaColumna = FilasEnX(xActual);
 
             float alturaAcumulada = 0f;
@@ -270,7 +303,17 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
                 bool esFilaVomito = (f >= filaInicioBoca && f < filaInicioBoca + altoBoca) ||
                                    (tieneSegundaFilaVomitos && f >= filaInicioBoca2 && f < filaInicioBoca2 + altoBoca);
 
-                bool esHuecoVomito = esPasillo && esFilaVomito;
+                //bool esHuecoVomito = esPasillo && esFilaVomito;
+
+                ZonaVomito zona = ClasificarZonaVomito(xActual);
+
+                bool esHuecoVomito = vomitosConPasilloLateral
+                    ? (zona == ZonaVomito.Hueco && esFilaVomito)
+                    : (esPasillo && esFilaVomito);
+
+                bool esPasilloVertical = EsPasilloSuelto(xActual)
+                    || (vomitosConPasilloLateral && zona == ZonaVomito.PasilloLateral);
+
 
                 bool esZonaEliminada = false;
 
@@ -335,20 +378,47 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
                     bool esLadoVomito = (colAsiento == 0 || colAsiento == asientosEntrePasillos - 1);
                     bool esCaminable = esPasillo || (esFilaSeguridad && esLadoVomito);
 
-                    Material matBloque = esCaminable ? GrisCemento : (Mathf.FloorToInt(xActual / anchoFranja) % 2 == 0 ? BlueColour : RedColour);
+                    //Material matBloque = esCaminable ? GrisCemento : (Mathf.FloorToInt(xActual / anchoFranja) % 2 == 0 ? BlueColour : RedColour);
+                    //AplicarMaterialATodo(bloque, matBloque);
+                    //if (!esCaminable && !esSinAsientos) PonerAsientos(bloque.transform, matBloque);
+
+                    bool esPasilloVerticalSuelto = EsPasilloSuelto(xActual);
+
+                    bool enPasilloHorizontal = EsPasilloHorizontal(xActual, f);
+
+                    Material matBloque;
+                    if (esPasilloVertical && materialPasilloSuelto != null)
+                        matBloque = materialPasilloSuelto;
+                    else if (esCaminable || esPasilloVertical)
+                        matBloque = GrisCemento;
+                    else if (enPasilloHorizontal && materialPasilloHorizontal != null)
+                        matBloque = materialPasilloHorizontal;
+                    else
+                        matBloque = (Mathf.FloorToInt(xActual / anchoFranja) % 2 == 0 ? BlueColour : RedColour);
+
                     AplicarMaterialATodo(bloque, matBloque);
-                    if (!esCaminable && !esSinAsientos) PonerAsientos(bloque.transform, matBloque);
+
+                    bool ponerButacas = !esCaminable
+                                     && !esSinAsientos
+                                     && !esPasilloVertical
+                                     && !enPasilloHorizontal
+                                     && FilaLlevaAsiento(f);
+
+                    if (ponerButacas) PonerAsientos(bloque.transform, matBloque);
+
+
                 }
 
-                if (esHuecoVomito && (f == filaInicioBoca || (tieneSegundaFilaVomitos && f == filaInicioBoca2)))
-                {
-                    GenerarMurosVomitoCompleto(xActual, f, multZ, contenedor.transform);
+                //OJO CON ESTO
+                //if (esHuecoVomito && (f == filaInicioBoca || (tieneSegundaFilaVomitos && f == filaInicioBoca2)))
+                //{
+                //    GenerarMurosVomitoCompleto(xActual, f, multZ, contenedor.transform);
 
-                    if (generarEscaleraVomito) 
-                    {
-                        GenerarEscaleraDescendenteVomito(xActual, f, multZ, contenedor.transform);
-                    }                        
-                }
+                //    if (generarEscaleraVomito) 
+                //    {
+                //        GenerarEscaleraDescendenteVomito(xActual, f, multZ, contenedor.transform);
+                //    }                        
+                //}
 
                 alturaAcumulada += altoRealFila;
             }
@@ -374,6 +444,23 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             GenerarBancasSuplentes(multZ, contenedor.transform);
             GenerarEscalinataJugadores(multZ, contenedor.transform);
             GenerarTunelJugadores(multZ, contenedor.transform);
+        }
+
+        if (vomitosConPasilloLateral)
+        {
+            foreach (float xCentro in _centrosVomitosCache)
+            {
+                GenerarMurosVomitoLateral(xCentro, filaInicioBoca, multZ, contenedor.transform);
+                if (generarEscaleraVomito)
+                    GenerarEscaleraDescendenteVomito(xCentro - anchoHuecoVomito / 2f, filaInicioBoca, multZ, contenedor.transform);
+
+                if (tieneSegundaFilaVomitos)
+                {
+                    GenerarMurosVomitoLateral(xCentro, filaInicioBoca2, multZ, contenedor.transform);
+                    if (generarEscaleraVomito)
+                        GenerarEscaleraDescendenteVomito(xCentro - anchoHuecoVomito / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                }
+            }
         }
 
         List<float> xSoportes = new List<float>();
@@ -1997,4 +2084,175 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             coronamiento.Add(new Vector3(x, y, z));
         }
     }
+
+    bool FilaLlevaAsiento(int fila)
+    {
+        if (!usarFilasAlternadas) return true;
+        return (fila - offsetFilaConAsiento) % 2 == 0;
+    }
+
+    bool EsPasilloSuelto(float xActual)
+    {
+        if (posicionesPasillosSueltos == null) return false;
+
+        foreach (float xPasillo in posicionesPasillosSueltos)
+        {
+            float mitad = anchoPasilloSuelto / 2f;
+            if (xActual >= xPasillo - mitad && xActual < xPasillo + mitad)
+                return true;
+        }
+
+        return false;
+    }
+
+    List<float> CentrosVomitos()
+    {
+        if (posicionesVomitos != null && posicionesVomitos.Count > 0)
+            return posicionesVomitos;
+
+        // Modo clasico: derivados del conteo de columnas
+        List<float> centros = new List<float>();
+        float x = 0f;
+        int col = 0;
+
+        while (x < largoMaximoTribuna)
+        {
+            bool esPasillo = (col >= asientosEntrePasillos);
+            if (esPasillo)
+                centros.Add(x + anchoPasilloEscalera / 2f);
+
+            //x += esPasillo ? anchoPasilloEscalera : anchoDeUnaPieza;
+            //col = esPasillo ? 0 : col + 1;
+
+            float avance = esPasillo ? anchoPasilloEscalera : anchoDeUnaPieza;
+            if (avance <= 0f) break;
+
+            x += avance;
+            col = esPasillo ? 0 : col + 1;
+        }
+    
+        return centros;
+    }
+
+    enum ZonaVomito { Fuera, Hueco, PasilloLateral }
+
+    //ZonaVomito ClasificarZonaVomito(float xActual)
+    //{
+    //    if (!vomitosConPasilloLateral) return ZonaVomito.Fuera;
+
+    //    foreach (float xCentro in CentrosVomitos())
+    //    {
+    //        float mitadHueco = anchoHuecoVomito / 2f;
+    //        float mitadTotal = mitadHueco + anchoPasilloLateralVomito;
+
+    //        float d = Mathf.Abs(xActual - xCentro);
+    //        if (d < mitadHueco) return ZonaVomito.Hueco;
+    //        if (d < mitadTotal) return ZonaVomito.PasilloLateral;
+    //    }
+
+    //    return ZonaVomito.Fuera;
+    //}
+
+    ZonaVomito ClasificarZonaVomito(float xActual)
+    {
+        if (!vomitosConPasilloLateral) return ZonaVomito.Fuera;
+        if (_centrosVomitosCache == null) return ZonaVomito.Fuera;
+
+        foreach (float xCentro in _centrosVomitosCache)
+        {
+            float mitadHueco = anchoHuecoVomito / 2f;
+            float mitadTotal = mitadHueco + anchoPasilloLateralVomito;
+
+            float d = Mathf.Abs(xActual - xCentro);
+            if (d < mitadHueco) return ZonaVomito.Hueco;
+            if (d < mitadTotal) return ZonaVomito.PasilloLateral;
+        }
+
+        return ZonaVomito.Fuera;
+    }
+
+    void GenerarMurosVomitoLateral(float xCentro, int filaInicio, float mZ, Transform padre)
+    {
+        float mitadHueco = anchoHuecoVomito / 2f;
+        float[] posicionesX = { xCentro - mitadHueco, xCentro + mitadHueco };
+
+        float yInicio = CalcularAlturaAcumuladaPlatea(filaInicio);
+        float zInicio = filaInicio * profundidadEscalon * mZ;
+        float yFin = CalcularAlturaAcumuladaPlatea(filaInicio + altoBoca);
+        float zFin = (filaInicio + altoBoca) * profundidadEscalon * mZ;
+
+        foreach (float x in posicionesX)
+        {
+            GameObject muroGO = new GameObject("Muro_Lateral_Vomito");
+            muroGO.transform.SetParent(padre);
+            muroGO.transform.localPosition = Vector3.zero;
+            muroGO.transform.localRotation = Quaternion.identity;
+            muroGO.AddComponent<MeshFilter>().mesh = CrearMeshMuro(x, yInicio, zInicio, yFin, zFin);
+            muroGO.AddComponent<MeshRenderer>().sharedMaterial = BlueColour;
+        }
+
+        GameObject dintel = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        dintel.name = "Muro_Superior_Vomito";
+        dintel.transform.SetParent(padre);
+        dintel.transform.localScale = new Vector3(anchoHuecoVomito, 1.0f, 0.1f);
+        dintel.transform.localPosition = new Vector3(xCentro, yFin + 0.5f, zFin);
+        dintel.transform.localRotation = Quaternion.identity;
+        dintel.GetComponent<Renderer>().sharedMaterial = BlueColour;
+        DestroyImmediate(dintel.GetComponent<BoxCollider>());
+    }
+
+    bool EsPasilloHorizontal(float xActual, int fila)
+    {
+        if (!generarPasilloHorizontal) return false;
+        if (_centrosVomitosCache == null || _centrosVomitosCache.Count == 0) return false;
+
+        float xMin = float.MaxValue;
+        float xMax = float.MinValue;
+        foreach (float x in _centrosVomitosCache)
+        {
+            if (x < xMin) xMin = x;
+            if (x > xMax) xMax = x;
+        }
+
+        if (xActual < xMin || xActual > xMax) return false;
+
+        //int desde = filaInicioBoca + altoBoca;
+        //int hasta = desde + AlturaRealPasilloHorizontal() - 1;
+
+        //if (fila >= desde && fila <= hasta) return true;
+
+        //if (tieneSegundaFilaVomitos)
+        //{
+        //    int desde2 = filaInicioBoca2 + altoBoca;
+        //    int hasta2 = desde2 + AlturaRealPasilloHorizontal() - 1;
+        //    if (fila >= desde2 && fila <= hasta2) return true;
+        //}
+
+        int desde = Mathf.Max(0, filaInicioBoca - AlturaRealPasilloHorizontal());
+        int hasta = filaInicioBoca - 1;
+
+        if (fila >= desde && fila <= hasta) return true;
+
+        if (tieneSegundaFilaVomitos)
+        {
+            int desde2 = Mathf.Max(0, filaInicioBoca2 - AlturaRealPasilloHorizontal());
+            int hasta2 = filaInicioBoca2 - 1;
+            if (fila >= desde2 && fila <= hasta2) return true;
+        }
+
+        return false;
+    }
+
+    int AlturaRealPasilloHorizontal()
+    {
+        int alto = Mathf.Max(1, alturaPasilloHorizontal);
+        if (!usarFilasAlternadas) return alto;
+
+        // La primera fila despues del pasillo (donde arranca el vomito)
+        // debe respetar la paridad: si ahi va butaca, extendemos una fila
+        if (FilaLlevaAsiento(filaInicioBoca)) alto++;
+
+        return alto;
+    }
+
 }

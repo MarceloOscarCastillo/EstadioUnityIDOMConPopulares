@@ -40,6 +40,13 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public float anchoEscalon = 0.80f;
     public float altoEscalon = 0.40f;
 
+    [Header("Filas alternadas")]
+    [Tooltip("Si true, intercala filas con butacas y filas apoyapies")]
+    public bool usarFilasAlternadas = false;
+    [Tooltip("Con 1, la fila 0 es apoyapies y la fila 1 lleva butacas")]
+    public int offsetFilaConAsiento = 1;
+
+
     [Header("Posicion butaca en escalon")]
     public float elevacionCanio = 0f;    
     public float offsetZButaca = -0.35f; // posicion en profundidad del escalon
@@ -95,6 +102,12 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     [Header("Configuración de Alzada")]
     public RangoAlzada[] rangosDeAlzada;
 
+    [Header("Pasillos verticales sueltos")]
+    [Tooltip("Distancias en metros sobre el arco de la fila 0")]
+    public List<float> distanciasPasillosSueltos = new List<float>();
+    public float anchoPasilloSuelto = 1.2f;
+    public Material materialPasilloSuelto;
+
     [Header("Vómitos")]
     public int vomitosPorLinea = 1;
     public bool tieneSegundaLinea = false;
@@ -120,7 +133,9 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
 
     [Header("Muros")]
     public bool generarMuroDelantero = true;
-    public bool generarMurosLaterales = true;
+    //public bool generarMurosLaterales = true;
+    public bool generarMuroLateralInicio = true;
+    public bool generarMuroLateralFin = true;
     public bool generarMuroSuperior = true;
     public float alturaMuro = 1.0f;
     public float alturaMuroSuperior = 2.0f;
@@ -240,6 +255,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
     public Transform TransformSector => transform;
 
+    private List<float> _angulosPasillosSueltos;
 
     [ContextMenu("Generar Codo")]
 
@@ -283,9 +299,9 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         }
         _longitudTotalInterior = _longAcumInterior[pasos];
 
+        CachearAngulosPasillos();
 
         longAcumFilaLarga[0] = 0f;
-
 
         int filaLarga = filasMaximas - 1;
 
@@ -359,21 +375,34 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                 mapaObjetos[(celda.fila, celda.columna, 0)] = bloqueObj;
                
                 ConfigurarEscalon(bloqueObj, w1, w2, w3, w4, celda.fila);
+                
+                float angMedio = (celda.angStart + celda.angEnd) / 2f;
+                bool esPasilloVertical = EsPasilloSueltoCodo(angMedio, celda.fila);
 
-                Material matAUsar = celda.tipo == TipoCelda.BloqueLibre ? GrisCemento : Material;
-
+                Material matAUsar;
 
                 if (colorearDecilesParaCalibrar)
                 {
-                    float tCelda = ((celda.angStart + celda.angEnd) / 2f) / anguloTotal;
+                    float tCelda = angMedio / anguloTotal;
                     if (invertirSentido) tCelda = 1f - tCelda;
                     int decil = Mathf.Clamp(Mathf.FloorToInt(tCelda * 10f), 0, 9);
                     matAUsar = (decil % 2 == 0) ? Rojo : Azul;
                 }
-
+                else if (esPasilloVertical && materialPasilloSuelto != null)
+                {
+                    matAUsar = materialPasilloSuelto;
+                }
+                else
+                {
+                    matAUsar = celda.tipo == TipoCelda.BloqueLibre ? GrisCemento : Material;
+                }
 
                 AplicarMaterialATodo(bloqueObj, matAUsar);
+
+
+
             }
+
         }
 
         // Loop de asientos y paraavalanchas
@@ -497,7 +526,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
             }
 
             // Asientos
-            if (esCodoPlatea)
+            if (esCodoPlatea && FilaLlevaAsiento(f))
             {
                 int cuantosAsientos = Mathf.FloorToInt(longitudTotal / 0.5f);
 
@@ -531,6 +560,12 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
                     if (generarBocaLogistica && EsZonaBocaLogistica(angulo - 0.1f, angulo + 0.1f, f)) continue;
 
+
+                    //if (EsPasilloSueltoCodo(angulo, f)) continue;
+
+                    float margenAsiento = GradosParaAncho(0.5f, f) / 2f;
+                    if (EsPasilloSueltoCodo(angulo, f, margenAsiento)) continue;
+
                     UbicarAsiento(posicion, tangente, contenedor, celdaEncontrada.Value.fila, celdaEncontrada.Value.columna, a);
                     
                 }
@@ -541,7 +576,8 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
         GenerarPisoFrontal(contenedor);
 
-        if (generarMurosLaterales) GenerarMurosLaterales(contenedor);
+        //if (generarMurosLaterales) GenerarMurosLaterales(contenedor);
+        GenerarMurosLaterales(contenedor);
 
         if (generarMuroSuperior) GenerarMuroSuperior(contenedor, mapa);
 
@@ -667,23 +703,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
     
     int FilasEnAngulo(float angulo)
     {
-        //float t = angulo / anguloTotal;
-
-        //if (invertirSentido) t = 1f - t;
-
-        //float tCurvado;
-        //if (usarFormaPersonalizada)
-        //{
-        //    float tSigmoide = Mathf.Pow(t, exponente) /
-        //                      (Mathf.Pow(t, exponente) + Mathf.Pow(1f - t, exponente));
-        //    tCurvado = Mathf.Lerp(tSigmoide, t, mezclaLineal);
-        //}
-        //else
-        //{
-        //    tCurvado = t; // circular puro
-        //}
-
-        //return Mathf.RoundToInt(Mathf.Lerp(filasMaximas, filasMinimas, tCurvado));
+        
 
         return Mathf.RoundToInt(FilasEnAnguloFloat(angulo));
 
@@ -960,6 +980,9 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
         for (int lado = 0; lado < 2; lado++)
         {
+            if (lado == 0 && !generarMuroLateralInicio) continue;
+            if (lado == 1 && !generarMuroLateralFin) continue;
+
             float angulo = angulos[lado];
             float rad = angulo * Mathf.Deg2Rad;
             int filasEnEsteAngulo = FilasEnAngulo(angulo);
@@ -1418,24 +1441,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
     }
 
     float FilasEnAnguloFloat(float angulo)
-    {
-        //float t = angulo / anguloTotal;
-        //if (invertirSentido) t = 1f - t;
-
-        //float tCurvado;
-        //if (usarFormaPersonalizada)
-        //{
-        //    float tSigmoide = Mathf.Pow(t, exponente) /
-        //                      (Mathf.Pow(t, exponente) + Mathf.Pow(1f - t, exponente));
-        //    tCurvado = Mathf.Lerp(tSigmoide, t, mezclaLineal);
-        //}
-        //else
-        //{
-        //    tCurvado = t;
-        //}
-
-        //return Mathf.Lerp(filasMaximas, filasMinimas, tCurvado);
-
+    {        
         float t = angulo / anguloTotal;
         if (invertirSentido) t = 1f - t;
 
@@ -2356,5 +2362,43 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         return Mathf.Lerp(valorInicio, valorFin, frac);
     }
 
+    bool FilaLlevaAsiento(int fila)
+    {
+        if (!usarFilasAlternadas) return true;
+        return (fila - offsetFilaConAsiento) % 2 == 0;
+    }
 
+    float DistanciaArcoAAngulo(float distancia)
+    {
+        if (_longAcumInterior == null) return 0f;
+        int pasos = _longAcumInterior.Length - 1;
+        float paso = BuscarAngulo(_longAcumInterior, distancia, pasos);
+        return paso * (anguloTotal / pasos);
+    }
+
+    void CachearAngulosPasillos()
+    {
+        _angulosPasillosSueltos = new List<float>();
+        foreach (float d in distanciasPasillosSueltos)
+            _angulosPasillosSueltos.Add(DistanciaArcoAAngulo(d));
+    }
+
+    float GradosParaAncho(float anchoMetros, int fila)
+    {
+        float radio = radioInferior + fila * anchoEscalon;
+        float circunferencia = 2f * Mathf.PI * radio;
+        if (circunferencia <= 0f) return 0f;
+        return (anchoMetros / circunferencia) * 360f;
+    }
+
+    bool EsPasilloSueltoCodo(float angulo, int fila, float margenExtra = 0f)
+    {
+        if (_angulosPasillosSueltos == null) return false;
+
+        float mitad = GradosParaAncho(anchoPasilloSuelto, fila) / 2f + margenExtra;
+        foreach (float a in _angulosPasillosSueltos)
+            if (Mathf.Abs(angulo - a) < mitad) return true;
+
+        return false;
+    }
 }
