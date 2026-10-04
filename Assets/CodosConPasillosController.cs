@@ -600,6 +600,9 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
         CachearCoronamientoCodo();
 
+
+        Debug.Log($"{gameObject.name}: {contenedor.GetComponentsInChildren<Transform>().Length} objetos");
+
         foreach (Transform hijo in contenedor.GetComponentsInChildren<Transform>())
         {
             if (hijo.gameObject != contenedor && Application.isPlaying)
@@ -1440,9 +1443,37 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         metrosLinealesCalculados = metros;
     }
 
+    //float FilasEnAnguloFloat(float angulo)
+    //{        
+    //    float t = angulo / anguloTotal;
+    //    if (invertirSentido) t = 1f - t;
+
+    //    float tCurvado;
+    //    if (usarRecortePorDeciles)
+    //    {
+    //        tCurvado = RecorteEnT(t);
+    //    }
+    //    else if (usarFormaPersonalizada)
+    //    {
+    //        float tSigmoide = Mathf.Pow(t, exponente) /
+    //                          (Mathf.Pow(t, exponente) + Mathf.Pow(1f - t, exponente));
+    //        tCurvado = Mathf.Lerp(tSigmoide, t, mezclaLineal);
+    //    }
+    //    else
+    //    {
+    //        tCurvado = t;
+    //    }
+
+    //    return Mathf.Lerp(filasMaximas, filasMinimas, tCurvado);
+
+    //}
+
+
     float FilasEnAnguloFloat(float angulo)
-    {        
-        float t = angulo / anguloTotal;
+    {
+        if (filasMaximas == filasMinimas) return filasMaximas;
+
+        float t = Mathf.Clamp01(angulo / anguloTotal);
         if (invertirSentido) t = 1f - t;
 
         float tCurvado;
@@ -1452,8 +1483,10 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         }
         else if (usarFormaPersonalizada)
         {
-            float tSigmoide = Mathf.Pow(t, exponente) /
-                              (Mathf.Pow(t, exponente) + Mathf.Pow(1f - t, exponente));
+            float a = Mathf.Pow(t, exponente);
+            float b = Mathf.Pow(1f - t, exponente);
+            float suma = a + b;
+            float tSigmoide = (suma > 0.0001f) ? a / suma : t;
             tCurvado = Mathf.Lerp(tSigmoide, t, mezclaLineal);
         }
         else
@@ -1462,9 +1495,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         }
 
         return Mathf.Lerp(filasMaximas, filasMinimas, tCurvado);
-
     }
-
 
     void GenerarSoportesCodo(GameObject contenedor)
     {

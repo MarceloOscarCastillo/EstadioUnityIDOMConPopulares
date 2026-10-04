@@ -30,6 +30,16 @@ public class StadiumFrontSkin : MonoBehaviour
     public float diametroTubo = 0.05f;
     public Material materialTubo;
 
+    [Header("Pendiente del coronamiento")]
+    [Tooltip("Altura de la pared en el extremo final. Si es 0, usa altoPared (sin pendiente)")]
+    public float altoParedFinal = 0f;
+
+    [Header("Faja de remate")]
+    public bool generarFajaRemate = true;
+    public float altoFaja = 0.6f;
+    public float espesorFaja = 0.25f;
+    public Material materialFaja;
+
     private const string NOMBRE_CONTENEDOR = "Contenedor_Piel";
 
     [ContextMenu("Generar Piel")]
@@ -43,6 +53,7 @@ public class StadiumFrontSkin : MonoBehaviour
 
         GenerarModulos(contenedor.transform);
         if (generarReticulado) GenerarReticulado(contenedor.transform);
+        GenerarFajaRemate(contenedor.transform);
 
         foreach (Transform hijo in contenedor.GetComponentsInChildren<Transform>())
         {
@@ -54,36 +65,81 @@ public class StadiumFrontSkin : MonoBehaviour
             StaticBatchingUtility.Combine(contenedor);
     }
 
+    //void GenerarModulos(Transform padre)
+    //{
+    //    float paso = ladoModulo + separacionModulos;
+    //    if (paso <= 0f) return;
+
+    //    int columnas = Mathf.FloorToInt((anchoPared + separacionModulos) / paso);
+    //    int filas = Mathf.FloorToInt((altoPared + separacionModulos) / paso);
+    //    if (columnas <= 0 || filas <= 0) return;
+
+    //    float anchoUsado = columnas * paso - separacionModulos;
+    //    float altoUsado = filas * paso - separacionModulos;
+    //    float xInicio = -anchoUsado / 2f + ladoModulo / 2f;
+    //    float yInicio = alturaBase + (altoPared - altoUsado) / 2f + ladoModulo / 2f;
+
+    //    System.Random rnd = new System.Random(semilla);
+
+    //    for (int f = 0; f < filas; f++)
+    //    {
+    //        for (int c = 0; c < columnas; c++)
+    //        {
+    //            GameObject prefab = ElegirPrefab(rnd);
+    //            if (prefab == null) continue;
+
+    //            Vector3 posLocal = new Vector3(
+    //                xInicio + c * paso,
+    //                yInicio + f * paso,
+    //                separacionCapas);
+
+    //            GameObject modulo = Instantiate(prefab, padre);
+    //            modulo.name = $"Modulo_{f}_{c}";
+    //            modulo.transform.position = transform.TransformPoint(posLocal);
+    //            modulo.transform.rotation = transform.rotation;
+    //        }
+    //    }
+    //}
+
+    float AltoEnColumna(float t)
+    {
+        if (altoParedFinal <= 0f) return altoPared;
+        return Mathf.Lerp(altoPared, altoParedFinal, Mathf.Clamp01(t));
+    }
+
     void GenerarModulos(Transform padre)
     {
         float paso = ladoModulo + separacionModulos;
         if (paso <= 0f) return;
 
         int columnas = Mathf.FloorToInt((anchoPared + separacionModulos) / paso);
-        int filas = Mathf.FloorToInt((altoPared + separacionModulos) / paso);
-        if (columnas <= 0 || filas <= 0) return;
+        if (columnas <= 0) return;
 
         float anchoUsado = columnas * paso - separacionModulos;
-        float altoUsado = filas * paso - separacionModulos;
         float xInicio = -anchoUsado / 2f + ladoModulo / 2f;
-        float yInicio = alturaBase + (altoPared - altoUsado) / 2f + ladoModulo / 2f;
 
         System.Random rnd = new System.Random(semilla);
 
-        for (int f = 0; f < filas; f++)
+        for (int c = 0; c < columnas; c++)
         {
-            for (int c = 0; c < columnas; c++)
+            float xCol = xInicio + c * paso;
+            float t = (columnas > 1) ? (float)c / (columnas - 1) : 0f;
+            float altoCol = AltoEnColumna(t);
+
+            int filas = Mathf.FloorToInt((altoCol + separacionModulos) / paso);
+            if (filas <= 0) continue;
+
+            float yInicio = alturaBase + ladoModulo / 2f;
+
+            for (int f = 0; f < filas; f++)
             {
                 GameObject prefab = ElegirPrefab(rnd);
                 if (prefab == null) continue;
 
-                Vector3 posLocal = new Vector3(
-                    xInicio + c * paso,
-                    yInicio + f * paso,
-                    separacionCapas);
+                Vector3 posLocal = new Vector3(xCol, yInicio + f * paso, separacionCapas);
 
                 GameObject modulo = Instantiate(prefab, padre);
-                modulo.name = $"Modulo_{f}_{c}";
+                modulo.name = $"Modulo_{c}_{f}";
                 modulo.transform.position = transform.TransformPoint(posLocal);
                 modulo.transform.rotation = transform.rotation;
             }
@@ -175,4 +231,50 @@ public class StadiumFrontSkin : MonoBehaviour
         if (Application.isPlaying) Destroy(viejo.gameObject);
         else DestroyImmediate(viejo.gameObject);
     }
+
+    void GenerarFajaRemate(Transform padre)
+    {
+        if (!generarFajaRemate) return;
+
+        float xIzq = -anchoPared / 2f;
+        float xDer = anchoPared / 2f;
+        float yIzq = alturaBase + altoPared;
+        float yDer = alturaBase + AltoEnColumna(1f);
+        float g = espesorFaja / 2f;
+        float z = separacionCapas;
+
+        Vector3[] v = new Vector3[8];
+        v[0] = new Vector3(xIzq, yIzq, z - g);
+        v[1] = new Vector3(xIzq, yIzq + altoFaja, z - g);
+        v[2] = new Vector3(xDer, yDer, z - g);
+        v[3] = new Vector3(xDer, yDer + altoFaja, z - g);
+        v[4] = new Vector3(xIzq, yIzq, z + g);
+        v[5] = new Vector3(xIzq, yIzq + altoFaja, z + g);
+        v[6] = new Vector3(xDer, yDer, z + g);
+        v[7] = new Vector3(xDer, yDer + altoFaja, z + g);
+
+        for (int i = 0; i < 8; i++)
+            v[i] = padre.InverseTransformPoint(transform.TransformPoint(v[i]));
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = v;
+        mesh.triangles = new int[] {
+        0, 1, 2, 1, 3, 2,
+        4, 6, 5, 5, 6, 7,
+        0, 4, 1, 4, 5, 1,
+        2, 3, 6, 3, 7, 6,
+        1, 5, 3, 5, 7, 3,
+        0, 2, 4, 2, 6, 4
+    };
+        mesh.RecalculateNormals();
+
+        GameObject fajaGO = new GameObject("Faja_Remate");
+        fajaGO.transform.SetParent(padre);
+        fajaGO.transform.localPosition = Vector3.zero;
+        fajaGO.transform.localRotation = Quaternion.identity;
+        fajaGO.AddComponent<MeshFilter>().mesh = mesh;
+        fajaGO.AddComponent<MeshRenderer>().sharedMaterial =
+            materialFaja != null ? materialFaja : materialTubo;
+    }
+
 }

@@ -82,6 +82,8 @@ public class ModoVisibilidadController : MonoBehaviour
             return;
         }
 
+        Debug.Log($"Impactó: {hit.collider.gameObject.name}, padre: {hit.collider.transform.parent?.name}, abuelo: {hit.collider.transform.parent?.parent?.name}");
+
         // Subir en la jerarquía hasta encontrar un objeto válido (máximo 3 niveles)
         GameObject objetoImpactado = hit.collider.gameObject;
         string nombre = objetoImpactado.name;
@@ -90,6 +92,7 @@ public class ModoVisibilidadController : MonoBehaviour
         {
             if (nombre == "Escalon_Cabecera" ||
                 nombre == "AsientoPlatea(Clone)" ||
+                nombre == "AsientoBidegain(Clone)" ||
                 nombre == "SeatersStandBlock(Clone)"
                 || nombre == "BlockPlateaCurva(Clone)")
                 break;
@@ -102,7 +105,9 @@ public class ModoVisibilidadController : MonoBehaviour
         Debug.Log($"Objeto final: {nombre}");
 
         bool esPopular = nombre == "Escalon_Cabecera" || nombre == "BlockPlateaCurva(Clone)";
-        bool esPlatea = nombre == "AsientoPlatea(Clone)" || nombre == "SeatersStandBlock(Clone)";
+        bool esPlatea = nombre == "AsientoPlatea(Clone)" ||
+             nombre == "AsientoBidegain(Clone)" ||
+            nombre == "SeatersStandBlock(Clone)";
 
         if (!esPopular && !esPlatea)
         {
@@ -164,11 +169,27 @@ public class ModoVisibilidadController : MonoBehaviour
             }
         }
 
+        Debug.Log($"colRef={colRef.name}, tAsiento={tAsiento?.name}, seat encontrado={tAsiento?.Find("Seat") != null}, yAsiento={yAsiento}");
+
         // Punto base: cara superior del asiento + offset hacia el campo
+        //Vector3 puntoBase = new Vector3(
+        //    hit.collider.bounds.center.x,
+        //    yAsiento,
+        //    hit.collider.bounds.center.z) + dirHaciaElCampo * 0.25f;
+
+        Transform refPos = (tAsiento != null) ? tAsiento : hit.collider.transform;
+
+        Vector3 centroRef;
+        if (!esPopular && tAsiento != null && tAsiento.name.StartsWith("Asiento"))
+            centroRef = tAsiento.position;
+        else
+            centroRef = hit.collider.bounds.center;
+
         Vector3 puntoBase = new Vector3(
-            hit.collider.bounds.center.x,
-            yAsiento,
-            hit.collider.bounds.center.z) + dirHaciaElCampo * 0.25f;
+     centroRef.x,
+     yAsiento,
+     centroRef.z) + dirHaciaElCampo * 0.10f;
+
 
         // Instanciar usuario (prefab ya tiene proporciones correctas)
         Vector3 posUsuario = puntoBase - dirHaciaElCampo * 0.1f;
@@ -271,7 +292,9 @@ public class ModoVisibilidadController : MonoBehaviour
         string nombre = objImpactado.name;
         for (int i = 0; i < 3; i++)
         {
-            if (nombre == "AsientoPlatea(Clone)" || nombre == "BlockPlateaCurva(Clone)") break;
+            if (nombre == "AsientoPlatea(Clone)" ||
+                nombre == "AsientoBidegain(Clone)" ||
+                nombre == "BlockPlateaCurva(Clone)") break;
             if (objImpactado.transform.parent == null) break;
             objImpactado = objImpactado.transform.parent.gameObject;
             nombre = objImpactado.name;
@@ -279,8 +302,10 @@ public class ModoVisibilidadController : MonoBehaviour
 
         // Buscar en el diccionario la clave de este objeto
         (int fila, int columna, int asiento) claveUsuario = (-1, -1, -1);
+        
         foreach (var kvp in codoScript.mapaObjetos)
         {
+            
             if (kvp.Value == objImpactado)
             {
                 claveUsuario = kvp.Key;
@@ -298,46 +323,66 @@ public class ModoVisibilidadController : MonoBehaviour
 
         // Buscar asientos en fila+1 (la fila de adelante, mas cerca del campo)
         int filaAdelante = claveUsuario.fila - 1;
-     
+
+        int cuantos = 0;
+        string columnasLog = "";
+        foreach (var kvp in codoScript.mapaObjetos)
+            if (kvp.Key.fila == filaAdelante) { cuantos++; columnasLog += kvp.Key.columna + ","; }
+        Debug.Log($"Fila adelante = {filaAdelante} | asientos: {cuantos} | columnas: {columnasLog}");
+
+
         if (esPopular)
         {
             Debug.Log($"Usuario en fila={claveUsuario.fila}, columna={claveUsuario.columna}");
             Debug.Log($"Buscando filaAdelante={filaAdelante}");
             Debug.Log($"Total objetos en diccionario: {codoScript.mapaObjetos.Count}");
 
-            InstanciarEspectadores(hit, esPopular, dirHaciaElCampo);           
+            InstanciarEspectadores(hit, esPopular, dirHaciaElCampo);
         }
         else
         {
-            int[] offsetsAsiento = { 0, 1, -1, 2, -2 };
-            foreach (int offsetA in offsetsAsiento)
+            Vector3 posUsuario = objImpactado.transform.position;
+            Vector3 dirLateral = Vector3.Cross(dirHaciaElCampo, Vector3.up).normalized;
+
+            List<KeyValuePair<float, GameObject>> candidatos = new List<KeyValuePair<float, GameObject>>();
+
+            foreach (var kvp in codoScript.mapaObjetos)
             {
-                int asientoObjetivo = claveUsuario.asiento + offsetA;
-                for (int deltaColumna = 0; deltaColumna <= 1; deltaColumna++)
-                {
-                    int[] columnas = deltaColumna == 0
-                        ? new[] { claveUsuario.columna }
-                        : new[] { claveUsuario.columna - 1, claveUsuario.columna + 1 };
-                    foreach (int col in columnas)
-                    {
-                        if (codoScript.mapaObjetos.TryGetValue((filaAdelante, col, asientoObjetivo), out GameObject objAdelante))
-                        {
-                            float yEsp = objAdelante.transform.position.y - 0.6f;
-                            Transform seatEsp = objAdelante.transform.Find("Seat");
-                            if (seatEsp != null)
-                            {
-                                Collider seatCol = seatEsp.GetComponent<Collider>();
-                                if (seatCol != null) yEsp = seatCol.bounds.max.y;
-                            }
-                            Vector3 posEsp = new Vector3(objAdelante.transform.position.x, yEsp, objAdelante.transform.position.z)
-                                + dirHaciaElCampo * 0.10f;
-                            cilindrosEspectadores.Add(CrearEspectador(posEsp, esPopular, false, dirHaciaElCampo));
-                            goto siguiente;
-                        }
-                    }
-                siguiente:;
-                }
+                if (kvp.Key.fila != filaAdelante) continue;
+                if (kvp.Value == null) continue;
+                if (!kvp.Value.name.StartsWith("Asiento")) continue;
+
+                Vector3 delta = kvp.Value.transform.position - posUsuario;
+                float lateral = Vector3.Dot(delta, dirLateral);
+                if (Mathf.Abs(lateral) > 1.6f) continue;
+
+                candidatos.Add(new KeyValuePair<float, GameObject>(Mathf.Abs(lateral), kvp.Value));
             }
+
+            candidatos.Sort((x, y) => x.Key.CompareTo(y.Key));
+
+            int cuantosEsp = Mathf.Min(5, candidatos.Count);
+            for (int i = 0; i < cuantosEsp; i++)
+            {
+                GameObject objAdelante = candidatos[i].Value;
+
+                float yEsp = objAdelante.transform.position.y - 0.6f;
+                Transform seatEsp = objAdelante.transform.Find("Seat");
+                if (seatEsp != null)
+                {
+                    Collider seatCol = seatEsp.GetComponent<Collider>();
+                    if (seatCol != null) yEsp = seatCol.bounds.max.y;
+                }
+
+                Vector3 posEsp = new Vector3(
+                    objAdelante.transform.position.x,
+                    yEsp,
+                    objAdelante.transform.position.z) + dirHaciaElCampo * 0.10f;
+
+                cilindrosEspectadores.Add(CrearEspectador(posEsp, esPopular, false, dirHaciaElCampo));
+            }
+
+
         }
     }
 

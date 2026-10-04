@@ -27,6 +27,17 @@ public class UIEstadioController : MonoBehaviour
     public Button buttonOcultarTecho;
 
 
+    [Header("Referencias Frente")]
+
+    public FrontController controladorFrente;
+    public Button buttonVerFrente;
+    [Tooltip("Panel con las dos opciones de frente. Se despliega al pasar por Ver Frente y se " +
+             "cierra al elegir una o al salir.")]
+    public GameObject panelOpcionesFrente;
+    public Button buttonFrenteIdom;
+    public Button buttonFrenteOficinaUrbana;
+    public Button buttonOcultarFrente;
+
     [Header("Referencias de Sistema")]
     public EstadioConfigurator configurator;
     public ContadorDeCapacidad contador;
@@ -35,14 +46,17 @@ public class UIEstadioController : MonoBehaviour
     public GameObject canvasMenu;
 
     void Start()
-    {        
+    {
+        Debug.Log("UIEstadioController Start");
+
         // Estado inicial: mostrando carga
         panelCarga.SetActive(false);
+
         panelStats.SetActive(false);
 
         buttonHome.onClick.AddListener(OnHomeClick);
 
-        panelOpcionesTecho?.SetActive(false);
+        if (panelOpcionesTecho != null) panelOpcionesTecho.SetActive(false);
 
         if (buttonVerTecho != null)
             buttonVerTecho.onClick.AddListener(AlternarPanelTecho);
@@ -62,6 +76,24 @@ public class UIEstadioController : MonoBehaviour
             controladorTecho.TechoCambio += OnTechoCambio;
 
         ActualizarBotonesTecho();
+        
+        if (panelOpcionesFrente != null) panelOpcionesFrente.SetActive(false);
+
+
+        if (buttonVerFrente != null)
+            buttonVerFrente.onClick.AddListener(AlternarPanelFrente);
+
+        if (buttonFrenteIdom != null)
+            buttonFrenteIdom.onClick.AddListener(() => ElegirFrente(FrontController.DisenoFrente.FrenteIDOM));
+
+        if (buttonFrenteOficinaUrbana != null)
+            buttonFrenteOficinaUrbana.onClick.AddListener(() => ElegirFrente(FrontController.DisenoFrente.FrenteConPiel));
+
+        if (buttonOcultarFrente != null)
+            buttonOcultarFrente.onClick.AddListener(OcultarFrente);
+
+        ActualizarBotonesFrente();
+
 
     }
 
@@ -163,6 +195,45 @@ public class UIEstadioController : MonoBehaviour
             if (texto != null) texto.text = hayTecho ? "Cambiar Techo" : "Ver Techo";
         }
     }
+    
+    void AlternarPanelFrente()
+    {
+        if (panelOpcionesFrente == null) return;
+        panelOpcionesFrente.SetActive(!panelOpcionesFrente.activeSelf);
+    }
 
+    void ElegirFrente(FrontController.DisenoFrente diseno)
+    {
+        FrontController frente = controladorFrente;
+        if (frente != null) frente.CambiarDiseno(diseno);
+
+        panelOpcionesFrente?.SetActive(false);
+        ActualizarBotonesFrente();
+    }
+
+    void OcultarFrente()
+    {
+        FrontController frente = controladorFrente;
+        if (frente != null) frente.LimpiarFrente();
+
+        panelOpcionesFrente?.SetActive(false);
+        ActualizarBotonesFrente();
+    }
+
+    void ActualizarBotonesFrente()
+    {
+        Debug.Log($"controladorFrente={controladorFrente}, FrenteVisible={controladorFrente?.FrenteVisible}");
+
+        bool hayFrente = controladorFrente != null && controladorFrente.FrenteVisible;
+
+        if (buttonOcultarFrente != null)
+            buttonOcultarFrente.gameObject.SetActive(hayFrente);
+
+        if (buttonVerFrente != null)
+        {
+            var texto = buttonVerFrente.GetComponentInChildren<TextMeshProUGUI>();
+            if (texto != null) texto.text = hayFrente ? "Cambiar Frente" : "Ver Frente";
+        }
+    }
 
 }

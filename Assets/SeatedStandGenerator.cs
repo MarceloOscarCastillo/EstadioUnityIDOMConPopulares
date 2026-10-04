@@ -477,6 +477,19 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
         CachearCoronamiento(multZ);
 
+        Debug.Log($"{gameObject.name}: {contenedor.GetComponentsInChildren<Transform>().Length} objetos");
+
+
+        foreach (MeshFilter mf in contenedor.GetComponentsInChildren<MeshFilter>())
+        {
+            if (mf.sharedMesh == null) continue;
+            Bounds b = mf.sharedMesh.bounds;
+            if (float.IsNaN(b.center.x) || float.IsNaN(b.center.y) || float.IsNaN(b.center.z) ||
+                float.IsNaN(b.size.x) || float.IsNaN(b.size.y) || float.IsNaN(b.size.z))
+                Debug.LogError($"Mesh invalido en: {mf.gameObject.name} (padre: {mf.transform.parent?.name})");
+        }
+
+
         foreach (Transform hijo in contenedor.GetComponentsInChildren<Transform>())
         {
             if (hijo.gameObject != contenedor && Application.isPlaying)
@@ -2031,25 +2044,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     /// se pierden.
     /// </summary>
     /// 
-    //METODO VIEJO COMENTADO, AHORA LA PUBLICACION DE LOS ANCLAJES LA MANEJA STADIUMCONFIGURATOR
-    //void PublicarAnclajesTecho(List<float> posicionesX, float mZ, RegistroAnclajesTecho registro,
-    //                           Matrix4x4 mundoALocalTecho)
-    //{
-    //    if (!publicarAnclajesTecho || registro == null) return;
-    //    if (posicionesX == null || posicionesX.Count == 0) return;
-
-    //    for (int i = 0; i < posicionesX.Count; i++)
-    //    {
-    //        Vector3 cabezaLocal = PosicionCabezaTensor(posicionesX[i], mZ);
-    //        Vector3 cabezaMundo = transform.TransformPoint(cabezaLocal);
-
-    //        // El techo trabaja en su propio sistema, centrado en el campo.
-    //        Vector3 posicionTecho = mundoALocalTecho.MultiplyPoint3x4(cabezaMundo);
-    //        Vector3 ejeTecho = mundoALocalTecho.MultiplyVector(transform.TransformVector(Vector3.up));
-
-    //        registro.Publicar(posicionTecho, ejeTecho, idTribunaParaTecho, i);
-    //    }
-    //}
+    
 
     float AlturaAcumuladaContinua(float filas)
     {

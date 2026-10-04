@@ -44,7 +44,10 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.SugeridaAmpliada, "SugeridaAmpliada" },
         { EstadioConfigurator.TipoConfiguracion.AmpliacionFinal, "Ampliación Final" },
          { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" },
-         { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena, "Bidegain Arena" }
+         { EstadioConfigurator.TipoConfiguracion.Bidegain_Actual, "Estadio Pedro Bidegain Actual" },      { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado, "Estadio Pedro Bidegain terminado" },
+         { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena, "Bidegain Arena" },
+         
+         
     };
 
     // Diccionario de descripciones (tooltips)
@@ -88,6 +91,10 @@ public class MenuSeleccionController : MonoBehaviour
             "Es la máxima ampliacíon posible y requiere la compra de propiedades sobre la calle Las Casas. Incluye la ampliación de los codos sobre José Marmol (ambos), del codo en Las Casas y Av. La Plata y de la segunda bandeja sobre Las Casas" },
         { EstadioConfigurator.TipoConfiguracion.TooMuch,
             "Similar a Amplicación Final pero con más populares" },
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Actual,
+            "Estadio Pedro Bidegain, situación actual" },
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado,
+            "Estadio Pedro Bidegain terminado" },
         { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena,
             "Estadio Pedro Bidegain reconvertido a Arena para eventos" }
     };

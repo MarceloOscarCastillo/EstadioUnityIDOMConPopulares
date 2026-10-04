@@ -1,3 +1,4 @@
+using Estadio.Techo;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -64,11 +65,13 @@ public class FrontController : MonoBehaviour
     public bool balconEnTerraza = true;
 
     [Header("Frente con Piel")]
-    public PielEstadio pielFrente;
+    public List<StadiumFrontSkin> pieles = new List<StadiumFrontSkin>();
     public GameObject prefabPisoOficinaUrbana;
     public float offsetZPisos = 0f;
 
     private const string NOMBRE_CONTENEDOR = "Contenedor_Frente";
+
+    public bool FrenteVisible => transform.Find(NOMBRE_CONTENEDOR) != null;
 
     [ContextMenu("Generar Frente")]
     public void GenerarFrente()
@@ -98,6 +101,10 @@ public class FrontController : MonoBehaviour
     {
         disenoActivo = nuevo;
         GenerarFrente();
+
+        ControladorTecho techo = Object.FindFirstObjectByType<ControladorTecho>();
+        if (techo != null)
+            techo.SetFaldones(nuevo == DisenoFrente.FrenteIDOM);
     }
 
     
@@ -159,8 +166,8 @@ public class FrontController : MonoBehaviour
 
     void GenerarFrenteConPiel(Transform padre)
     {
-        if (pielFrente != null)
-            pielFrente.GenerarPiel();
+        foreach (StadiumFrontSkin piel in pieles)
+            if (piel != null) piel.GenerarPiel();
 
         if (prefabPisoOficinaUrbana == null) return;
 
@@ -189,8 +196,9 @@ public class FrontController : MonoBehaviour
             else DestroyImmediate(viejo.gameObject);
         }
 
-        if (pielFrente != null) pielFrente.LimpiarPiel();
-    }
+        foreach (StadiumFrontSkin piel in pieles)
+            if (piel != null) piel.LimpiarPiel();
+    }   
 
     Vector3 PosicionEdificio(EdificioIDOM e)
     {

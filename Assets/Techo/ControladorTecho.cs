@@ -117,8 +117,18 @@ namespace Estadio.Techo
         //  Construccion
         // ------------------------------------------------------------------
 
-        private void OnEnable() => ConstruirGeometria();
-        private void OnValidate() => ConstruirGeometria();
+      
+        private void OnEnable()
+        {
+            if (!HayRegistroDisponible()) return;
+            ConstruirGeometria();
+        }
+
+        private void OnValidate()
+        {
+            if (!HayRegistroDisponible()) return;
+            ConstruirGeometria();
+        }
 
         [ContextMenu("Reconstruir geometria")]
         public void ConstruirGeometria()
@@ -320,28 +330,7 @@ namespace Estadio.Techo
                 TechoCambio?.Invoke(true);
             }
         }
-
-        /// <summary>
-        /// Los soportes de codo son del techo, no del estadio: sostienen la viga longitudinal
-        /// donde ya no hay platea abajo. Por eso aparecen y desaparecen con el.
-        /// </summary>
-        //private void GenerarSoportesCodo()
-        //{
-        //    if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
-        //    if (_soportesCodo == null) return;
-
-        //    // La viga longitudinal va primero: los soportes de codo y las vigas finales
-        //    // consultan su altura para saber donde apoyar.
-        //    if (_vigaLongitudinal == null) _vigaLongitudinal = GetComponent<VigaLongitudinalTecho>();
-        //    _vigaLongitudinal?.Generar(origenTecho);
-
-        //    _soportesCodo.Generar(origenTecho, configurador);
-
-        //    if (_vigasFinales == null) _vigasFinales = GetComponent<VigasFinalesTecho>();
-        //    _vigasFinales?.Generar(origenTecho);
-        //}
-
-
+              
         private void GenerarElementosPropios()
         {
             if (_vigaLongitudinal == null) _vigaLongitudinal = GetComponent<VigaLongitudinalTecho>();
@@ -442,5 +431,30 @@ namespace Estadio.Techo
                 else Debug.LogWarning($"[Techo] {mensaje}", this);
             }
         }
+
+        public void SetFaldones(bool activo)
+        {
+            Debug.Log($"SetFaldones({activo}), actual={parametrosMembrana.generarFaldon}");
+
+            if (parametrosMembrana.generarFaldon == activo) return;
+            parametrosMembrana.generarFaldon = activo;
+
+            //_membrana.Construir(_perimetroEstadio, _perimetroTecho, _coronamientos,
+            //                    _borde, _tendido);
+
+            Debug.Log("Reconstruyendo techo...");
+
+            ConstruirGeometria();
+
+        }
+
+        
+        private bool HayRegistroDisponible()
+        {
+            if (usarAnclajesSinteticos) return true;
+            if (configurador == null || configurador.RegistroTecho == null) return true;
+            return configurador.RegistroTecho.CantidadPublicados > 0;
+        }
+
     }
 }
