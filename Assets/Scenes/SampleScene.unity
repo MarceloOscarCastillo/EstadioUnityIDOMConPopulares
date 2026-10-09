@@ -2763,6 +2763,11 @@ MonoBehaviour:
   - {fileID: 604480966}
   - {fileID: 447081489}
   - {fileID: 888807059}
+  - {fileID: 462586174}
+  - {fileID: 2034205060}
+  - {fileID: 691947624}
+  - {fileID: 355873506}
+  - {fileID: 1290168084}
 --- !u!1 &126472026
 GameObject:
   m_ObjectHideFlags: 0
@@ -4335,7 +4340,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -81.1, y: -100}
+  m_AnchoredPosition: {x: -264.4, y: -100}
   m_SizeDelta: {x: 160, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &223510419
@@ -9795,6 +9800,7 @@ MonoBehaviour:
   - {fileID: 1550792475}
   prefabPisoOficinaUrbana: {fileID: 0}
   offsetZPisos: 0
+  escudoEnEscena: {fileID: 8354304584855259064}
 --- !u!1001 &437884803
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31244,7 +31250,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -81.2, y: -40}
+  m_AnchoredPosition: {x: -264.4, y: -40}
   m_SizeDelta: {x: 160, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1245169547
@@ -53509,11 +53515,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: EscudoCASLAQuad
       objectReference: {fileID: 0}
+    - target: {fileID: 5912239483677323026, guid: 99a9031ebe79f6249b38cd7a0472acb0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99a9031ebe79f6249b38cd7a0472acb0, type: 3}
+--- !u!1 &8354304584855259064 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5912239483677323026, guid: 99a9031ebe79f6249b38cd7a0472acb0, type: 3}
+  m_PrefabInstance: {fileID: 8354304584855259063}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8526408129276937694
 PrefabInstance:
   m_ObjectHideFlags: 0

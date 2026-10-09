@@ -23,6 +23,7 @@ public class SharedComponentsController : MonoBehaviour
             else if (componente is GeneradorEscaleraArquitectonica gea) gea.GenerarEscalera();            
             else if (componente is CampoDeJuego cdj) cdj.GenerarCarteles();
             else if (componente is StandsDoorsAndWallsScript sdaw) sdaw.GenerarParedConPuertas();
+            else if (componente is ShopsLineGenerator slg) slg.GenerarComercios();
         }
     }
 }

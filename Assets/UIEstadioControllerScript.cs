@@ -62,10 +62,10 @@ public class UIEstadioController : MonoBehaviour
             buttonVerTecho.onClick.AddListener(AlternarPanelTecho);
 
         if (buttonTechoIdom != null)
-            buttonTechoIdom.onClick.AddListener(() => ElegirTecho(Estadio.Techo.DisenoTecho.Diseno1Membrana));
+            buttonTechoIdom.onClick.AddListener(() => ElegirTecho(Estadio.Techo.DisenoTecho.MembranaConFaldonesYCablesTransversales));
 
         if (buttonTechoOficinaUrbana != null)
-            buttonTechoOficinaUrbana.onClick.AddListener(() => ElegirTecho(Estadio.Techo.DisenoTecho.Diseno2Reticulado));
+            buttonTechoOficinaUrbana.onClick.AddListener(() => ElegirTecho(Estadio.Techo.DisenoTecho.MembranaSinFaldonesYConPuentes));
 
         if (buttonOcultarTecho != null)
             buttonOcultarTecho.onClick.AddListener(OcultarTecho);

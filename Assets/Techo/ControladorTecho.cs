@@ -7,8 +7,8 @@ namespace Estadio.Techo
 {
     public enum DisenoTecho
     {
-        Diseno1Membrana,
-        Diseno2Reticulado
+        MembranaConFaldonesYCablesTransversales = 0,
+        MembranaSinFaldonesYConPuentes = 1
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ namespace Estadio.Techo
         [SerializeField] private float alturaCoronamientoCabecera = 30f;
 
         [Header("Diseno")]
-        [SerializeField] private DisenoTecho diseno = DisenoTecho.Diseno1Membrana;
+        [SerializeField] private DisenoTecho diseno = DisenoTecho.MembranaConFaldonesYCablesTransversales;
 
         [Header("Parametros")]
         [SerializeField] private ParametrosPerimetroTecho parametrosPerimetroTecho = ParametrosPerimetroTecho.PorDefecto;
@@ -135,7 +135,9 @@ namespace Estadio.Techo
         {
             _geometriaLista = false;
             _ultimoError = null;
-
+                
+            parametrosMembrana.generarFaldon = (diseno == DisenoTecho.MembranaConFaldonesYCablesTransversales);
+       
             try
             {
                 _perimetroEstadio = new PerimetroSuperelipse(semiejeX, semiejeZ, exponenteCodos);
@@ -339,7 +341,7 @@ namespace Estadio.Techo
             if (_soportesCodo == null) _soportesCodo = GetComponent<SoportesTechoCodo>();
             _soportesCodo?.Generar(origenTecho, configurador);
 
-            if (diseno == DisenoTecho.Diseno1Membrana)
+            if (diseno == DisenoTecho.MembranaConFaldonesYCablesTransversales)
             {
                 // Las vigas finales cierran la esquina en el Diseno 1. En el 2 ese lugar lo ocupan
                 // los puentes exteriores.
@@ -432,21 +434,21 @@ namespace Estadio.Techo
             }
         }
 
-        public void SetFaldones(bool activo)
-        {
-            Debug.Log($"SetFaldones({activo}), actual={parametrosMembrana.generarFaldon}");
+        //public void SetFaldones(bool activo)
+        //{
+        //    Debug.Log($"SetFaldones({activo}), actual={parametrosMembrana.generarFaldon}");
 
-            if (parametrosMembrana.generarFaldon == activo) return;
-            parametrosMembrana.generarFaldon = activo;
+        //    if (parametrosMembrana.generarFaldon == activo) return;
+        //    parametrosMembrana.generarFaldon = activo;
 
-            //_membrana.Construir(_perimetroEstadio, _perimetroTecho, _coronamientos,
-            //                    _borde, _tendido);
+        //    //_membrana.Construir(_perimetroEstadio, _perimetroTecho, _coronamientos,
+        //    //                    _borde, _tendido);
 
-            Debug.Log("Reconstruyendo techo...");
+        //    Debug.Log("Reconstruyendo techo...");
 
-            ConstruirGeometria();
+        //    ConstruirGeometria();
 
-        }
+        //}
 
         
         private bool HayRegistroDisponible()

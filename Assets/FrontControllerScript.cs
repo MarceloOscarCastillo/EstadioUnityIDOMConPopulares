@@ -69,6 +69,9 @@ public class FrontController : MonoBehaviour
     public GameObject prefabPisoOficinaUrbana;
     public float offsetZPisos = 0f;
 
+    [Header("Frente con Piel - Escudo")]
+    public GameObject escudoEnEscena;
+
     private const string NOMBRE_CONTENEDOR = "Contenedor_Frente";
 
     public bool FrenteVisible => transform.Find(NOMBRE_CONTENEDOR) != null;
@@ -100,11 +103,7 @@ public class FrontController : MonoBehaviour
     public void CambiarDiseno(DisenoFrente nuevo)
     {
         disenoActivo = nuevo;
-        GenerarFrente();
-
-        ControladorTecho techo = Object.FindFirstObjectByType<ControladorTecho>();
-        if (techo != null)
-            techo.SetFaldones(nuevo == DisenoFrente.FrenteIDOM);
+        GenerarFrente();        
     }
 
     
@@ -112,6 +111,8 @@ public class FrontController : MonoBehaviour
     void GenerarFrenteIDOM(Transform padre)
     {
         if (prefabEdificio == null) return;
+
+        if (escudoEnEscena != null) escudoEnEscena.SetActive(false);
 
         foreach (EdificioIDOM e in edificios)
         {
@@ -166,6 +167,8 @@ public class FrontController : MonoBehaviour
 
     void GenerarFrenteConPiel(Transform padre)
     {
+        if (escudoEnEscena != null) escudoEnEscena.SetActive(true);
+
         foreach (StadiumFrontSkin piel in pieles)
             if (piel != null) piel.GenerarPiel();
 
@@ -177,7 +180,7 @@ public class FrontController : MonoBehaviour
             piso.name = $"Piso_OficinaUrbana_{y:F1}";
             piso.transform.position = transform.TransformPoint(new Vector3(0f, y, offsetZPisos));
             piso.transform.rotation = transform.rotation;
-        }
+        }        
     }
 
     void AplicarMaterialATodo(GameObject obj, Material mat)
@@ -189,6 +192,8 @@ public class FrontController : MonoBehaviour
     [ContextMenu("Limpiar Frente")]
     public void LimpiarFrente()
     {
+        if (escudoEnEscena != null) escudoEnEscena.SetActive(false);
+
         Transform viejo = transform.Find(NOMBRE_CONTENEDOR);
         if (viejo != null)
         {

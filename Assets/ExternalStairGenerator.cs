@@ -23,6 +23,7 @@ public class GeneradorEscaleraArquitectonica : MonoBehaviour
 
     [Header("Configuración de la Escalera")]
     [Range(2, 200)] public int escalonesTotales = 15;
+    public Material materialEscalera;
 
     [Header("Configuración de Murallas")]
     public bool generarMurallas = true;
@@ -39,7 +40,7 @@ public class GeneradorEscaleraArquitectonica : MonoBehaviour
     public int filaPreviaADescanso2 = 12;
     public float profundidadDescanso2 = 1.50f;
 
-    private Material materialEscalera;
+    //private Material materialEscalera;
 
     private const string NOMBRE_CONTENEDOR = "Escalinata_Externa";
 

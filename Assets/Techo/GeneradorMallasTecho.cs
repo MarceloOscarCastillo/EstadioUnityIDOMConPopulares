@@ -198,7 +198,7 @@ namespace Estadio.Techo
                 if (generarCablesFaldon) GenerarCablesFaldon(membrana);
             }
 
-            bool esDiseno1 = Controlador != null && Controlador.Diseno == DisenoTecho.Diseno1Membrana;
+            bool esDiseno1 = Controlador != null && Controlador.Diseno == DisenoTecho.MembranaConFaldonesYCablesTransversales;
 
             if (generarCables && esDiseno1 && tendido != null && tendido.Construido)
                 GenerarCables(tendido);
@@ -213,7 +213,7 @@ namespace Estadio.Techo
         
         private void BarrerElemento(ElementoBordeConstruido elemento)
         {
-            bool esDiseno1 = Controlador != null && Controlador.Diseno == DisenoTecho.Diseno1Membrana;
+            bool esDiseno1 = Controlador != null && Controlador.Diseno == DisenoTecho.MembranaConFaldonesYCablesTransversales;
 
             Vector3[] eje = elemento.eje;
 
@@ -323,7 +323,7 @@ namespace Estadio.Techo
             float escalaX = (longitud / cantidad) / longitudModulo;
 
             // En el Diseno 2 las tubulares corren por encima de la tela y llevan material propio.
-            bool esDiseno1 = Controlador == null || Controlador.Diseno == DisenoTecho.Diseno1Membrana;
+            bool esDiseno1 = Controlador == null || Controlador.Diseno == DisenoTecho.MembranaConFaldonesYCablesTransversales;
             bool cambiarMaterial = !esDiseno1 && materialTubularDiseno2 != null;
 
             for (int i = 0; i < cantidad; i++)

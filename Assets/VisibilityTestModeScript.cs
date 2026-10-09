@@ -145,20 +145,48 @@ public class ModoVisibilidadController : MonoBehaviour
             dirHaciaElCampo.y = 0;
             dirHaciaElCampo.Normalize();
         }
+        //else
+        //{
+        //    Transform t = hit.collider.transform;
+        //    while (t != null && t.name != "SeatersStandBlock(Clone)")
+        //        t = t.parent;
+        //    dirHaciaElCampo = t != null ? -t.forward : -hit.collider.transform.forward;
+        //    dirHaciaElCampo.y = 0;
+        //    dirHaciaElCampo.Normalize();
+        //}
+
         else
         {
-            Transform t = hit.collider.transform;
-            while (t != null && t.name != "SeatersStandBlock(Clone)")
-                t = t.parent;
-            dirHaciaElCampo = t != null ? -t.forward : -hit.collider.transform.forward;
+            SeatedStandGenerator plateaRecta =
+                hit.collider.GetComponentInParent<SeatedStandGenerator>();
+
+            if (plateaRecta != null)
+            {
+                dirHaciaElCampo = -plateaRecta.transform.forward;
+                if (plateaRecta.invertir) dirHaciaElCampo = -dirHaciaElCampo;
+            }
+            else
+            {
+                dirHaciaElCampo = -hit.collider.transform.forward;
+            }
+
             dirHaciaElCampo.y = 0;
             dirHaciaElCampo.Normalize();
         }
 
+
+
+        Debug.Log($"dirHaciaElCampo={dirHaciaElCampo}, esPopular={esPopular}");
+
         // Obtener Y del asiento
         Collider colRef = hit.collider;
+
         float yAsiento = colRef.bounds.max.y;
+
+        Debug.Log($"yAsiento={yAsiento}, hit.point.y={hit.point.y}, bounds.max.y={colRef.bounds.max.y}, bounds.min.y={colRef.bounds.min.y}");
+
         Transform tAsiento = colRef.transform.parent;
+        
         if (tAsiento != null)
         {
             Transform seat = tAsiento.Find("Seat");
@@ -397,6 +425,10 @@ public class ModoVisibilidadController : MonoBehaviour
 
         if (dirMirada != Vector3.zero)
             espectador.transform.rotation = Quaternion.LookRotation(dirMirada, Vector3.up);
+
+
+        Debug.Log($"Espectador en {posicionBase}, prefab={prefab.name}, escalaMundo={espectador.transform.lossyScale}");
+
 
         return espectador;
     }
