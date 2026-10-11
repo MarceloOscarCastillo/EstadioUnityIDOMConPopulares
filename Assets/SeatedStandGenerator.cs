@@ -36,6 +36,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public float anchoPasilloEscalera = 2.0f;
     public bool invertir = true;
 
+    
     [Header("Vomitos con pasillo lateral")]
     [Tooltip("Si true, el hueco va al centro y los pasillos a los costados")]
     public bool vomitosConPasilloLateral = false;
@@ -98,7 +99,6 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public Material Glass;
     public float anchoFranja = 20f;
 
-
     [Header("Recorte de Filas")]
     public bool usarRecorteFilas = false;
     public int filasEnExtremoIzquierdo = 48;
@@ -110,6 +110,14 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public float separacionSoportes = 5f;
     public float alturaTramoVertical = 2f;
     public Material MaterialVigas;
+
+    [Header("Prolongacion de la viga diagonal")]
+    public bool prolongarVigaDiagonal = false;
+    [Tooltip("Objeto cuya Y define hasta donde baja la viga. Si es null usa ground0Level")]
+    public Transform referenciaNivelViga;
+    [Tooltip("Metros que la viga penetra por debajo de ese nivel")]
+    public float penetracionViga = 0.3f;
+
 
     [Header("Viga Vertical Interior")]
     public int filaVigaVerticalInterior = 5;
@@ -1336,6 +1344,59 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         viga.AddComponent<MeshRenderer>().sharedMaterial = MaterialVigas;
     }
 
+    //    void CrearVigaDiagonal(Transform padre, float x, float zInicio, float yInicio, float zFin, float yFin, float mZ)
+    //    {
+    //        GameObject viga = new GameObject("Viga_Diagonal");
+    //        viga.transform.SetParent(padre);
+    //        viga.transform.localPosition = Vector3.zero;
+    //        viga.transform.localRotation = Quaternion.identity;
+
+    //        float g = anchoVigaDiagonal / 2f;
+    //        float h = altoVigaDiagonal / 2f;
+
+    //        // Direccion de la diagonal
+    //        Vector3 dir = new Vector3(0, yFin - yInicio, zFin - zInicio).normalized;
+    //        Vector3 perp = Vector3.Cross(dir, Vector3.right).normalized * h;
+
+    //        // Desplazamiento Y para que la viga quede debajo de los escalones
+    //        float desplazamientoY = -(altoVigaDiagonal - mordidaViga);
+
+    //        Vector3 pInicio = new Vector3(x, yInicio + desplazamientoY, zInicio);
+    //        Vector3 pFin = new Vector3(x, yFin + desplazamientoY, zFin);
+
+    //        // Extremo inicio (diagonal)
+    //        Vector3 i0 = new Vector3(x - g, pInicio.y - perp.y, pInicio.z - perp.z);
+    //        Vector3 i1 = new Vector3(x - g, pInicio.y + perp.y, pInicio.z + perp.z);
+    //        Vector3 i4 = new Vector3(x + g, pInicio.y - perp.y, pInicio.z - perp.z);
+    //        Vector3 i5 = new Vector3(x + g, pInicio.y + perp.y, pInicio.z + perp.z);
+
+    //        // Extremo final con corte VERTICAL (perpendicular al suelo)
+    //        float yFinSuperior = pFin.y + h;
+    //        float yFinInferior = pFin.y - h;
+    //        Vector3 f2 = new Vector3(x - g, yFinInferior, zFin);
+    //        Vector3 f3 = new Vector3(x - g, yFinSuperior, zFin);
+    //        Vector3 f6 = new Vector3(x + g, yFinInferior, zFin);
+    //        Vector3 f7 = new Vector3(x + g, yFinSuperior, zFin);
+
+    //        Vector3[] v = new Vector3[] { i0, i1, f2, f3, i4, i5, f6, f7 };
+
+    //        Mesh mesh = new Mesh();
+    //        mesh.vertices = v;
+    //        mesh.triangles = new int[] {
+    //    0, 1, 2, 1, 3, 2,
+    //    4, 6, 5, 5, 6, 7,
+    //    0, 4, 1, 4, 5, 1,
+    //    2, 3, 6, 3, 7, 6,
+    //    1, 5, 3, 5, 7, 3,
+    //    0, 2, 4, 2, 6, 4
+    //};
+    //        mesh.RecalculateNormals();
+
+    //        viga.AddComponent<MeshFilter>().mesh = mesh;
+    //        viga.AddComponent<MeshRenderer>().sharedMaterial = MaterialVigas;
+    //    }
+
+
     void CrearVigaDiagonal(Transform padre, float x, float zInicio, float yInicio, float zFin, float yFin, float mZ)
     {
         GameObject viga = new GameObject("Viga_Diagonal");
@@ -1354,7 +1415,27 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         float desplazamientoY = -(altoVigaDiagonal - mordidaViga);
 
         Vector3 pInicio = new Vector3(x, yInicio + desplazamientoY, zInicio);
+
         Vector3 pFin = new Vector3(x, yFin + desplazamientoY, zFin);
+
+        if (prolongarVigaDiagonal)
+        {
+            Transform refNivel = referenciaNivelViga != null ? referenciaNivelViga : ground0Level;
+
+            if (refNivel != null)
+            {
+                float yDestinoLocal = transform.InverseTransformPoint(refNivel.position).y - penetracionViga;
+                Vector3 dirProlong = (pFin - pInicio).normalized;
+
+                if (Mathf.Abs(dirProlong.y) > 0.0001f)
+                {
+                    float t = (yDestinoLocal - pInicio.y) / dirProlong.y;
+                    pFin = pInicio + dirProlong * t;
+                }
+            }
+        }
+
+        zFin = pFin.z;
 
         // Extremo inicio (diagonal)
         Vector3 i0 = new Vector3(x - g, pInicio.y - perp.y, pInicio.z - perp.z);

@@ -42,6 +42,7 @@ public class EstadioConfigurator : MonoBehaviour
         public int capacidadPopulares;
         public int capacidadPlateas;
         public int capacidadPalcos;
+        
     }
 
     [System.NonSerialized]
@@ -57,6 +58,8 @@ public class EstadioConfigurator : MonoBehaviour
         // Al usar MonoBehaviour, Unity guarda la referencia exacta a ESE objeto de la escena.
         // Un mismo objeto (Ej: Platea Norte) puede estar metido en las listas de varios perfiles a la vez.
         public List<MonoBehaviour> sectoresActivos;
+
+        public PisoOperativoController.TipoPisoOperativo pisoOperativo;
     }
 
     [Header("Variante del Estadio Seleccionada")]
@@ -121,6 +124,10 @@ public void AplicarConfiguracionEstadio()
         Debug.LogError($"No creaste ningún perfil en la lista para la variante: {varianteAActivar}");
         return;
     }
+
+        PisoOperativoController piso = Object.FindFirstObjectByType<PisoOperativoController>();
+        if (piso != null) piso.CambiarTipo(perfilElegido.pisoOperativo);
+
 
         if (controladorTecho != null) controladorTecho.Ocultar();
 
@@ -396,6 +403,10 @@ public void AplicarConfiguracionEstadio()
         // Guardar variante actual como anterior
         varianteAnterior = varianteAActivar;
         perfilAnterior = perfilNuevo;
+
+        PisoOperativoController piso = Object.FindFirstObjectByType<PisoOperativoController>();
+        if (piso != null) piso.CambiarTipo(perfilNuevo.pisoOperativo);
+
 
         AplicarConfiguracionEstadio();
         //if (ui != null) ui.MostrarStats();

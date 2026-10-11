@@ -67,6 +67,16 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public Material Azul;
 
 
+    [Header("Franjas de color")]
+    public bool usarFranjasDeColor = false;
+    [Tooltip("Ancho de cada franja en metros, medido sobre la fila 0")]
+    public float anchoFranja = 8f;
+    [Tooltip("Materiales que se alternan ciclicamente. El primero es el de la franja inicial")]
+    public List<Material> materialesFranja = new List<Material>();
+    [Tooltip("Desplaza el inicio de las franjas, en metros de arco")]
+    public float offsetFranja = 0f;
+
+    
     [Header("Es codo de platea")]
     public bool esCodoPlatea = true;
 
@@ -153,6 +163,15 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public float alturaBaranda = 0.9f;
     public float offsetPivotBaranda = 0.75f;
 
+    [Header("Alambrado Frontal")]
+    public bool generarAlambradoFrontal = false;
+    public GameObject prefabAlambrado;
+    public float alturaAlambrado = 2.5f;
+    public float espaciadoAlambrado = 4f;
+    public float offsetPivotAlambrado = 0f;
+    public float offsetRadialAlambrado = 0f;
+    public Vector3 rotacionAlambrado = Vector3.zero;
+
 
     [Header("Soportes Estructurales")]
     public bool generarSoportes = false;
@@ -170,6 +189,13 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     [Header("Viga Diagonal")]
     public int filaArranqueDiagonal = 3;
     public float mordidaViga = 0.05f;
+
+    [Header("Prolongacion de la viga diagonal")]
+    public bool prolongarVigaDiagonal = false;
+    [Tooltip("Objeto cuya Y define hasta donde baja la viga. Si es null usa ground0Level")]
+    public Transform referenciaNivelViga;
+    [Tooltip("Metros que la viga penetra por debajo de ese nivel")]
+    public float penetracionViga = 0.3f;
 
     [Header("Viga Horizontal")]
     public bool tieneVigaHorizontal = true;
@@ -245,6 +271,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
 
     public bool PublicaAnclajesTecho => false;
 
+    private float _gradosPorFranja;
+
     public GeometriaSoporte GeometriaDelSoporte => default;
 
     public RolEstructuralTecho RolEnElTecho => RolEstructuralTecho.Codo;
@@ -300,6 +328,8 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         _longitudTotalInterior = _longAcumInterior[pasos];
 
         CachearAngulosPasillos();
+
+        CachearFranjas();
 
         longAcumFilaLarga[0] = 0f;
 
@@ -392,14 +422,18 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                 {
                     matAUsar = materialPasilloSuelto;
                 }
+
+                else if (celda.tipo == TipoCelda.BloqueLibre)
+                {
+                    matAUsar = GrisCemento;
+                }
                 else
                 {
-                    matAUsar = celda.tipo == TipoCelda.BloqueLibre ? GrisCemento : Material;
+                    Material matFranja = MaterialDeFranja(angMedio);
+                    matAUsar = matFranja != null ? matFranja : Material;
                 }
 
                 AplicarMaterialATodo(bloqueObj, matAUsar);
-
-
 
             }
 
@@ -566,7 +600,9 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                     float margenAsiento = GradosParaAncho(0.5f, f) / 2f;
                     if (EsPasilloSueltoCodo(angulo, f, margenAsiento)) continue;
 
-                    UbicarAsiento(posicion, tangente, contenedor, celdaEncontrada.Value.fila, celdaEncontrada.Value.columna, a);
+                    Material matAsiento = MaterialDeFranja(angulo);
+
+                    UbicarAsiento(posicion, tangente, contenedor, celdaEncontrada.Value.fila, celdaEncontrada.Value.columna, a, matAsiento);
                     
                 }
             }
@@ -712,10 +748,30 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
 
     }
-    
-    void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor, int fila, int columna, int asiento)
+
+    //void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor, int fila, int columna, int asiento)
+    //{
+    //    float distanciaCentroACaraSuperiorBloque = altoEscalon / 2f; // altoEscalon es el equivalente en codos
+    //    float yButaca = distanciaCentroACaraSuperiorBloque + elevacionCanio;
+
+    //    Vector3 dirRadial = (posicion - transform.position);
+    //    dirRadial.y = 0;
+    //    dirRadial.Normalize();
+
+    //    GameObject asientoObj = Instantiate(AsientoPlatea);
+    //    asientoObj.transform.localScale = Vector3.one;
+    //    asientoObj.transform.position = posicion + (Vector3.up * yButaca) + dirRadial * offsetZButaca;
+    //    asientoObj.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up);
+    //    asientoObj.transform.Rotate(0, 180, 0);
+    //    asientoObj.transform.SetParent(contenedor.transform, true);
+    //    AplicarMaterialATodo(asientoObj, Material);
+    //    mapaObjetos[(fila, columna, asiento)] = asientoObj;
+    //}
+
+    void UbicarAsiento(Vector3 posicion, Vector3 tangente, GameObject contenedor,
+    int fila, int columna, int asiento, Material mat)
     {
-        float distanciaCentroACaraSuperiorBloque = altoEscalon / 2f; // altoEscalon es el equivalente en codos
+        float distanciaCentroACaraSuperiorBloque = altoEscalon / 2f;
         float yButaca = distanciaCentroACaraSuperiorBloque + elevacionCanio;
 
         Vector3 dirRadial = (posicion - transform.position);
@@ -728,9 +784,10 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         asientoObj.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up);
         asientoObj.transform.Rotate(0, 180, 0);
         asientoObj.transform.SetParent(contenedor.transform, true);
-        AplicarMaterialATodo(asientoObj, Material);
+        AplicarMaterialATodo(asientoObj, mat != null ? mat : Material);
         mapaObjetos[(fila, columna, asiento)] = asientoObj;
     }
+
 
     float BuscarAngulo(float[] longitudesAcumuladas, float distanciaObjetivo, int anguloMaximo)
     {
@@ -973,6 +1030,13 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                 distancia += espaciadoBaranda;
             }
         }
+
+        if (generarAlambradoFrontal && prefabAlambrado != null) 
+        {
+            GenerarAlambradoFrontal(contenedor, anguloIzqBoca, anguloDerBoca);
+        }
+        
+
     }
 
     void GenerarMurosLaterales(GameObject contenedor)
@@ -1681,6 +1745,25 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
     void CrearVigaDiagonalCodo(GameObject contenedor, Vector3 pInicio, Vector3 pFin, Vector3 dirRadial, Vector3 dirTangente)
     {
+
+        if (prolongarVigaDiagonal)
+        {
+            Transform refNivel = referenciaNivelViga != null ? referenciaNivelViga : ground0Level;
+
+            if (refNivel != null)
+            {
+                float yDestino = refNivel.position.y - penetracionViga;
+                Vector3 dirProlong = (pInicio - pFin).normalized;
+
+                if (Mathf.Abs(dirProlong.y) > 0.0001f)
+                {
+                    float t = (yDestino - pFin.y) / dirProlong.y;
+                    pInicio = pFin + dirProlong * t;
+                }
+            }
+        }
+
+
         GameObject viga = new GameObject("Viga_Diagonal_Codo");
         viga.transform.SetParent(contenedor.transform);
         viga.transform.localPosition = Vector3.zero;
@@ -2432,4 +2515,87 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
         return false;
     }
+
+    void CachearFranjas()
+    {
+        _gradosPorFranja = 0f;
+        if (!usarFranjasDeColor || anchoFranja <= 0f) return;
+        if (radioInferior <= 0f) return;
+
+        float circunferenciaFila0 = 2f * Mathf.PI * radioInferior;
+        _gradosPorFranja = (anchoFranja / circunferenciaFila0) * 360f;
+    }
+
+    Material MaterialDeFranja(float angulo)
+    {
+        if (!usarFranjasDeColor) return null;
+        if (materialesFranja == null || materialesFranja.Count == 0) return null;
+        if (_gradosPorFranja <= 0f) return null;
+
+        float circunferenciaFila0 = 2f * Mathf.PI * radioInferior;
+        float gradosOffset = (offsetFranja / circunferenciaFila0) * 360f;
+
+        float t = angulo - gradosOffset;
+        if (invertirSentido) t = anguloTotal - t;
+
+        int indice = Mathf.FloorToInt(t / _gradosPorFranja);
+        indice = ((indice % materialesFranja.Count) + materialesFranja.Count) % materialesFranja.Count;
+
+        return materialesFranja[indice];
+    }
+
+    void GenerarAlambradoFrontal(GameObject contenedor, float anguloIzqBoca, float anguloDerBoca)
+    {
+        if (!generarAlambradoFrontal || prefabAlambrado == null) return;
+        if (espaciadoAlambrado <= 0f) return;
+
+        int pasosMesh = 900;
+        float[] longAcum = new float[pasosMesh + 1];
+        longAcum[0] = 0f;
+
+        float radio = radioInferior - profundidadPisoFrontal + offsetRadialAlambrado;
+
+        for (int g = 1; g <= pasosMesh; g++)
+        {
+            float aA = (g - 1) * (anguloTotal / pasosMesh);
+            float aB = g * (anguloTotal / pasosMesh);
+            Vector3 pA = transform.TransformPoint(CalcularPunto(aA, radio, 0));
+            Vector3 pB = transform.TransformPoint(CalcularPunto(aB, radio, 0));
+            longAcum[g] = longAcum[g - 1] + Vector3.Distance(pA, pB);
+        }
+
+        float longitudTotal = longAcum[pasosMesh];
+        float distancia = 0f;
+
+        while (distancia < longitudTotal - espaciadoAlambrado / 2f)
+        {
+            float paso = BuscarAngulo(longAcum, distancia, pasosMesh);
+            float angulo = paso * (anguloTotal / pasosMesh);
+
+            if (generarBocaLogistica && angulo >= anguloIzqBoca && angulo <= anguloDerBoca)
+            {
+                distancia += espaciadoAlambrado;
+                continue;
+            }
+
+            Vector3 pos = transform.TransformPoint(CalcularPunto(angulo, radio, 0));
+            pos += Vector3.up * (alturaMuroFrontal + alturaAlambrado / 2f);
+
+            float delta = 0.5f;
+            float anguloA = Mathf.Max(0, angulo - delta);
+            float anguloB = Mathf.Min(anguloTotal, angulo + delta);
+
+            Vector3 pA = transform.TransformPoint(CalcularPunto(anguloA, radio, 0));
+            Vector3 pB = transform.TransformPoint(CalcularPunto(anguloB, radio, 0));
+            Vector3 tangente = (pB - pA).normalized;
+
+            GameObject alambrado = Instantiate(prefabAlambrado, contenedor.transform);
+            alambrado.transform.position = pos + tangente * offsetPivotAlambrado;
+            alambrado.transform.rotation = Quaternion.LookRotation(tangente, Vector3.up)
+                                         * Quaternion.Euler(rotacionAlambrado);
+
+            distancia += espaciadoAlambrado;
+        }
+    }
+
 }

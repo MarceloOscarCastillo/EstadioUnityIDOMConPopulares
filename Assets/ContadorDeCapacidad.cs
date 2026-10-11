@@ -23,11 +23,12 @@ public class ContadorDeCapacidad : MonoBehaviour
     [Header("Anchos de pieza por sector")]
     public float anchoPiezaCabecera = 1.0f;
 
+    //[Header("Piso para eventos")]
+    //public bool esVersionParaEventos = false;
+    //public GameObject pisoParaEventos;
+    //public float espectadoresPorM2 = 3f;
 
-    [Header("Piso para eventos")]
-    public bool esVersionParaEventos = false;
-    public GameObject pisoParaEventos;
-    public float espectadoresPorM2 = 3f;
+    public PisoOperativoController pisoOperativo;
 
     [HideInInspector] public int capacidadPisoEventos = 0;
     [HideInInspector] public float areaPisoEventos = 0f;
@@ -98,12 +99,10 @@ public class ContadorDeCapacidad : MonoBehaviour
 
 
         capacidadPisoEventos = 0;
-        areaPisoEventos = 0f;
-
-        if (esVersionParaEventos && pisoParaEventos != null)
+        if (pisoOperativo != null)
         {
-            areaPisoEventos = CalcularAreaHorizontal(pisoParaEventos);
-            capacidadPisoEventos = Mathf.FloorToInt(areaPisoEventos * espectadoresPorM2);
+            pisoOperativo.CalcularCapacidadPiso();
+            capacidadPisoEventos = pisoOperativo.capacidadPisoOperativo;
         }
 
 
@@ -191,8 +190,11 @@ public class ContadorDeCapacidad : MonoBehaviour
         UnityEngine.Debug.Log($"<b>Sectores Plateas:</b> {aforoAsientos} asientos físicos");
         UnityEngine.Debug.Log($"<b>Palcos:</b> {palcos} unidades (Est. {aforoPalcos} personas)");
 
-        if (esVersionParaEventos)
-            UnityEngine.Debug.Log($"<b>Piso para eventos:</b> {capacidadPisoEventos} personas ({areaPisoEventos:F1} m² a {espectadoresPorM2} pers/m²)");
+        //if (esVersionParaEventos)
+        //    UnityEngine.Debug.Log($"<b>Piso para eventos:</b> {capacidadPisoEventos} personas ({areaPisoEventos:F1} m² a {espectadoresPorM2} pers/m²)");
+
+        if (pisoOperativo != null && pisoOperativo.SumaCapacidad)
+            UnityEngine.Debug.Log($"<b>Piso operativo:</b> {pisoOperativo.capacidadPisoOperativo} personas ({pisoOperativo.areaPisoOperativo:F1} m² a {pisoOperativo.espectadoresPorM2} pers/m²)");
 
         UnityEngine.Debug.Log($"<color=yellow><b>CAPACIDAD TOTAL FINAL: {granTotal} espectadores</b></color>");
         UnityEngine.Debug.Log($"-------------------------------------------");

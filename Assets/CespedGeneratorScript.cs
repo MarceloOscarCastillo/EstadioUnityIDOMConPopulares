@@ -10,6 +10,16 @@ public class CespedGenerator : MonoBehaviour
     public float escalaRuido = 5f;
     public Renderer rendererCesped; // arrastrás FutbolField aquí
 
+    [Header("Zona Campo de Juego y Margenes")]
+    public float largoZonaCampoJuego = 119.3f;
+    public float anchoZonaCampoJuego = 80f;
+    public float margenSentidoLongitudinal = 7.15f;
+    public float margenSentidoTransversal = 6f;
+
+    [Header("Salida")]
+    public string nombreTextura = "CespedGenerado";
+
+
     [ContextMenu("Generar Cesped")]
     public void GenerarCesped()
     {
@@ -18,8 +28,9 @@ public class CespedGenerator : MonoBehaviour
         Texture2D textura = new Texture2D(resolucion, resolucion);
 
         // Calcular en pixeles donde empieza y termina el campo de juego
-        float margenPorcentajeZ = 7.15f / 119.3f;
-        float margenPorcentajeX = 6f / 80f;
+        float margenPorcentajeZ = margenSentidoLongitudinal / largoZonaCampoJuego;
+        float margenPorcentajeX = margenSentidoTransversal / anchoZonaCampoJuego;
+
         int margenZ = Mathf.RoundToInt(margenPorcentajeZ * resolucion);
         int margenX = Mathf.RoundToInt(margenPorcentajeX * resolucion);
         int campoInicioZ = margenZ;
@@ -61,7 +72,9 @@ public class CespedGenerator : MonoBehaviour
 #if UNITY_EDITOR
         if (!System.IO.Directory.Exists("Assets/Textures"))
             System.IO.Directory.CreateDirectory("Assets/Textures");
-        UnityEditor.AssetDatabase.CreateAsset(textura, "Assets/Textures/CespedGenerado.asset");
+        
+        UnityEditor.AssetDatabase.CreateAsset(textura, $"Assets/Textures/{nombreTextura}.asset");
+
         UnityEditor.AssetDatabase.SaveAssets();
         Debug.Log("Textura guardada en Assets/Textures/CespedGenerado.asset");
 #endif
