@@ -46,8 +46,10 @@ public class MenuSeleccionController : MonoBehaviour
          { EstadioConfigurator.TipoConfiguracion.TooMuch, "No será demasiado?" },
          { EstadioConfigurator.TipoConfiguracion.Bidegain_Actual, "Estadio Pedro Bidegain Actual" },      { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado, "Estadio Pedro Bidegain terminado" },
          { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena, "Bidegain Arena" },
-         
-         
+         { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena_Corto, "Bidegain Arena, versión corta" },
+         { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado_Plus, "Bidegain terminado, con más populares" }
+
+
     };
 
     // Diccionario de descripciones (tooltips)
@@ -96,7 +98,11 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado,
             "Estadio Pedro Bidegain terminado" },
         { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena,
-            "Estadio Pedro Bidegain reconvertido a Arena para eventos" }
+            "Estadio Pedro Bidegain reconvertido a Arena para eventos" },
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena_Corto,
+            "Estadio Pedro Bidegain reconvertido a Arena para eventos. En esta versión no desaparece toda la tribuna local sino que solo se recortan sus filas inferiores para facilitar la instalación de un escenario" },
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado_Plus,
+            "Estadio Pedro Bidegain terminado plus, con más populares" }
     };
 
     void Start()

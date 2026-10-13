@@ -612,12 +612,19 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
         GenerarPisoFrontal(contenedor);
 
-        //if (generarMurosLaterales) GenerarMurosLaterales(contenedor);
+        
         GenerarMurosLaterales(contenedor);
 
         if (generarMuroSuperior) GenerarMuroSuperior(contenedor, mapa);
 
         if (generarMurosVomitos) GenerarMurosVomitos(contenedor, angulosVomitos);
+
+
+        if (generarAlambradoFrontal && prefabAlambrado != null)
+        {
+            GenerarAlambradoFrontal(contenedor);
+        }
+
 
         if (generarBocaLogistica)
         {
@@ -1030,13 +1037,6 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                 distancia += espaciadoBaranda;
             }
         }
-
-        if (generarAlambradoFrontal && prefabAlambrado != null) 
-        {
-            GenerarAlambradoFrontal(contenedor, anguloIzqBoca, anguloDerBoca);
-        }
-        
-
     }
 
     void GenerarMurosLaterales(GameObject contenedor)
@@ -2544,10 +2544,21 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         return materialesFranja[indice];
     }
 
-    void GenerarAlambradoFrontal(GameObject contenedor, float anguloIzqBoca, float anguloDerBoca)
+    void GenerarAlambradoFrontal(GameObject contenedor)
     {
         if (!generarAlambradoFrontal || prefabAlambrado == null) return;
         if (espaciadoAlambrado <= 0f) return;
+
+
+        float anguloIzqBoca = 0f;
+        float anguloDerBoca = 0f;
+        if (generarBocaLogistica)
+        {
+            float circunferencia = 2f * Mathf.PI * radioInferior;
+            float gradosBoca = (anchoBocaLogistica / circunferencia) * 360f;
+            anguloIzqBoca = anguloBocaLogistica - gradosBoca / 2f;
+            anguloDerBoca = anguloBocaLogistica + gradosBoca / 2f;
+        }
 
         int pasosMesh = 900;
         float[] longAcum = new float[pasosMesh + 1];

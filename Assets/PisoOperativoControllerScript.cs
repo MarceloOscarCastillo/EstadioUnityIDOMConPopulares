@@ -6,7 +6,8 @@ public class PisoOperativoController : MonoBehaviour
     public enum TipoPisoOperativo
     {
         CampoDeFutbol,
-        ZonaPublico
+        ZonaPublico,
+        ZonaPublicoCorta
     }
 
     [Header("Tipo activo")]
@@ -24,6 +25,11 @@ public class PisoOperativoController : MonoBehaviour
     [Tooltip("Canchas y elementos propios de la version arena")]
     public List<GameObject> elementosZonaPublico = new List<GameObject>();
 
+    [Header("Zona de publico - corta")]
+    public GameObject pisoZonaPublicoCorta;
+    public List<GameObject> elementosZonaPublicoCorta = new List<GameObject>();
+
+
     [Header("Capacidad")]
     [Tooltip("Solo la zona de publico suma espectadores de pie")]
     public float espectadoresPorM2 = 3f;
@@ -31,12 +37,26 @@ public class PisoOperativoController : MonoBehaviour
     [HideInInspector] public float areaPisoOperativo = 0f;
     [HideInInspector] public int capacidadPisoOperativo = 0;
 
-    public bool SumaCapacidad => tipoActivo == TipoPisoOperativo.ZonaPublico;
+    //public bool SumaCapacidad => tipoActivo == TipoPisoOperativo.ZonaPublico;
+
+    public bool SumaCapacidad => tipoActivo != TipoPisoOperativo.CampoDeFutbol;
+
+    GameObject PisoActivo()
+    {
+        switch (tipoActivo)
+        {
+            case TipoPisoOperativo.ZonaPublicoCorta: return pisoZonaPublicoCorta;
+            case TipoPisoOperativo.ZonaPublico: return pisoZonaPublico;
+        }
+        return null;
+    }
 
     [ContextMenu("Aplicar Piso")]
     public void AplicarPiso()
     {
         bool esFutbol = tipoActivo == TipoPisoOperativo.CampoDeFutbol;
+        bool esCorta = tipoActivo == TipoPisoOperativo.ZonaPublicoCorta;
+        bool esLarga = tipoActivo == TipoPisoOperativo.ZonaPublico;
 
         if (pisoCampoFutbol != null) pisoCampoFutbol.SetActive(esFutbol);
         foreach (GameObject go in elementosCampoFutbol)
@@ -45,6 +65,10 @@ public class PisoOperativoController : MonoBehaviour
         if (pisoZonaPublico != null) pisoZonaPublico.SetActive(!esFutbol);
         foreach (GameObject go in elementosZonaPublico)
             if (go != null) go.SetActive(!esFutbol);
+
+        if (pisoZonaPublicoCorta != null) pisoZonaPublicoCorta.SetActive(esCorta);
+        foreach (GameObject go in elementosZonaPublicoCorta)
+            if (go != null) go.SetActive(esCorta);
 
         CalcularCapacidadPiso();
     }
@@ -55,14 +79,26 @@ public class PisoOperativoController : MonoBehaviour
         AplicarPiso();
     }
 
+    //public void CalcularCapacidadPiso()
+    //{
+    //    areaPisoOperativo = 0f;
+    //    capacidadPisoOperativo = 0;
+
+    //    if (!SumaCapacidad || pisoZonaPublico == null) return;
+
+    //    areaPisoOperativo = CalcularAreaHorizontal(pisoZonaPublico);
+    //    capacidadPisoOperativo = Mathf.FloorToInt(areaPisoOperativo * espectadoresPorM2);
+    //}
+
     public void CalcularCapacidadPiso()
     {
         areaPisoOperativo = 0f;
         capacidadPisoOperativo = 0;
 
-        if (!SumaCapacidad || pisoZonaPublico == null) return;
+        GameObject piso = PisoActivo();
+        if (piso == null) return;
 
-        areaPisoOperativo = CalcularAreaHorizontal(pisoZonaPublico);
+        areaPisoOperativo = CalcularAreaHorizontal(piso);
         capacidadPisoOperativo = Mathf.FloorToInt(areaPisoOperativo * espectadoresPorM2);
     }
 

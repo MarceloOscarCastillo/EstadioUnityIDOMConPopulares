@@ -30,7 +30,9 @@ public class EstadioConfigurator : MonoBehaviour
         OficinaUrbana = 19,
         Bidegain_Actual = 100,
         Bidegain_Terminado = 101,
-        Bidegain_Arena = 102
+        Bidegain_Arena = 102,
+        Bidegain_Arena_Corto = 103,
+        Bidegain_Terminado_Plus = 104
     }
 
     [System.Serializable]
@@ -519,38 +521,7 @@ public void AplicarConfiguracionEstadio()
     /// cabezas estan cacheadas desde la generacion y no dependen del estado actual de
     /// los parametros ni de los transforms, que a esta altura ya fueron batcheados.
     /// </summary>
-    //public void RecolectarAnclajesTecho(PerfilEstadio perfil)
-    //{
-    //    registroTecho.Limpiar();
-
-    //    Matrix4x4 mundoALocal = MatrizTecho;
-    //    int publicados = 0;
-
-    //    foreach (MonoBehaviour sector in perfil.sectoresActivos)
-    //    {
-    //        if (!(sector is IProveedorAnclajesTecho proveedor)) continue;
-    //        if (!proveedor.PublicaAnclajesTecho) continue;
-
-    //        IReadOnlyList<Vector3> cabezas = proveedor.CabezasTensoresLocales;
-    //        if (cabezas == null || cabezas.Count == 0) continue;
-
-    //        Transform t = proveedor.TransformSector;
-
-    //        for (int i = 0; i < cabezas.Count; i++)
-    //        {
-    //            Vector3 mundo = t.TransformPoint(cabezas[i]);
-    //            Vector3 local = mundoALocal.MultiplyPoint3x4(mundo);
-    //            Vector3 eje = mundoALocal.MultiplyVector(t.TransformVector(Vector3.up));
-
-    //            registroTecho.Publicar(local, eje, proveedor.IdParaTecho, i);
-    //            publicados++;
-    //        }
-    //    }
-
-    //    Debug.Log($"[Techo] {publicados} anclajes recolectados de {perfil.sectoresActivos.Count} sectores.");
-    //}
-
-
+   
     public void RecolectarAnclajesTecho(PerfilEstadio perfil)
     {
         registroTecho.Limpiar();

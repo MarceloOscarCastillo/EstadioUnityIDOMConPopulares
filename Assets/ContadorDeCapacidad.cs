@@ -15,19 +15,14 @@ public class ContadorDeCapacidad : MonoBehaviour
 
     [Header("Deteccion de asientos")]
     public List<string> nombresPrefabsAsiento = new List<string>()
-    { "AsientoPlatea", "AsientoBidegain" };
+    { "AsientoPlatea", "AsientoBidegain", "AsientoCodoSurPopular" };
 
     [Header("Filtros de Contenedores")]
     public string tagContenedores = "SectorEstadio";
 
     [Header("Anchos de pieza por sector")]
     public float anchoPiezaCabecera = 1.0f;
-
-    //[Header("Piso para eventos")]
-    //public bool esVersionParaEventos = false;
-    //public GameObject pisoParaEventos;
-    //public float espectadoresPorM2 = 3f;
-
+    
     public PisoOperativoController pisoOperativo;
 
     [HideInInspector] public int capacidadPisoEventos = 0;
@@ -157,25 +152,7 @@ public class ContadorDeCapacidad : MonoBehaviour
 
         return cuenta;
     }
-
-    //private void ImprimirReportePro(int aforoMetros, int aforoAsientos, int palcos, int aforoPalcos, float metros)
-    //{
-    //    int granTotal = aforoMetros + aforoAsientos + aforoPalcos;
-
-    //    capacidadPopulares = aforoMetros;
-    //    capacidadPlateas = aforoAsientos;
-    //    capacidadPalcos = aforoPalcos;
-    //    capacidadTotal = granTotal;
-
-    //    UnityEngine.Debug.Log($"<color=cyan><b>--- REPORTE TÉCNICO DE AFORO ---</b></color>");
-    //    UnityEngine.Debug.Log($"<b>Sectores Populares:</b> {aforoMetros} personas ({metros:F1} metros lineales)");
-    //    UnityEngine.Debug.Log($"<b>Sectores Plateas:</b> {aforoAsientos} asientos físicos");
-    //    UnityEngine.Debug.Log($"<b>Palcos:</b> {palcos} unidades (Est. {aforoPalcos} personas)");
-    //    UnityEngine.Debug.Log($"<color=yellow><b>CAPACIDAD TOTAL FINAL: {granTotal} espectadores</b></color>");
-    //    UnityEngine.Debug.Log($"-------------------------------------------");
-    //}
-
-
+    
     private void ImprimirReporteDeCapacidades(int aforoMetros, int aforoAsientos, int palcos, int aforoPalcos, float metros)
     {
         int granTotal = aforoMetros + aforoAsientos + aforoPalcos + capacidadPisoEventos;
@@ -189,10 +166,7 @@ public class ContadorDeCapacidad : MonoBehaviour
         UnityEngine.Debug.Log($"<b>Sectores Populares:</b> {aforoMetros} personas ({metros:F1} metros lineales)");
         UnityEngine.Debug.Log($"<b>Sectores Plateas:</b> {aforoAsientos} asientos físicos");
         UnityEngine.Debug.Log($"<b>Palcos:</b> {palcos} unidades (Est. {aforoPalcos} personas)");
-
-        //if (esVersionParaEventos)
-        //    UnityEngine.Debug.Log($"<b>Piso para eventos:</b> {capacidadPisoEventos} personas ({areaPisoEventos:F1} m² a {espectadoresPorM2} pers/m²)");
-
+        
         if (pisoOperativo != null && pisoOperativo.SumaCapacidad)
             UnityEngine.Debug.Log($"<b>Piso operativo:</b> {pisoOperativo.capacidadPisoOperativo} personas ({pisoOperativo.areaPisoOperativo:F1} m² a {pisoOperativo.espectadoresPorM2} pers/m²)");
 

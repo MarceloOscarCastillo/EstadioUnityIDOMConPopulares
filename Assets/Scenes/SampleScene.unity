@@ -3416,6 +3416,7 @@ MonoBehaviour:
   profundidadHuella: 0.45
   anchoOriginalPrefab: 10
   escalonesTotales: 20
+  materialEscalera: {fileID: 0}
   generarMurallas: 1
   altoMuralla: 1.1
   anchoMuralla: 0.15
@@ -6433,6 +6434,7 @@ MonoBehaviour:
   profundidadHuella: 0.45
   anchoOriginalPrefab: 10
   escalonesTotales: 20
+  materialEscalera: {fileID: 0}
   generarMurallas: 1
   altoMuralla: 1.1
   anchoMuralla: 0.15
@@ -7591,6 +7593,10 @@ MonoBehaviour:
   GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   Rojo: {fileID: 0}
   Azul: {fileID: 0}
+  usarFranjasDeColor: 0
+  anchoFranja: 8
+  materialesFranja: []
+  offsetFranja: 0
   esCodoPlatea: 1
   mezclaLineal: 0.4
   exponente: 2
@@ -7648,6 +7654,13 @@ MonoBehaviour:
   prefabBaranda: {fileID: 0}
   alturaBaranda: 0.9
   offsetPivotBaranda: 0.75
+  generarAlambradoFrontal: 0
+  prefabAlambrado: {fileID: 0}
+  alturaAlambrado: 2.5
+  espaciadoAlambrado: 4
+  offsetPivotAlambrado: 0
+  offsetRadialAlambrado: 0
+  rotacionAlambrado: {x: 0, y: 0, z: 0}
   generarSoportes: 1
   separacionSoportes: 3
   MaterialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -7657,6 +7670,9 @@ MonoBehaviour:
   alturaVigaVerticalExterior: 4
   filaArranqueDiagonal: 3
   mordidaViga: 0.05
+  prolongarVigaDiagonal: 0
+  referenciaNivelViga: {fileID: 0}
+  penetracionViga: 0.3
   tieneVigaHorizontal: 1
   anchoViga: 0.3
   altoViga: 0.3
@@ -16613,6 +16629,10 @@ MonoBehaviour:
   GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   Rojo: {fileID: 0}
   Azul: {fileID: 0}
+  usarFranjasDeColor: 0
+  anchoFranja: 8
+  materialesFranja: []
+  offsetFranja: 0
   esCodoPlatea: 0
   mezclaLineal: 0.4
   exponente: 2
@@ -16670,6 +16690,13 @@ MonoBehaviour:
   prefabBaranda: {fileID: 0}
   alturaBaranda: 0.9
   offsetPivotBaranda: 0.75
+  generarAlambradoFrontal: 0
+  prefabAlambrado: {fileID: 0}
+  alturaAlambrado: 2.5
+  espaciadoAlambrado: 4
+  offsetPivotAlambrado: 0
+  offsetRadialAlambrado: 0
+  rotacionAlambrado: {x: 0, y: 0, z: 0}
   generarSoportes: 1
   separacionSoportes: 3
   MaterialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -16679,6 +16706,9 @@ MonoBehaviour:
   alturaVigaVerticalExterior: 4
   filaArranqueDiagonal: 3
   mordidaViga: 0.05
+  prolongarVigaDiagonal: 0
+  referenciaNivelViga: {fileID: 0}
+  penetracionViga: 0.3
   tieneVigaHorizontal: 1
   anchoViga: 0.3
   altoViga: 0.3
@@ -20223,6 +20253,10 @@ MonoBehaviour:
   GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   Rojo: {fileID: 0}
   Azul: {fileID: 0}
+  usarFranjasDeColor: 0
+  anchoFranja: 8
+  materialesFranja: []
+  offsetFranja: 0
   esCodoPlatea: 1
   mezclaLineal: 0.4
   exponente: 2
@@ -20280,6 +20314,13 @@ MonoBehaviour:
   prefabBaranda: {fileID: 0}
   alturaBaranda: 0.9
   offsetPivotBaranda: 0.75
+  generarAlambradoFrontal: 0
+  prefabAlambrado: {fileID: 0}
+  alturaAlambrado: 2.5
+  espaciadoAlambrado: 4
+  offsetPivotAlambrado: 0
+  offsetRadialAlambrado: 0
+  rotacionAlambrado: {x: 0, y: 0, z: 0}
   generarSoportes: 1
   separacionSoportes: 3
   MaterialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -20289,6 +20330,9 @@ MonoBehaviour:
   alturaVigaVerticalExterior: 4
   filaArranqueDiagonal: 3
   mordidaViga: 0.05
+  prolongarVigaDiagonal: 0
+  referenciaNivelViga: {fileID: 0}
+  penetracionViga: 0.3
   tieneVigaHorizontal: 1
   anchoViga: 0.3
   altoViga: 0.3
@@ -24006,6 +24050,7 @@ MonoBehaviour:
   profundidadHuella: 0.45
   anchoOriginalPrefab: 10
   escalonesTotales: 20
+  materialEscalera: {fileID: 0}
   generarMurallas: 1
   altoMuralla: 1.1
   anchoMuralla: 0.15
@@ -28030,6 +28075,10 @@ MonoBehaviour:
   GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   Rojo: {fileID: 0}
   Azul: {fileID: 0}
+  usarFranjasDeColor: 0
+  anchoFranja: 8
+  materialesFranja: []
+  offsetFranja: 0
   esCodoPlatea: 1
   mezclaLineal: 0.4
   exponente: 2
@@ -28087,6 +28136,13 @@ MonoBehaviour:
   prefabBaranda: {fileID: 0}
   alturaBaranda: 0.9
   offsetPivotBaranda: 0.75
+  generarAlambradoFrontal: 0
+  prefabAlambrado: {fileID: 0}
+  alturaAlambrado: 2.5
+  espaciadoAlambrado: 4
+  offsetPivotAlambrado: 0
+  offsetRadialAlambrado: 0
+  rotacionAlambrado: {x: 0, y: 0, z: 0}
   generarSoportes: 1
   separacionSoportes: 3
   MaterialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -28096,6 +28152,9 @@ MonoBehaviour:
   alturaVigaVerticalExterior: 4
   filaArranqueDiagonal: 3
   mordidaViga: 0.05
+  prolongarVigaDiagonal: 0
+  referenciaNivelViga: {fileID: 0}
+  penetracionViga: 0.3
   tieneVigaHorizontal: 1
   anchoViga: 0.3
   altoViga: 0.3
@@ -30312,6 +30371,7 @@ MonoBehaviour:
   profundidadHuella: 0.45
   anchoOriginalPrefab: 10
   escalonesTotales: 20
+  materialEscalera: {fileID: 0}
   generarMurallas: 1
   altoMuralla: 1.1
   anchoMuralla: 0.15
@@ -30386,6 +30446,10 @@ MonoBehaviour:
   GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   Rojo: {fileID: 0}
   Azul: {fileID: 0}
+  usarFranjasDeColor: 0
+  anchoFranja: 8
+  materialesFranja: []
+  offsetFranja: 0
   esCodoPlatea: 0
   mezclaLineal: 0.4
   exponente: 2
@@ -30443,6 +30507,13 @@ MonoBehaviour:
   prefabBaranda: {fileID: 0}
   alturaBaranda: 0.9
   offsetPivotBaranda: 0.75
+  generarAlambradoFrontal: 0
+  prefabAlambrado: {fileID: 0}
+  alturaAlambrado: 2.5
+  espaciadoAlambrado: 4
+  offsetPivotAlambrado: 0
+  offsetRadialAlambrado: 0
+  rotacionAlambrado: {x: 0, y: 0, z: 0}
   generarSoportes: 1
   separacionSoportes: 3
   MaterialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -30452,6 +30523,9 @@ MonoBehaviour:
   alturaVigaVerticalExterior: 4
   filaArranqueDiagonal: 3
   mordidaViga: 0.05
+  prolongarVigaDiagonal: 0
+  referenciaNivelViga: {fileID: 0}
+  penetracionViga: 0.3
   tieneVigaHorizontal: 1
   anchoViga: 0.3
   altoViga: 0.3
@@ -31400,6 +31474,10 @@ MonoBehaviour:
   GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   Rojo: {fileID: 0}
   Azul: {fileID: 0}
+  usarFranjasDeColor: 0
+  anchoFranja: 8
+  materialesFranja: []
+  offsetFranja: 0
   esCodoPlatea: 0
   mezclaLineal: 0.4
   exponente: 2
@@ -31457,6 +31535,13 @@ MonoBehaviour:
   prefabBaranda: {fileID: 0}
   alturaBaranda: 0.9
   offsetPivotBaranda: 0.75
+  generarAlambradoFrontal: 0
+  prefabAlambrado: {fileID: 0}
+  alturaAlambrado: 2.5
+  espaciadoAlambrado: 4
+  offsetPivotAlambrado: 0
+  offsetRadialAlambrado: 0
+  rotacionAlambrado: {x: 0, y: 0, z: 0}
   generarSoportes: 1
   separacionSoportes: 3
   MaterialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -31466,6 +31551,9 @@ MonoBehaviour:
   alturaVigaVerticalExterior: 4
   filaArranqueDiagonal: 3
   mordidaViga: 0.05
+  prolongarVigaDiagonal: 0
+  referenciaNivelViga: {fileID: 0}
+  penetracionViga: 0.3
   tieneVigaHorizontal: 1
   anchoViga: 0.3
   altoViga: 0.3
@@ -31671,6 +31759,10 @@ MonoBehaviour:
   GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   Rojo: {fileID: 0}
   Azul: {fileID: 0}
+  usarFranjasDeColor: 0
+  anchoFranja: 8
+  materialesFranja: []
+  offsetFranja: 0
   esCodoPlatea: 1
   mezclaLineal: 0.4
   exponente: 2
@@ -31728,6 +31820,13 @@ MonoBehaviour:
   prefabBaranda: {fileID: 0}
   alturaBaranda: 0.9
   offsetPivotBaranda: 0.75
+  generarAlambradoFrontal: 0
+  prefabAlambrado: {fileID: 0}
+  alturaAlambrado: 2.5
+  espaciadoAlambrado: 4
+  offsetPivotAlambrado: 0
+  offsetRadialAlambrado: 0
+  rotacionAlambrado: {x: 0, y: 0, z: 0}
   generarSoportes: 1
   separacionSoportes: 3
   MaterialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -31737,6 +31836,9 @@ MonoBehaviour:
   alturaVigaVerticalExterior: 4
   filaArranqueDiagonal: 3
   mordidaViga: 0.05
+  prolongarVigaDiagonal: 0
+  referenciaNivelViga: {fileID: 0}
+  penetracionViga: 0.3
   tieneVigaHorizontal: 1
   anchoViga: 0.3
   altoViga: 0.3
@@ -34018,9 +34120,7 @@ MonoBehaviour:
   - AsientoBidegain
   tagContenedores: SectorEstadio
   anchoPiezaCabecera: 1
-  esVersionParaEventos: 0
-  pisoParaEventos: {fileID: 0}
-  espectadoresPorM2: 3
+  pisoOperativo: {fileID: 0}
   capacidadPisoEventos: 0
   areaPisoEventos: 0
   capacidadTotal: 68142
@@ -44451,6 +44551,10 @@ MonoBehaviour:
   GrisCemento: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
   Rojo: {fileID: 0}
   Azul: {fileID: 0}
+  usarFranjasDeColor: 0
+  anchoFranja: 8
+  materialesFranja: []
+  offsetFranja: 0
   esCodoPlatea: 0
   mezclaLineal: 0.4
   exponente: 2
@@ -44508,6 +44612,13 @@ MonoBehaviour:
   prefabBaranda: {fileID: 0}
   alturaBaranda: 0.9
   offsetPivotBaranda: 0.75
+  generarAlambradoFrontal: 0
+  prefabAlambrado: {fileID: 0}
+  alturaAlambrado: 2.5
+  espaciadoAlambrado: 4
+  offsetPivotAlambrado: 0
+  offsetRadialAlambrado: 0
+  rotacionAlambrado: {x: 0, y: 0, z: 0}
   generarSoportes: 1
   separacionSoportes: 3
   MaterialVigas: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
@@ -44517,6 +44628,9 @@ MonoBehaviour:
   alturaVigaVerticalExterior: 4
   filaArranqueDiagonal: 3
   mordidaViga: 0.05
+  prolongarVigaDiagonal: 0
+  referenciaNivelViga: {fileID: 0}
+  penetracionViga: 0.3
   tieneVigaHorizontal: 1
   anchoViga: 0.3
   altoViga: 0.3
@@ -48934,6 +49048,7 @@ MonoBehaviour:
     - {fileID: 3915447271960441972}
     - {fileID: 1750532139}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 2
     sectoresActivos:
     - {fileID: 1934296944}
@@ -48954,6 +49069,7 @@ MonoBehaviour:
     - {fileID: 3915447271960441972}
     - {fileID: 1750532139}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 3
     sectoresActivos:
     - {fileID: 1934296944}
@@ -48974,9 +49090,11 @@ MonoBehaviour:
     - {fileID: 8919632588939478277}
     - {fileID: 491496193}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 0
     sectoresActivos:
     - {fileID: 1773288978}
+    pisoOperativo: 0
   - nombreVariante: 5
     sectoresActivos:
     - {fileID: 1934296944}
@@ -48997,6 +49115,7 @@ MonoBehaviour:
     - {fileID: 1706160141}
     - {fileID: 1778285680}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 4
     sectoresActivos:
     - {fileID: 1934296944}
@@ -49017,6 +49136,7 @@ MonoBehaviour:
     - {fileID: 1706160141}
     - {fileID: 1778285680}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 6
     sectoresActivos:
     - {fileID: 1934296944}
@@ -49037,6 +49157,7 @@ MonoBehaviour:
     - {fileID: 1471331676}
     - {fileID: 1279435204}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 10
     sectoresActivos:
     - {fileID: 1274227706}
@@ -49058,6 +49179,7 @@ MonoBehaviour:
     - {fileID: 1279435204}
     - {fileID: 122323991}
     - {fileID: 1772243456}
+    pisoOperativo: 0
   - nombreVariante: 7
     sectoresActivos:
     - {fileID: 6750404414539606035}
@@ -49082,6 +49204,7 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 1750532139}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 8
     sectoresActivos:
     - {fileID: 6750404414539606035}
@@ -49106,6 +49229,7 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 1750532139}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 9
     sectoresActivos:
     - {fileID: 2136861135}
@@ -49130,6 +49254,7 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 368899984}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 11
     sectoresActivos:
     - {fileID: 2136861135}
@@ -49150,6 +49275,7 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 368899984}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 12
     sectoresActivos:
     - {fileID: 2136861135}
@@ -49170,6 +49296,7 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 368899984}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 14
     sectoresActivos:
     - {fileID: 2136861135}
@@ -49190,6 +49317,7 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 368899984}
     - {fileID: 122323991}
+    pisoOperativo: 0
   - nombreVariante: 15
     sectoresActivos:
     - {fileID: 1934296944}
@@ -49205,6 +49333,7 @@ MonoBehaviour:
     - {fileID: 122323991}
     - {fileID: 1370166327}
     - {fileID: 6750404414539606035}
+    pisoOperativo: 0
   - nombreVariante: 16
     sectoresActivos:
     - {fileID: 1934296944}
@@ -49225,6 +49354,7 @@ MonoBehaviour:
     - {fileID: 1855783872}
     - {fileID: 1706160141}
     - {fileID: 1778285680}
+    pisoOperativo: 0
   - nombreVariante: 17
     sectoresActivos:
     - {fileID: 1934296944}
@@ -49245,6 +49375,7 @@ MonoBehaviour:
     - {fileID: 1855783872}
     - {fileID: 1706160141}
     - {fileID: 1778285680}
+    pisoOperativo: 0
   - nombreVariante: 18
     sectoresActivos:
     - {fileID: 1934296944}
@@ -49265,6 +49396,7 @@ MonoBehaviour:
     - {fileID: 775588749}
     - {fileID: 1706160141}
     - {fileID: 1279435204}
+    pisoOperativo: 0
   - nombreVariante: 19
     sectoresActivos:
     - {fileID: 1980784683}
@@ -49286,6 +49418,7 @@ MonoBehaviour:
     - {fileID: 1471331676}
     - {fileID: 1778285680}
     - {fileID: 33234914}
+    pisoOperativo: 0
   origenTecho: {fileID: 12055150}
   controladorTecho: {fileID: 671784518}
 --- !u!1 &2024052994
@@ -49612,6 +49745,11 @@ MonoBehaviour:
   ruido: 0.003
   escalaRuido: 1.4
   rendererCesped: {fileID: 7393725474838672636}
+  largoZonaCampoJuego: 119.3
+  anchoZonaCampoJuego: 80
+  margenSentidoLongitudinal: 7.15
+  margenSentidoTransversal: 6
+  nombreTextura: CespedGenerado
 --- !u!1 &2038118645
 GameObject:
   m_ObjectHideFlags: 0
