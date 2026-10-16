@@ -54,6 +54,8 @@ public class PisoOperativoController : MonoBehaviour
     [ContextMenu("Aplicar Piso")]
     public void AplicarPiso()
     {
+        Debug.Log($"AplicarPiso: tipoActivo={tipoActivo}, esLarga={tipoActivo == TipoPisoOperativo.ZonaPublico}, piso={pisoZonaPublico?.name}, activoAntes={pisoZonaPublico?.activeSelf}");
+
         bool esFutbol = tipoActivo == TipoPisoOperativo.CampoDeFutbol;
         bool esCorta = tipoActivo == TipoPisoOperativo.ZonaPublicoCorta;
         bool esLarga = tipoActivo == TipoPisoOperativo.ZonaPublico;
@@ -62,13 +64,15 @@ public class PisoOperativoController : MonoBehaviour
         foreach (GameObject go in elementosCampoFutbol)
             if (go != null) go.SetActive(esFutbol);
 
-        if (pisoZonaPublico != null) pisoZonaPublico.SetActive(!esFutbol);
+        if (pisoZonaPublico != null) pisoZonaPublico.SetActive(esLarga);
         foreach (GameObject go in elementosZonaPublico)
-            if (go != null) go.SetActive(!esFutbol);
+            if (go != null) go.SetActive(esLarga);
 
         if (pisoZonaPublicoCorta != null) pisoZonaPublicoCorta.SetActive(esCorta);
         foreach (GameObject go in elementosZonaPublicoCorta)
             if (go != null) go.SetActive(esCorta);
+
+        Debug.Log($"AplicarPiso fin: piso activo={pisoZonaPublico?.activeSelf}");
 
         CalcularCapacidadPiso();
     }
@@ -79,23 +83,14 @@ public class PisoOperativoController : MonoBehaviour
         AplicarPiso();
     }
 
-    //public void CalcularCapacidadPiso()
-    //{
-    //    areaPisoOperativo = 0f;
-    //    capacidadPisoOperativo = 0;
-
-    //    if (!SumaCapacidad || pisoZonaPublico == null) return;
-
-    //    areaPisoOperativo = CalcularAreaHorizontal(pisoZonaPublico);
-    //    capacidadPisoOperativo = Mathf.FloorToInt(areaPisoOperativo * espectadoresPorM2);
-    //}
-
+   
     public void CalcularCapacidadPiso()
     {
         areaPisoOperativo = 0f;
         capacidadPisoOperativo = 0;
 
         GameObject piso = PisoActivo();
+
         if (piso == null) return;
 
         areaPisoOperativo = CalcularAreaHorizontal(piso);
