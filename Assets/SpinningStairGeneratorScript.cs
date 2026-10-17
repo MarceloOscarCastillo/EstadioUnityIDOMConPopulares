@@ -1,6 +1,7 @@
-using UnityEngine;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEditor;
+using UnityEngine;
 
 public class GeneradorEscaleraGiratoria : MonoBehaviour
 {
@@ -41,13 +42,22 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
     [Header("Repeticiones")]
     public int cantidadRepeticiones = 1; // 1 = una sola U, 2 = dos U apiladas, etc.
 
+    [Header("Escalera Final (Opcional)")]
+    public bool usarEscaleraFinal = false;
+    public int escalonesEscaleraFinal = 6;
+    public bool usarRellanoFinal = false;
+    public float profundidadRellanoFinal = 2.5f;
+    public float anchoRellanoFinal = 3f;
+
+
     private Material materialEscalera;
     private const string NOMBRE_CONTENEDOR = "Escalinata_Interna";
 
     // Tracking de direccion actual
     private bool subiendo_en_Z_positivo = true; // true = avanza en Z+, false = avanza en Z-
     private float offsetX = 0f; // desplazamiento acumulado en X por los giros
-        
+    private float ladoExterno = -1f;
+
     [ContextMenu("Generar Escalera Completa")]
     public void GenerarEscalera()
     {
@@ -65,18 +75,26 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
         subiendo_en_Z_positivo = true;
         offsetX = 0f;
 
+
+        ladoExterno = girarALaDerechaDescanso1 ? -1f : 1f;
+
         List<Vector3> nodosExt = new List<Vector3>();
+        List<List<Vector3>> tramosInt = new List<List<Vector3>>();
         List<Vector3> nodosInt = new List<Vector3>();
+        tramosInt.Add(nodosInt);
+
 
         Vector3 posPuntero = Vector3.zero;
+       
+        float signoIni = 1f; // arranca subiendo en Z+
+        float xExtIni = (anchoRealEscalon / 2f) * ladoExterno * signoIni + offsetX;
+        float xIntIni = -(anchoRealEscalon / 2f) * ladoExterno * signoIni + offsetX;
 
-        float xInt = anchoRealEscalon / 2f;
-        float xExt = -anchoRealEscalon / 2f;
+        nodosExt.Add(new Vector3(xExtIni, posPuntero.y, -profundidadHuella / 2f));
+        nodosInt.Add(new Vector3(xIntIni, posPuntero.y, -profundidadHuella / 2f));
 
-        nodosExt.Add(new Vector3(xExt + offsetX, posPuntero.y, -profundidadHuella / 2f));
-        nodosInt.Add(new Vector3(xInt + offsetX, posPuntero.y, -profundidadHuella / 2f));
 
-        
+
         for (int rep = 0; rep < cantidadRepeticiones; rep++)
         {
             int escalonesEnEstaRep = 0;
@@ -88,9 +106,7 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
                 bool esPrevioAlDescanso1 = usarPrimerDescanso && (filaActual == filaPreviaADescanso1);
                 bool esPrevioAlDescanso2 = usarSegundoDescanso && (filaActual == filaPreviaADescanso2);
 
-                // Instanciar escalon
-                //GameObject escalonObj = PrefabUtility.InstantiatePrefab(prefabEscalon, contenedorPadre.transform) as GameObject;
-
+                
                 GameObject escalonObj = Application.isPlaying
                 ? Instantiate(prefabEscalon, contenedorPadre.transform)
                 : PrefabUtility.InstantiatePrefab(prefabEscalon, contenedorPadre.transform) as GameObject;
@@ -105,10 +121,12 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
                 escalonObj.transform.localRotation = subiendo_en_Z_positivo ?
                     Quaternion.identity : Quaternion.Euler(0, 180, 0);
                 escalonObj.transform.localScale = new Vector3(factorEscalaX, 1f, 1f);
+                
 
-                // Recalcular posiciones de murallas segun direccion actual
-                xInt = subiendo_en_Z_positivo ? anchoRealEscalon / 2f + offsetX : -anchoRealEscalon / 2f + offsetX;
-                xExt = subiendo_en_Z_positivo ? -anchoRealEscalon / 2f + offsetX : anchoRealEscalon / 2f + offsetX;
+                float signo = subiendo_en_Z_positivo ? 1f : -1f;
+                float xExt = (anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+                float xInt = -(anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+
 
                 if (!esPrevioAlDescanso1 && !esPrevioAlDescanso2)
                 {
@@ -130,39 +148,58 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
                 escalonesEnEstaRep++;
 
                 if (usarPrimerDescanso && filaActual == filaPreviaADescanso1)
+                    
                     ProcesarDescanso(ref posPuntero, profundidadDescanso1, girarEnDescanso1,
-                        girarALaDerechaDescanso1, nodosExt, nodosInt, contenedorPadre, $"Descanso1_Rep{rep}");
+    girarALaDerechaDescanso1, nodosExt, ref nodosInt, tramosInt, contenedorPadre, $"Descanso1_Rep{rep}");
                 else if (usarSegundoDescanso && filaActual == filaPreviaADescanso2)
-                    ProcesarDescanso(ref posPuntero, profundidadDescanso2, girarEnDescanso2,
-                        girarALaDerechaDescanso2, nodosExt, nodosInt, contenedorPadre, $"Descanso2_Rep{rep}");
+                    
+                    ProcesarDescanso(ref posPuntero, profundidadDescanso1, girarEnDescanso1,
+    girarALaDerechaDescanso1, nodosExt, ref nodosInt, tramosInt, contenedorPadre, $"Descanso1_Rep{rep}");
             }
 
             // Descanso intermedio entre repeticiones (excepto en la ultima)
             if (rep < cantidadRepeticiones - 1)
             {
-                ProcesarDescanso(ref posPuntero, profundidadDescanso1, true,
-                    girarALaDerechaDescanso1, nodosExt, nodosInt, contenedorPadre, $"Descanso_Intermedio_{rep}");
+                
+                ProcesarDescanso(ref posPuntero, profundidadDescanso1, girarEnDescanso1,
+    girarALaDerechaDescanso1, nodosExt, ref nodosInt, tramosInt, contenedorPadre, $"Descanso1_Rep{rep}");
             }
         }
+
+        GenerarTramoFinal(ref posPuntero, nodosExt, ref nodosInt, tramosInt, contenedorPadre, 0);
 
         // Generar murallas
         if (generarMurallas)
         {
-            GenerarMurallaRampaContinua(nodosExt, "Muralla_Externa", contenedorPadre);
-            GenerarMurallaRampaContinua(nodosInt, "Muralla_Interna", contenedorPadre);
+            
+
+            if (generarMurallas)
+            {
+                GenerarMurallaRampaContinua(nodosExt, "Muralla_Externa", contenedorPadre);
+
+                for (int i = 0; i < tramosInt.Count; i++)
+                    GenerarMurallaRampaContinua(tramosInt[i], $"Muralla_Interna_{i}", contenedorPadre);
+            }
         }
+
         
+
         if (!Application.isPlaying)
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(this.gameObject.scene);
         //UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(this.gameObject.scene);
     }
-
+    
     void ProcesarDescanso(ref Vector3 posPuntero, float profDescanso, bool girar, bool girarDerecha,
-    List<Vector3> nodosExt, List<Vector3> nodosInt, GameObject padre, string nombre)
+    List<Vector3> nodosExt, ref List<Vector3> nodosInt, List<List<Vector3>> tramosInt,
+    GameObject padre, string nombre)
+
     {
         float dirZ = subiendo_en_Z_positivo ? 1f : -1f;
-        float xInt = subiendo_en_Z_positivo ? anchoRealEscalon / 2f + offsetX : -anchoRealEscalon / 2f + offsetX;
-        float xExt = subiendo_en_Z_positivo ? -anchoRealEscalon / 2f + offsetX : anchoRealEscalon / 2f + offsetX;
+        
+
+        float signo = subiendo_en_Z_positivo ? 1f : -1f;
+        float xExt = (anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+        float xInt = -(anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
 
         Vector3 inicioDescanso = posPuntero;
 
@@ -187,14 +224,13 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
             if (!subiendo_en_Z_positivo) dirGiroX *= -1f;
 
             float anchoDescanso = anchoRealEscalon + anchoMuralla;
+            
+            float xCentro = offsetX;
+            float anchoTotalDescanso = anchoRealEscalon * 2f + anchoMuralla;
 
-            // Calcular xExt correctamente
-            float xExtActual = subiendo_en_Z_positivo ?
-                -anchoRealEscalon / 2f + offsetX :
-                anchoRealEscalon / 2f + offsetX;
+            float xDescansoInicio = xCentro - (anchoRealEscalon / 2f) * dirGiroX;
+            float xDescansoFin = xDescansoInicio + anchoTotalDescanso * dirGiroX;
 
-            float xDescansoInicio = xExtActual;
-            float xDescansoFin = xExtActual + (anchoRealEscalon * 2f + anchoMuralla) * dirGiroX;
 
             Vector3 esquina1 = new Vector3(xDescansoInicio, inicioDescanso.y,
                 inicioDescanso.z + profDescanso * dirZ);
@@ -207,28 +243,40 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
                 esquina2,
                 padre, nombre, true);
 
-            // Muralla EXTERNA rodea el descanso en 3 tramos
-            nodosExt.Add(new Vector3(xExtActual, inicioDescanso.y, inicioDescanso.z));
-            nodosExt.Add(new Vector3(xExtActual, inicioDescanso.y, esquina1.z));
-            nodosExt.Add(new Vector3(esquina2.x, inicioDescanso.y, esquina1.z));
-            nodosExt.Add(new Vector3(esquina2.x, inicioDescanso.y, inicioDescanso.z));
+            nodosExt.Add(new Vector3(xDescansoInicio, inicioDescanso.y, inicioDescanso.z));
+            nodosExt.Add(new Vector3(xDescansoInicio, inicioDescanso.y, esquina1.z));
+            nodosExt.Add(new Vector3(xDescansoFin, inicioDescanso.y, esquina1.z));
+            nodosExt.Add(new Vector3(xDescansoFin, inicioDescanso.y, inicioDescanso.z));
+
+
+            Debug.Log($"{nombre}: dirGiroX={dirGiroX}, subiendoZ+={subiendo_en_Z_positivo}, offsetX={offsetX}, xIni={xDescansoInicio:F2}, xFin={xDescansoFin:F2}, zIni={inicioDescanso.z:F2}, zFin={esquina1.z:F2}");
 
             // Muralla INTERNA se interrumpe en el descanso
+           
+            // Cerrar la tira interna actual
             nodosInt.Add(new Vector3(xInt, inicioDescanso.y, inicioDescanso.z));
 
-            // Actualizar offsetX y direccion para el tramo 2
             offsetX += anchoDescanso * dirGiroX;
             subiendo_en_Z_positivo = !subiendo_en_Z_positivo;
 
-            // Actualizar posicion para siguiente tramo
             posPuntero = new Vector3(offsetX, inicioDescanso.y,
                 inicioDescanso.z + (profundidadHuella / 2f) * (subiendo_en_Z_positivo ? 1f : -1f));
             posPuntero.y += altoContrahuella / 2f;
 
-            // Muralla interna retoma en el tramo 2
-            float xIntNuevo = subiendo_en_Z_positivo ?
-                anchoRealEscalon / 2f + offsetX : -anchoRealEscalon / 2f + offsetX;
+            // Abrir una tira nueva para el tramo siguiente
+            nodosInt = new List<Vector3>();
+            tramosInt.Add(nodosInt);
+
+            
+            float signoNuevo = subiendo_en_Z_positivo ? 1f : -1f;
+            float xIntNuevo = -(anchoRealEscalon / 2f) * ladoExterno * signoNuevo + offsetX;
+
+
+
             nodosInt.Add(new Vector3(xIntNuevo, posPuntero.y, posPuntero.z));
+
+            
+
         }
     }
 
@@ -358,5 +406,79 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
 
         if (Application.isPlaying) Destroy(t.gameObject);
         else Undo.DestroyObjectImmediate(t.gameObject);        
+    }
+
+    void GenerarTramoFinal(ref Vector3 posPuntero, List<Vector3> nodosExt,
+    ref List<Vector3> nodosInt, List<List<Vector3>> tramosInt,
+    GameObject padre, int rep)
+    {
+        if (!usarEscaleraFinal) return;
+
+        float dirZ = subiendo_en_Z_positivo ? 1f : -1f;
+        float signo = subiendo_en_Z_positivo ? 1f : -1f;
+        float factorEscalaX = anchoRealEscalon / anchoOriginalPrefab;
+
+        for (int i = 0; i < escalonesEscaleraFinal; i++)
+        {
+            GameObject escalonObj = Application.isPlaying
+                ? Instantiate(prefabEscalon, padre.transform)
+                : PrefabUtility.InstantiatePrefab(prefabEscalon, padre.transform) as GameObject;
+
+            escalonObj.name = $"Escalon_Final_{i + 1}";
+            escalonObj.transform.localPosition = new Vector3(offsetX, posPuntero.y, posPuntero.z);
+            escalonObj.transform.localRotation = subiendo_en_Z_positivo ?
+                Quaternion.identity : Quaternion.Euler(0, 180, 0);
+            escalonObj.transform.localScale = new Vector3(factorEscalaX, 1f, 1f);
+
+            float xE = (anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+            float xI = -(anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+
+            nodosExt.Add(new Vector3(xE, posPuntero.y, posPuntero.z));
+            nodosInt.Add(new Vector3(xI, posPuntero.y, posPuntero.z));
+
+            posPuntero.y += altoContrahuella;
+            posPuntero.z += profundidadHuella * dirZ;
+        }
+
+        if (!usarRellanoFinal) return;
+
+        GenerarRellanoFinal(posPuntero, nodosExt, ref nodosInt, tramosInt, padre);
+    }
+
+    void GenerarRellanoFinal(Vector3 inicio, List<Vector3> nodosExt,
+    ref List<Vector3> nodosInt, List<List<Vector3>> tramosInt, GameObject padre)
+    {
+        float dirZ = subiendo_en_Z_positivo ? 1f : -1f;
+        float signo = subiendo_en_Z_positivo ? 1f : -1f;
+
+        // El rellano se extiende hacia el lado de giro
+        float dirSalida = -ladoExterno * signo;
+
+        float xBordeExterno = (anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+        float xBordeSalida = xBordeExterno + anchoRellanoFinal * dirSalida;
+
+        float zFondo = inicio.z + profundidadRellanoFinal * dirZ;
+
+        GenerarDescansoSolido(
+            new Vector3(xBordeExterno, inicio.y, inicio.z),
+            new Vector3(xBordeSalida, inicio.y, zFondo),
+            padre, "Rellano_Final", true);
+
+        // Muralla externa: sigue por el lado externo y cierra el fondo.
+        // El lado de salida queda abierto hacia la tribuna.
+        nodosExt.Add(new Vector3(xBordeExterno, inicio.y, inicio.z));
+        nodosExt.Add(new Vector3(xBordeExterno, inicio.y, zFondo));
+        nodosExt.Add(new Vector3(xBordeSalida, inicio.y, zFondo));
+
+        // Cerrar la tira interna de la escalera
+        float xInt = -(anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+        nodosInt.Add(new Vector3(xInt, inicio.y, inicio.z));
+
+        // Medio muro sobre el lado de la boca: va desde el borde interno
+        // de la escalera hasta el extremo de salida del rellano
+        List<Vector3> medioMuro = new List<Vector3>();
+        medioMuro.Add(new Vector3(xInt, inicio.y, inicio.z));
+        medioMuro.Add(new Vector3(xBordeSalida, inicio.y, inicio.z));
+        tramosInt.Add(medioMuro);
     }
 }
