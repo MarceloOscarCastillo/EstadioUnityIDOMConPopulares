@@ -48,7 +48,7 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
     public bool usarRellanoFinal = false;
     public float profundidadRellanoFinal = 2.5f;
     public float anchoRellanoFinal = 3f;
-
+    public bool salidaHaciaAdelante = false;
 
     private Material materialEscalera;
     private const string NOMBRE_CONTENEDOR = "Escalinata_Interna";
@@ -451,34 +451,71 @@ public class GeneradorEscaleraGiratoria : MonoBehaviour
         float dirZ = subiendo_en_Z_positivo ? 1f : -1f;
         float signo = subiendo_en_Z_positivo ? 1f : -1f;
 
-        // El rellano se extiende hacia el lado de giro
-        float dirSalida = -ladoExterno * signo;
+        if (salidaHaciaAdelante == false)
+        {
+            // El rellano se extiende hacia el lado de giro
+            float dirSalida = -ladoExterno * signo;
 
-        float xBordeExterno = (anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
-        float xBordeSalida = xBordeExterno + anchoRellanoFinal * dirSalida;
+            float xBordeExterno = (anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+            float xBordeSalida = xBordeExterno + anchoRellanoFinal * dirSalida;
 
-        float zFondo = inicio.z + profundidadRellanoFinal * dirZ;
+            float zFondo = inicio.z + profundidadRellanoFinal * dirZ;
 
-        GenerarDescansoSolido(
-            new Vector3(xBordeExterno, inicio.y, inicio.z),
-            new Vector3(xBordeSalida, inicio.y, zFondo),
-            padre, "Rellano_Final", true);
+            GenerarDescansoSolido(
+                new Vector3(xBordeExterno, inicio.y, inicio.z),
+                new Vector3(xBordeSalida, inicio.y, zFondo),
+                padre, "Rellano_Final", true);
 
-        // Muralla externa: sigue por el lado externo y cierra el fondo.
-        // El lado de salida queda abierto hacia la tribuna.
-        nodosExt.Add(new Vector3(xBordeExterno, inicio.y, inicio.z));
-        nodosExt.Add(new Vector3(xBordeExterno, inicio.y, zFondo));
-        nodosExt.Add(new Vector3(xBordeSalida, inicio.y, zFondo));
+            // Muralla externa: sigue por el lado externo y cierra el fondo.
+            // El lado de salida queda abierto hacia la tribuna.
+            nodosExt.Add(new Vector3(xBordeExterno, inicio.y, inicio.z));
+            nodosExt.Add(new Vector3(xBordeExterno, inicio.y, zFondo));
+            nodosExt.Add(new Vector3(xBordeSalida, inicio.y, zFondo));
 
-        // Cerrar la tira interna de la escalera
-        float xInt = -(anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
-        nodosInt.Add(new Vector3(xInt, inicio.y, inicio.z));
+            // Cerrar la tira interna de la escalera
+            float xInt = -(anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+            nodosInt.Add(new Vector3(xInt, inicio.y, inicio.z));
 
-        // Medio muro sobre el lado de la boca: va desde el borde interno
-        // de la escalera hasta el extremo de salida del rellano
-        List<Vector3> medioMuro = new List<Vector3>();
-        medioMuro.Add(new Vector3(xInt, inicio.y, inicio.z));
-        medioMuro.Add(new Vector3(xBordeSalida, inicio.y, inicio.z));
-        tramosInt.Add(medioMuro);
+            // Medio muro sobre el lado de la boca: va desde el borde interno
+            // de la escalera hasta el extremo de salida del rellano
+            List<Vector3> medioMuro = new List<Vector3>();
+            medioMuro.Add(new Vector3(xInt, inicio.y, inicio.z));
+            medioMuro.Add(new Vector3(xBordeSalida, inicio.y, inicio.z));
+            tramosInt.Add(medioMuro);
+        }
+
+
+        else 
+        {
+            // El rellano se extiende hacia el lado de giro
+            float dirSalida = -ladoExterno * signo;
+
+            float xBordeExterno = (anchoRealEscalon / 2f) * ladoExterno + offsetX;
+            float xBordeInterno = xBordeExterno + anchoRellanoFinal;
+
+            float zFondo = inicio.z + profundidadRellanoFinal * dirZ;
+
+            GenerarDescansoSolido(
+                new Vector3(xBordeExterno, inicio.y, inicio.z),
+                new Vector3(xBordeInterno, inicio.y, zFondo),
+                padre, "Rellano_Final", true); ;
+
+            // Muralla externa: sigue por el lado externo y cierra el fondo.
+            // El lado de salida queda abierto hacia la tribuna.
+            nodosExt.Add(new Vector3(xBordeExterno, inicio.y, inicio.z));
+            nodosInt.Add(new Vector3(xBordeInterno, inicio.y, zFondo));
+
+
+            nodosExt.Add(new Vector3(xBordeExterno, inicio.y, inicio.z));
+            nodosExt.Add(new Vector3(xBordeExterno, inicio.y, zFondo));
+
+
+            //Cerrar la tira interna de la escalera
+
+            //float xInt = -(anchoRealEscalon / 2f) * ladoExterno * signo + offsetX;
+            //nodosInt.Add(new Vector3(xInt, inicio.y, inicio.z));
+
+        }
+            
     }
 }
