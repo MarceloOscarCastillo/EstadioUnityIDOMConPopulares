@@ -341,6 +341,12 @@ MonoBehaviour:
   girarEnDescanso2: 0
   girarALaDerechaDescanso2: 1
   cantidadRepeticiones: 1
+  usarEscaleraFinal: 0
+  escalonesEscaleraFinal: 6
+  usarRellanoFinal: 0
+  profundidadRellanoFinal: 2.5
+  anchoRellanoFinal: 3
+  salidaHaciaAdelante: 0
 --- !u!1 &26930375
 GameObject:
   m_ObjectHideFlags: 0
@@ -11126,6 +11132,12 @@ MonoBehaviour:
   girarEnDescanso2: 0
   girarALaDerechaDescanso2: 1
   cantidadRepeticiones: 2
+  usarEscaleraFinal: 0
+  escalonesEscaleraFinal: 6
+  usarRellanoFinal: 0
+  profundidadRellanoFinal: 2.5
+  anchoRellanoFinal: 3
+  salidaHaciaAdelante: 0
 --- !u!1001 &491496191
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11587,6 +11599,12 @@ MonoBehaviour:
   girarEnDescanso2: 0
   girarALaDerechaDescanso2: 1
   cantidadRepeticiones: 2
+  usarEscaleraFinal: 0
+  escalonesEscaleraFinal: 6
+  usarRellanoFinal: 0
+  profundidadRellanoFinal: 2.5
+  anchoRellanoFinal: 3
+  salidaHaciaAdelante: 0
 --- !u!43 &525534168
 Mesh:
   m_ObjectHideFlags: 0
@@ -17362,6 +17380,12 @@ MonoBehaviour:
   girarEnDescanso2: 0
   girarALaDerechaDescanso2: 1
   cantidadRepeticiones: 1
+  usarEscaleraFinal: 0
+  escalonesEscaleraFinal: 6
+  usarRellanoFinal: 0
+  profundidadRellanoFinal: 2.5
+  anchoRellanoFinal: 3
+  salidaHaciaAdelante: 0
 --- !u!1 &702110511
 GameObject:
   m_ObjectHideFlags: 0
@@ -17652,6 +17676,12 @@ MonoBehaviour:
   girarEnDescanso2: 0
   girarALaDerechaDescanso2: 1
   cantidadRepeticiones: 2
+  usarEscaleraFinal: 0
+  escalonesEscaleraFinal: 6
+  usarRellanoFinal: 0
+  profundidadRellanoFinal: 2.5
+  anchoRellanoFinal: 3
+  salidaHaciaAdelante: 0
 --- !u!43 &710719037
 Mesh:
   m_ObjectHideFlags: 0
@@ -29745,6 +29775,12 @@ MonoBehaviour:
   girarEnDescanso2: 0
   girarALaDerechaDescanso2: 1
   cantidadRepeticiones: 1
+  usarEscaleraFinal: 0
+  escalonesEscaleraFinal: 6
+  usarRellanoFinal: 0
+  profundidadRellanoFinal: 2.5
+  anchoRellanoFinal: 3
+  salidaHaciaAdelante: 0
 --- !u!1001 &1186816619
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33863,6 +33899,12 @@ MonoBehaviour:
   girarEnDescanso2: 0
   girarALaDerechaDescanso2: 1
   cantidadRepeticiones: 1
+  usarEscaleraFinal: 0
+  escalonesEscaleraFinal: 6
+  usarRellanoFinal: 0
+  profundidadRellanoFinal: 2.5
+  anchoRellanoFinal: 3
+  salidaHaciaAdelante: 0
 --- !u!43 &1363360866
 Mesh:
   m_ObjectHideFlags: 0
