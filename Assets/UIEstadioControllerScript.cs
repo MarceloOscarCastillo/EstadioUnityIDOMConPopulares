@@ -45,6 +45,12 @@ public class UIEstadioController : MonoBehaviour
     [Header("Referencias Menu")]
     public GameObject canvasMenu;
 
+    [Header("Cambio de escena")]
+    public Button buttonCambiarEstadio;
+    public string nombreOtraEscena;
+    public string textoBotonCambiarEstadio = "Ver otro estadio";
+
+
     void Start()
     {
         Debug.Log("UIEstadioController Start");
@@ -76,7 +82,7 @@ public class UIEstadioController : MonoBehaviour
             controladorTecho.TechoCambio += OnTechoCambio;
 
         ActualizarBotonesTecho();
-        
+
         if (panelOpcionesFrente != null) panelOpcionesFrente.SetActive(false);
 
 
@@ -91,6 +97,16 @@ public class UIEstadioController : MonoBehaviour
 
         if (buttonOcultarFrente != null)
             buttonOcultarFrente.onClick.AddListener(OcultarFrente);
+
+
+        if (buttonCambiarEstadio != null) {             
+        buttonCambiarEstadio.onClick.AddListener(CambiarEstadio);
+
+            var texto = buttonCambiarEstadio.GetComponentInChildren<TextMeshProUGUI>();
+            if (texto != null) texto.text = textoBotonCambiarEstadio;
+
+        }
+
 
         ActualizarBotonesFrente();
 
@@ -234,6 +250,12 @@ public class UIEstadioController : MonoBehaviour
             var texto = buttonVerFrente.GetComponentInChildren<TextMeshProUGUI>();
             if (texto != null) texto.text = hayFrente ? "Cambiar Frente" : "Ver Frente";
         }
+    }
+
+    void CambiarEstadio()
+    {
+        if (string.IsNullOrEmpty(nombreOtraEscena)) return;
+        UnityEngine.SceneManagement.SceneManager.LoadScene(nombreOtraEscena);
     }
 
 }

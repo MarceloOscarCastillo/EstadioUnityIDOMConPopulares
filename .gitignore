@@ -102,9 +102,13 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
+
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
 # Cesium Local Package
 !/*.tgz
 !/LocalPackages/*.tgz
+
+Assets/_Recovery/
+Cesium/*.tgz
