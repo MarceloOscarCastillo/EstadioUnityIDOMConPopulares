@@ -59,7 +59,7 @@ public class MenuSeleccionController : MonoBehaviour
         { EstadioConfigurator.TipoConfiguracion.IDOMOriginal,
             "Es la versión original del proyecto IDOM. Es all seater, no hay tribunas sin asientos.\n\nLas cabeceras tienen dos bandejas." },
             { EstadioConfigurator.TipoConfiguracion.OficinaUrbana,
-            "Es la versión que el estudio Oficina Urbana hizo para la campaña de Sergio Costantino en 2023. Sólo tiene populares en 2 codos." },
+            "Es la versión que el estudio Oficina Urbana presentó en 2023. Sólo tiene populares en 2 codos." },
 
 { EstadioConfigurator.TipoConfiguracion.Preinauguracion,
             "Esta versión permitiría hacer una preinauguración con una capacidad cercana a las 60.000 personas. No cuenta con los codos superiores" },

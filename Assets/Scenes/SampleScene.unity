@@ -7589,6 +7589,7 @@ MonoBehaviour:
   altoEscalon: 0.4
   usarFilasAlternadas: 0
   offsetFilaConAsiento: 1
+  filaInicioAsientos: 0
   elevacionCanio: 0.2
   offsetZButaca: 0.25
   invertirSentido: 0
@@ -7634,6 +7635,8 @@ MonoBehaviour:
   filaInicioBocaVomito: 5
   filaInicioBoca2: 25
   metrosLibresAlrededor: 0.5
+  posicionVomitoDeterminaPosicionPasillo: 1
+  filasSinAsientosArribaYAbajoDelVomito: 3
   generarMurosVomitos: 1
   alturaMuroVomito: 1.5
   MaterialMuroVomito: {fileID: 0}
@@ -12329,6 +12332,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: anchoDelPar
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: anguloTotal
       value: 90
       objectReference: {fileID: 0}
@@ -16758,6 +16765,7 @@ MonoBehaviour:
   altoEscalon: 0.2
   usarFilasAlternadas: 0
   offsetFilaConAsiento: 1
+  filaInicioAsientos: 0
   elevacionCanio: 0
   offsetZButaca: -0.35
   invertirSentido: 0
@@ -16803,6 +16811,8 @@ MonoBehaviour:
   filaInicioBocaVomito: 5
   filaInicioBoca2: 25
   metrosLibresAlrededor: 0.5
+  posicionVomitoDeterminaPosicionPasillo: 1
+  filasSinAsientosArribaYAbajoDelVomito: 3
   generarMurosVomitos: 1
   alturaMuroVomito: 1.5
   MaterialMuroVomito: {fileID: 0}
@@ -16810,7 +16820,7 @@ MonoBehaviour:
   filaInicioPara: 10
   frecuenciaFilasPara: 10
   distanciaEntrePares: 4
-  anchoDelPar: 4
+  anchoDelPar: 1.8
   ajusteAlturaParaavalancha: 0.45
   generarMuroDelantero: 1
   generarMuroLateralInicio: 1
@@ -18863,6 +18873,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: anchoDelPar
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: anguloTotal
       value: 90
       objectReference: {fileID: 0}
@@ -20397,6 +20411,7 @@ MonoBehaviour:
   altoEscalon: 0.4
   usarFilasAlternadas: 0
   offsetFilaConAsiento: 1
+  filaInicioAsientos: 0
   elevacionCanio: 0.2
   offsetZButaca: 0.25
   invertirSentido: 0
@@ -20442,6 +20457,8 @@ MonoBehaviour:
   filaInicioBocaVomito: 5
   filaInicioBoca2: 25
   metrosLibresAlrededor: 0.5
+  posicionVomitoDeterminaPosicionPasillo: 1
+  filasSinAsientosArribaYAbajoDelVomito: 3
   generarMurosVomitos: 1
   alturaMuroVomito: 1.5
   MaterialMuroVomito: {fileID: 0}
@@ -21061,6 +21078,10 @@ PrefabInstance:
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: altoEscalon
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: anchoDelPar
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: anguloTotal
@@ -28219,6 +28240,7 @@ MonoBehaviour:
   altoEscalon: 0.4
   usarFilasAlternadas: 0
   offsetFilaConAsiento: 1
+  filaInicioAsientos: 0
   elevacionCanio: 0.2
   offsetZButaca: 0.25
   invertirSentido: 0
@@ -28264,6 +28286,8 @@ MonoBehaviour:
   filaInicioBocaVomito: 5
   filaInicioBoca2: 25
   metrosLibresAlrededor: 0.5
+  posicionVomitoDeterminaPosicionPasillo: 1
+  filasSinAsientosArribaYAbajoDelVomito: 3
   generarMurosVomitos: 1
   alturaMuroVomito: 1.5
   MaterialMuroVomito: {fileID: 0}
@@ -30734,6 +30758,7 @@ MonoBehaviour:
   altoEscalon: 0.2
   usarFilasAlternadas: 0
   offsetFilaConAsiento: 1
+  filaInicioAsientos: 0
   elevacionCanio: 0
   offsetZButaca: -0.35
   invertirSentido: 0
@@ -30779,6 +30804,8 @@ MonoBehaviour:
   filaInicioBocaVomito: 5
   filaInicioBoca2: 25
   metrosLibresAlrededor: 0.5
+  posicionVomitoDeterminaPosicionPasillo: 1
+  filasSinAsientosArribaYAbajoDelVomito: 3
   generarMurosVomitos: 1
   alturaMuroVomito: 1.5
   MaterialMuroVomito: {fileID: 0}
@@ -30786,7 +30813,7 @@ MonoBehaviour:
   filaInicioPara: 10
   frecuenciaFilasPara: 10
   distanciaEntrePares: 4
-  anchoDelPar: 4
+  anchoDelPar: 1.8
   ajusteAlturaParaavalancha: 0.45
   generarMuroDelantero: 1
   generarMuroLateralInicio: 1
@@ -31762,6 +31789,7 @@ MonoBehaviour:
   altoEscalon: 0.2
   usarFilasAlternadas: 0
   offsetFilaConAsiento: 1
+  filaInicioAsientos: 0
   elevacionCanio: 0
   offsetZButaca: -0.35
   invertirSentido: 0
@@ -31807,6 +31835,8 @@ MonoBehaviour:
   filaInicioBocaVomito: 5
   filaInicioBoca2: 25
   metrosLibresAlrededor: 0.5
+  posicionVomitoDeterminaPosicionPasillo: 1
+  filasSinAsientosArribaYAbajoDelVomito: 3
   generarMurosVomitos: 1
   alturaMuroVomito: 1.5
   MaterialMuroVomito: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
@@ -31814,7 +31844,7 @@ MonoBehaviour:
   filaInicioPara: 10
   frecuenciaFilasPara: 10
   distanciaEntrePares: 4
-  anchoDelPar: 4
+  anchoDelPar: 1.8
   ajusteAlturaParaavalancha: 0.45
   generarMuroDelantero: 1
   generarMuroLateralInicio: 1
@@ -32047,6 +32077,7 @@ MonoBehaviour:
   altoEscalon: 0.4
   usarFilasAlternadas: 0
   offsetFilaConAsiento: 1
+  filaInicioAsientos: 0
   elevacionCanio: 0.2
   offsetZButaca: 0.25
   invertirSentido: 0
@@ -32092,6 +32123,8 @@ MonoBehaviour:
   filaInicioBocaVomito: 5
   filaInicioBoca2: 25
   metrosLibresAlrededor: 0.5
+  posicionVomitoDeterminaPosicionPasillo: 1
+  filasSinAsientosArribaYAbajoDelVomito: 3
   generarMurosVomitos: 1
   alturaMuroVomito: 1.5
   MaterialMuroVomito: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
@@ -41750,6 +41783,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      propertyPath: anchoDelPar
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: anguloTotal
       value: 90
       objectReference: {fileID: 0}
@@ -44845,6 +44882,7 @@ MonoBehaviour:
   altoEscalon: 0.2
   usarFilasAlternadas: 0
   offsetFilaConAsiento: 1
+  filaInicioAsientos: 0
   elevacionCanio: 0
   offsetZButaca: -0.35
   invertirSentido: 0
@@ -44890,6 +44928,8 @@ MonoBehaviour:
   filaInicioBocaVomito: 5
   filaInicioBoca2: 25
   metrosLibresAlrededor: 0.5
+  posicionVomitoDeterminaPosicionPasillo: 1
+  filasSinAsientosArribaYAbajoDelVomito: 3
   generarMurosVomitos: 1
   alturaMuroVomito: 1.5
   MaterialMuroVomito: {fileID: 0}
@@ -44897,7 +44937,7 @@ MonoBehaviour:
   filaInicioPara: 10
   frecuenciaFilasPara: 10
   distanciaEntrePares: 4
-  anchoDelPar: 4
+  anchoDelPar: 1.8
   ajusteAlturaParaavalancha: 0.45
   generarMuroDelantero: 1
   generarMuroLateralInicio: 1

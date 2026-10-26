@@ -266,7 +266,6 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
     [ContextMenu("Generar Platea")]
 
-
     void Start()
     {
         //if (Application.isPlaying)

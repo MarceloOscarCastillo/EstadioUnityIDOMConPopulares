@@ -46,6 +46,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     [Tooltip("Con 1, la fila 0 es apoyapies y la fila 1 lleva butacas")]
     public int offsetFilaConAsiento = 1;
 
+    [Tooltip("Primera fila que lleva asientos. Las anteriores quedan como escalon desnudo")]
+    public int filaInicioAsientos = 0;
 
     [Header("Posicion butaca en escalon")]
     public float elevacionCanio = 0f;    
@@ -126,6 +128,11 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public int filaInicioBocaVomito = 5;
     public int filaInicioBoca2 = 25;
     public float metrosLibresAlrededor = 0.5f;
+    [Tooltip("Si es false, el vomito no genera pasillo vertical en toda la altura")]
+    public bool posicionVomitoDeterminaPosicionPasillo = true;
+    [Tooltip("Filas sin asientos arriba y abajo del hueco, solo en el ancho del vomito")]
+    public int filasSinAsientosArribaYAbajoDelVomito = 3;
+
 
     [Header("Muros de Vómitos")]
     public bool generarMurosVomitos = true;
@@ -541,8 +548,19 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                                     break;
                                 }
                             }
-                            Material matPara = (celdaPara != null && celdaPara.Value.tipo == TipoCelda.BloqueLibre)
-                                ? GrisCemento : Material;
+                            //Material matPara = (celdaPara != null && celdaPara.Value.tipo == TipoCelda.BloqueLibre)
+                            //    ? GrisCemento : Material;
+
+                            Material matPara;
+                            if (celdaPara != null && celdaPara.Value.tipo == TipoCelda.BloqueLibre)
+                            {
+                                matPara = GrisCemento;
+                            }
+                            else
+                            {
+                                Material matFranja = MaterialDeFranja(anguloPara);
+                                matPara = matFranja != null ? matFranja : Material;
+                            }
 
                             if (generarBocaLogistica && EsZonaBocaLogistica(anguloPara - 0.1f, anguloPara + 0.1f, f)) continue;
 
@@ -560,7 +578,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
             }
 
             // Asientos
-            if (esCodoPlatea && FilaLlevaAsiento(f))
+            if (esCodoPlatea && f>= filaInicioAsientos && FilaLlevaAsiento(f))
             {
                 int cuantosAsientos = Mathf.FloorToInt(longitudTotal / 0.5f);
 
@@ -720,6 +738,34 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         return mapa;
     }
 
+    //TipoCelda DeterminarTipo(float anguloMedio, int fila, List<float> angulosVomitos)
+    //{
+    //    float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
+    //    float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
+    //    float gradosPasillo = (anchoPasilloVomito / circunferenciaMedia) * 360f;
+    //    float gradosLibres = (metrosLibresAlrededor / circunferenciaMedia) * 360f;
+
+    //    bool esFilaVomito1 = (fila >= filaInicioBocaVomito && fila < filaInicioBocaVomito + altoBocaVomito);
+    //    bool esFilaVomito2 = tieneSegundaLinea && (fila >= filaInicioBoca2 && fila < filaInicioBoca2 + altoBocaVomito);
+    //    bool esFilaVomito = esFilaVomito1 || esFilaVomito2;
+
+    //    foreach (float anguloVomito in angulosVomitos)
+    //    {
+    //        if (Mathf.Abs(anguloMedio - anguloVomito) <= gradosPasillo)
+    //        {
+    //            if (esFilaVomito) return TipoCelda.Vacio;
+    //            if (!esCodoPlatea) return TipoCelda.Bloque;
+    //            return TipoCelda.Escalera;
+    //        }
+
+    //        if (esFilaVomito && Mathf.Abs(anguloMedio - anguloVomito) <= gradosPasillo + gradosLibres)
+    //            return esCodoPlatea ? TipoCelda.BloqueLibre : TipoCelda.Bloque;
+    //    }
+
+    //    return TipoCelda.Bloque;
+    //}
+
+
     TipoCelda DeterminarTipo(float anguloMedio, int fila, List<float> angulosVomitos)
     {
         float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
@@ -731,22 +777,42 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         bool esFilaVomito2 = tieneSegundaLinea && (fila >= filaInicioBoca2 && fila < filaInicioBoca2 + altoBocaVomito);
         bool esFilaVomito = esFilaVomito1 || esFilaVomito2;
 
+        int margen = filasSinAsientosArribaYAbajoDelVomito;
+
+        bool esFilaLibre1 = (fila >= filaInicioBocaVomito - margen
+                          && fila < filaInicioBocaVomito + altoBocaVomito + margen);
+        bool esFilaLibre2 = tieneSegundaLinea
+                          && (fila >= filaInicioBoca2 - margen
+                           && fila < filaInicioBoca2 + altoBocaVomito + margen);
+        bool esFilaLibre = esFilaLibre1 || esFilaLibre2;
+
         foreach (float anguloVomito in angulosVomitos)
         {
-            if (Mathf.Abs(anguloMedio - anguloVomito) <= gradosPasillo)
+            float distancia = Mathf.Abs(anguloMedio - anguloVomito);
+
+            if (distancia <= gradosPasillo)
             {
                 if (esFilaVomito) return TipoCelda.Vacio;
+
+                if (!posicionVomitoDeterminaPosicionPasillo)
+                {
+                    // El vomito no genera pasillo vertical: solo quedan libres
+                    // las filas inmediatas arriba y abajo del hueco
+                    return esFilaLibre ? TipoCelda.BloqueLibre : TipoCelda.Bloque;
+                }
+
                 if (!esCodoPlatea) return TipoCelda.Bloque;
                 return TipoCelda.Escalera;
             }
 
-            if (esFilaVomito && Mathf.Abs(anguloMedio - anguloVomito) <= gradosPasillo + gradosLibres)
+            if (esFilaVomito && distancia <= gradosPasillo + gradosLibres)
                 return esCodoPlatea ? TipoCelda.BloqueLibre : TipoCelda.Bloque;
         }
 
         return TipoCelda.Bloque;
     }
-    
+
+
     int FilasEnAngulo(float angulo)
     {
         
