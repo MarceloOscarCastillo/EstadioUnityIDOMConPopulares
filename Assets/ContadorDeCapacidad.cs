@@ -22,7 +22,15 @@ public class ContadorDeCapacidad : MonoBehaviour
 
     [Header("Anchos de pieza por sector")]
     public float anchoPiezaCabecera = 1.0f;
-    
+
+    [Header("Correccion por paraavalanchas")]
+    [Tooltip("Espectadores que se descuentan por cada paraavalanchas instanciado")]
+    public int espectadoresPorParaavalancha = 4;
+
+    [HideInInspector] public int totalParaavalanchas = 0;
+    [HideInInspector] public int descuentoParaavalanchas = 0;
+
+
     public PisoOperativoController pisoOperativo;
 
     [HideInInspector] public int capacidadPisoEventos = 0;
@@ -33,10 +41,25 @@ public class ContadorDeCapacidad : MonoBehaviour
     [HideInInspector] public int capacidadPlateas;
     [HideInInspector] public int capacidadPalcos;
 
+    [System.Serializable]
+    public class DetalleSubsector
+    {
+        public string sector;
+        public string subsector;
+        public int orden;
+        public int capacidad;
+    }
+
+    [HideInInspector] public List<DetalleSubsector> detallePorSubsector = new List<DetalleSubsector>();
+
+
+
     [ContextMenu("Calcular Capacidad Total")]
     public void CalcularCapacidad()
     {
-        
+
+        totalParaavalanchas = 0;
+
         // 1. Buscamos todos los contenedores generados por tus scripts
         GameObject[] contenedores = GameObject.FindGameObjectsWithTag(tagContenedores);
 
@@ -48,46 +71,110 @@ public class ContadorDeCapacidad : MonoBehaviour
        
         UnityEngine.Debug.Log($"Buscando con tag: {tagContenedores}. Encontrados: {contenedores.Length}");
 
+        //foreach (GameObject contenedor in contenedores)
+        //{
+        //    UnityEngine.Debug.Log($"Analizando contenedor: {contenedor.name}");
+        //    string nombreLower = contenedor.name.ToLower();
+
+        //    // 1. INTENTAMOS CONTAR ASIENTOS PRIMERO
+        //    int asientosEncontrados = ContarHijosPorNombre(contenedor, "Asiento");
+
+        //    if (asientosEncontrados > 0)
+        //    {
+        //        // Si hay asientos, priorizamos el conteo físico (Plateas, Codos con asientos, etc.)
+        //        aforoAsientos += asientosEncontrados;
+        //    }
+        //    else
+        //    {
+        //        // 2. SI NO HAY ASIENTOS, CALCULAMOS POR METROS LINEALES
+
+        //        UpperCurveStandWithWalkpathScript generador = contenedor.transform.parent?.GetComponent<UpperCurveStandWithWalkpathScript>();
+        //        if (generador != null)
+        //        {
+        //            generador.CalcularMetrosLinealesInternos(); // siempre recalcular
+        //            metrosLinealesTotales += generador.metrosLinealesCalculados;
+        //            aforoPorMetros += Mathf.FloorToInt(generador.metrosLinealesCalculados * personasPorMetroLineal);
+        //        }
+        //        else
+        //        {
+        //            float metrosSector = CalcularMetrosLineales(contenedor);
+        //            if (metrosSector > 0)
+        //            {
+        //                metrosLinealesTotales += metrosSector;
+        //                aforoPorMetros += Mathf.FloorToInt(metrosSector * personasPorMetroLineal);
+        //            }
+        //        }
+
+
+        //    }
+
+        //    // CASO C: Palcos y paraavalanchas (Independiente de si el sector es popular o platea)
+        //    totalPalcos += ContarHijosPorNombre(contenedor, "Palco");
+        //    totalParaavalanchas += ContarHijosPorNombre(contenedor, "Paraavalanchas");
+        //}
+
+        detallePorSubsector.Clear();
+
         foreach (GameObject contenedor in contenedores)
         {
-            UnityEngine.Debug.Log($"Analizando contenedor: {contenedor.name}");
-            string nombreLower = contenedor.name.ToLower();
+            int aporteContenedor = 0;
 
-            // 1. INTENTAMOS CONTAR ASIENTOS PRIMERO
             int asientosEncontrados = ContarHijosPorNombre(contenedor, "Asiento");
 
             if (asientosEncontrados > 0)
             {
-                // Si hay asientos, priorizamos el conteo físico (Plateas, Codos con asientos, etc.)
                 aforoAsientos += asientosEncontrados;
+                aporteContenedor += asientosEncontrados;
             }
             else
             {
-                // 2. SI NO HAY ASIENTOS, CALCULAMOS POR METROS LINEALES
-               
-                UpperCurveStandWithWalkpathScript generador = contenedor.transform.parent?.GetComponent<UpperCurveStandWithWalkpathScript>();
+                float metrosDeEsteContenedor = 0f;
+
+                UpperCurveStandWithWalkpathScript generador =
+                    contenedor.transform.parent?.GetComponent<UpperCurveStandWithWalkpathScript>();
+
                 if (generador != null)
                 {
-                    generador.CalcularMetrosLinealesInternos(); // siempre recalcular
-                    metrosLinealesTotales += generador.metrosLinealesCalculados;
-                    aforoPorMetros += Mathf.FloorToInt(generador.metrosLinealesCalculados * personasPorMetroLineal);
+                    generador.CalcularMetrosLinealesInternos();
+                    metrosDeEsteContenedor = generador.metrosLinealesCalculados;
                 }
                 else
                 {
-                    float metrosSector = CalcularMetrosLineales(contenedor);
-                    if (metrosSector > 0)
-                    {
-                        metrosLinealesTotales += metrosSector;
-                        aforoPorMetros += Mathf.FloorToInt(metrosSector * personasPorMetroLineal);
-                    }
+                    metrosDeEsteContenedor = CalcularMetrosLineales(contenedor);
                 }
 
-
+                if (metrosDeEsteContenedor > 0)
+                {
+                    int personas = Mathf.FloorToInt(metrosDeEsteContenedor * personasPorMetroLineal);
+                    metrosLinealesTotales += metrosDeEsteContenedor;
+                    aforoPorMetros += personas;
+                    aporteContenedor += personas;
+                }
             }
 
-            // CASO C: Palcos (Independiente de si el sector es popular o platea)
-            totalPalcos += ContarHijosPorNombre(contenedor, "Palco");
+            int palcosAqui = ContarHijosPorNombre(contenedor, "Palco");
+            totalPalcos += palcosAqui;
+            aporteContenedor += palcosAqui * 8;
+
+            int paraAqui = ContarHijosPorNombre(contenedor, "Paraavalanchas");
+            totalParaavalanchas += paraAqui;
+            aporteContenedor -= paraAqui * espectadoresPorParaavalancha;
+
+            IdentidadSector identidad = contenedor.transform.parent?.GetComponent<IdentidadSector>();
+
+            if (identidad != null && !string.IsNullOrEmpty(identidad.sector))
+            {
+                detallePorSubsector.Add(new DetalleSubsector
+                {
+                    sector = identidad.sector,
+                    subsector = identidad.subsector,
+                    orden = identidad.orden,
+                    capacidad = aporteContenedor
+                });
+            }
         }
+
+        descuentoParaavalanchas = totalParaavalanchas * espectadoresPorParaavalancha;
 
         // Asumimos una capacidad promedio por Palco (puedes ajustar este número)
         int aforoPalcos = totalPalcos * 8;
@@ -107,7 +194,10 @@ public class ContadorDeCapacidad : MonoBehaviour
         }
 
 
-        ImprimirReporteDeCapacidades(aforoPorMetros, aforoAsientos, totalPalcos, aforoPalcos, metrosLinealesTotales);        
+        ImprimirReporteDeCapacidades(aforoPorMetros, aforoAsientos, totalPalcos, aforoPalcos, metrosLinealesTotales);
+
+        UnityEngine.Debug.Log(ArmarTextoDetalle());
+
     }
 
 
@@ -155,7 +245,7 @@ public class ContadorDeCapacidad : MonoBehaviour
     
     private void ImprimirReporteDeCapacidades(int aforoMetros, int aforoAsientos, int palcos, int aforoPalcos, float metros)
     {
-        int granTotal = aforoMetros + aforoAsientos + aforoPalcos + capacidadPisoEventos;
+        int granTotal = aforoMetros + aforoAsientos + aforoPalcos + capacidadPisoEventos -descuentoParaavalanchas;
 
         capacidadPopulares = aforoMetros;
         capacidadPlateas = aforoAsientos;
@@ -166,7 +256,10 @@ public class ContadorDeCapacidad : MonoBehaviour
         UnityEngine.Debug.Log($"<b>Sectores Populares:</b> {aforoMetros} personas ({metros:F1} metros lineales)");
         UnityEngine.Debug.Log($"<b>Sectores Plateas:</b> {aforoAsientos} asientos físicos");
         UnityEngine.Debug.Log($"<b>Palcos:</b> {palcos} unidades (Est. {aforoPalcos} personas)");
-        
+
+        if (totalParaavalanchas > 0)
+            UnityEngine.Debug.Log($"<b>Paraavalanchas:</b> {totalParaavalanchas} unidades (-{descuentoParaavalanchas} personas)");
+
         if (pisoOperativo != null && pisoOperativo.SumaCapacidad)
             UnityEngine.Debug.Log($"<b>Piso operativo:</b> {pisoOperativo.capacidadPisoOperativo} personas ({pisoOperativo.areaPisoOperativo:F1} m² a {pisoOperativo.espectadoresPorM2} pers/m²)");
 
@@ -205,4 +298,45 @@ public class ContadorDeCapacidad : MonoBehaviour
 
         return area;
     }
+
+    public string ArmarTextoDetalle()
+    {
+        var porSector = new Dictionary<string, List<DetalleSubsector>>();
+
+        foreach (DetalleSubsector d in detallePorSubsector)
+        {
+            if (!porSector.ContainsKey(d.sector))
+                porSector[d.sector] = new List<DetalleSubsector>();
+            porSector[d.sector].Add(d);
+        }
+
+        var sb = new System.Text.StringBuilder();
+
+        foreach (var par in porSector)
+        {
+            int totalSector = 0;
+            foreach (DetalleSubsector d in par.Value) totalSector += d.capacidad;
+
+            sb.AppendLine($"<b>{par.Key}: {totalSector:N0} espectadores</b>");
+
+            par.Value.Sort((a, b) => a.orden.CompareTo(b.orden));
+
+            foreach (DetalleSubsector d in par.Value)
+                sb.AppendLine($"    {d.subsector}: {d.capacidad:N0}");
+
+            sb.AppendLine();
+        }
+
+        if (pisoOperativo != null && pisoOperativo.SumaCapacidad)
+        {
+            sb.AppendLine($"<b>Piso operativo: {pisoOperativo.capacidadPisoOperativo:N0} espectadores</b>");
+            sb.AppendLine($"    {pisoOperativo.areaPisoOperativo:F0} m² a {pisoOperativo.espectadoresPorM2} personas por m²");
+            sb.AppendLine();
+        }
+
+        sb.AppendLine($"<b>TOTAL: {capacidadTotal:N0} espectadores</b>");
+
+        return sb.ToString();
+    }
+
 }

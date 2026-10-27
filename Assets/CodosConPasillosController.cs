@@ -120,6 +120,20 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public float anchoPasilloSuelto = 1.2f;
     public Material materialPasilloSuelto;
 
+
+    [Header("Verjas de separacion")]
+    [Tooltip("Distancias en metros sobre el arco de la fila 0 donde va cada verja")]
+    public List<float> distanciasVerjas = new List<float>();
+    public float alturaVerja = 3f;
+    public float diametroPosteGrueso = 0.10f;
+    public float diametroPosteFino = 0.02f;
+    [Tooltip("Cada cuantos escalones va un poste grueso")]
+    public int escalonesEntrePostesGruesos = 7;
+    [Tooltip("Postes finos entre dos gruesos")]
+    public int postesFinosEntreGruesos = 20;
+    public Material materialVerja;
+
+
     [Header("Vómitos")]
     public int vomitosPorLinea = 1;
     public bool tieneSegundaLinea = false;
@@ -178,6 +192,11 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public float offsetPivotAlambrado = 0f;
     public float offsetRadialAlambrado = 0f;
     public Vector3 rotacionAlambrado = Vector3.zero;
+
+    [Header("Pasillo Superior")]
+    public bool generarPasilloSuperior = false;
+    public float anchoPasilloSuperior = 2f;
+    public Material materialPasilloSuperior;
 
 
     [Header("Soportes Estructurales")]
@@ -548,9 +567,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                                     break;
                                 }
                             }
-                            //Material matPara = (celdaPara != null && celdaPara.Value.tipo == TipoCelda.BloqueLibre)
-                            //    ? GrisCemento : Material;
-
+                            
                             Material matPara;
                             if (celdaPara != null && celdaPara.Value.tipo == TipoCelda.BloqueLibre)
                             {
@@ -633,10 +650,14 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         
         GenerarMurosLaterales(contenedor);
 
+        GenerarPasilloSuperior(contenedor);
+
         if (generarMuroSuperior) GenerarMuroSuperior(contenedor, mapa);
 
         if (generarMurosVomitos) GenerarMurosVomitos(contenedor, angulosVomitos);
 
+
+        GenerarVerjas(contenedor);
 
         if (generarAlambradoFrontal && prefabAlambrado != null)
         {
@@ -1260,8 +1281,9 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
             float yBase = CalcularAlturaAcumulada(filaBase)
                         + fraccion * altoEscalon * ObtenerFactorParaFila(filaBase);
-
-            float radio = radioInferior + filasFloat * anchoEscalon + anchoEscalon;
+            
+            float radio = radioInferior + filasFloat * anchoEscalon + anchoEscalon
+            + (generarPasilloSuperior ? anchoPasilloSuperior : 0f);
 
             float rad = angulo * Mathf.Deg2Rad;
             Vector3 dirRadial = new Vector3(Mathf.Cos(rad), 0f, Mathf.Sin(rad));
@@ -2673,6 +2695,189 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
             distancia += espaciadoAlambrado;
         }
+    }
+
+    void GenerarVerjas(GameObject contenedor)
+    {
+        if (distanciasVerjas == null || distanciasVerjas.Count == 0) return;
+        if (materialVerja == null) return;
+
+        foreach (float distancia in distanciasVerjas)
+        {
+            float angulo = DistanciaArcoAAngulo(distancia);
+            int filasAqui = FilasEnAngulo(angulo);
+            if (filasAqui < 2) continue;
+
+            GameObject verjaGO = new GameObject("Verja");
+            verjaGO.transform.SetParent(contenedor.transform, false);
+
+            // Postes gruesos cada N escalones, finos interpolados entre ellos
+            int paso = Mathf.Max(1, escalonesEntrePostesGruesos);
+            int divisiones = postesFinosEntreGruesos + 1;
+
+            for (int f = 0; f < filasAqui; f += paso)
+            {
+                int fSiguiente = Mathf.Min(f + paso, filasAqui - 1);
+
+                // Poste grueso en la fila f
+                CrearPosteVerja(verjaGO.transform, angulo, f, diametroPosteGrueso);
+
+                if (fSiguiente == f) break;
+
+                // Postes finos entre f y fSiguiente
+                for (int i = 1; i < divisiones; i++)
+                {
+                    float t = (float)i / divisiones;
+                    float filaInterpolada = Mathf.Lerp(f, fSiguiente, t);
+                    CrearPosteVerjaInterpolado(verjaGO.transform, angulo, filaInterpolada, diametroPosteFino);
+                }
+            }
+
+            // Poste grueso final
+            CrearPosteVerja(verjaGO.transform, angulo, filasAqui - 1, diametroPosteGrueso);
+
+            // Caños horizontales a 0, 1, 2 y 3 metros
+            for (int nivel = 0; nivel <= 3; nivel++)
+                CrearCanioVerja(verjaGO.transform, angulo, filasAqui, nivel);
+        }
+    }
+
+    void CrearPosteVerja(Transform padre, float angulo, int fila, float diametro)
+    {
+        CrearPosteVerjaInterpolado(padre, angulo, fila, diametro);
+    }
+
+    void CrearPosteVerjaInterpolado(Transform padre, float angulo, float filaFloat, float diametro)
+    {
+        int filaBase = Mathf.FloorToInt(filaFloat);
+        float frac = filaFloat - filaBase;
+
+        float radio = radioInferior + filaFloat * anchoEscalon;
+        float y = CalcularAlturaAcumulada(filaBase)
+                + frac * altoEscalon * ObtenerFactorParaFila(filaBase);
+
+        float rad = angulo * Mathf.Deg2Rad;
+        Vector3 posLocal = new Vector3(radio * Mathf.Cos(rad), y, radio * Mathf.Sin(rad));
+        Vector3 pos = transform.TransformPoint(posLocal);
+
+        GameObject poste = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        poste.name = "Poste_Verja";
+        poste.transform.SetParent(padre);
+        poste.transform.position = pos + Vector3.up * (alturaVerja / 2f);
+        poste.transform.rotation = Quaternion.identity;
+        poste.transform.localScale = new Vector3(diametro, alturaVerja / 2f, diametro);
+
+        Collider col = poste.GetComponent<Collider>();
+        if (col != null)
+        {
+            if (Application.isPlaying) Destroy(col);
+            else DestroyImmediate(col);
+        }
+
+        poste.GetComponent<Renderer>().sharedMaterial = materialVerja;
+    }
+
+    void CrearCanioVerja(Transform padre, float angulo, int filasAqui, float alturaNivel)
+    {
+        float rad = angulo * Mathf.Deg2Rad;
+
+        // Un segmento por fila, para que el cano siga la pendiente
+        for (int f = 0; f < filasAqui - 1; f++)
+        {
+            float radioA = radioInferior + f * anchoEscalon;
+            float radioB = radioInferior + (f + 1) * anchoEscalon;
+
+            Vector3 pA = transform.TransformPoint(new Vector3(
+                radioA * Mathf.Cos(rad), CalcularAlturaAcumulada(f), radioA * Mathf.Sin(rad)));
+            Vector3 pB = transform.TransformPoint(new Vector3(
+                radioB * Mathf.Cos(rad), CalcularAlturaAcumulada(f + 1), radioB * Mathf.Sin(rad)));
+
+            pA += Vector3.up * alturaNivel;
+            pB += Vector3.up * alturaNivel;
+
+            CrearCanioEntrePuntos(pA, pB, diametroPosteFino, padre);
+        }
+    }
+
+    void CrearCanioEntrePuntos(Vector3 pA, Vector3 pB, float diametro, Transform padre)
+    {
+        GameObject canio = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        canio.name = "Canio_Verja";
+        canio.transform.SetParent(padre);
+
+        Collider col = canio.GetComponent<Collider>();
+        if (col != null)
+        {
+            if (Application.isPlaying) Destroy(col);
+            else DestroyImmediate(col);
+        }
+
+        canio.transform.position = (pA + pB) / 2f;
+        canio.transform.up = (pB - pA).normalized;
+        canio.transform.localScale = new Vector3(diametro, Vector3.Distance(pA, pB) / 2f, diametro);
+
+        canio.GetComponent<Renderer>().sharedMaterial = materialVerja;
+    }
+
+    void GenerarPasilloSuperior(GameObject contenedor)
+    {
+        if (!generarPasilloSuperior) return;
+
+        int segmentos = cantidadPiezas;
+        float anguloPorSegmento = anguloTotal / segmentos;
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangulos = new List<int>();
+
+        for (int s = 0; s < segmentos; s++)
+        {
+            float anguloA = s * anguloPorSegmento;
+            float anguloB = (s + 1) * anguloPorSegmento;
+
+            Vector3 interiorA = PuntoCoronamiento(anguloA, 0f);
+            Vector3 interiorB = PuntoCoronamiento(anguloB, 0f);
+            Vector3 exteriorA = PuntoCoronamiento(anguloA, anchoPasilloSuperior);
+            Vector3 exteriorB = PuntoCoronamiento(anguloB, anchoPasilloSuperior);
+
+            interiorA = contenedor.transform.InverseTransformPoint(interiorA);
+            interiorB = contenedor.transform.InverseTransformPoint(interiorB);
+            exteriorA = contenedor.transform.InverseTransformPoint(exteriorA);
+            exteriorB = contenedor.transform.InverseTransformPoint(exteriorB);
+
+            int idx = vertices.Count;
+            vertices.AddRange(new[] { interiorA, interiorB, exteriorA, exteriorB });
+            triangulos.AddRange(new[] { idx, idx + 2, idx + 1, idx + 1, idx + 2, idx + 3 });
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = triangulos.ToArray();
+        mesh.RecalculateNormals();
+
+        GameObject pisoGO = new GameObject("Pasillo_Superior");
+        pisoGO.transform.SetParent(contenedor.transform);
+        pisoGO.transform.localPosition = Vector3.zero;
+        pisoGO.transform.localRotation = Quaternion.identity;
+        pisoGO.AddComponent<MeshFilter>().mesh = mesh;
+        pisoGO.AddComponent<MeshRenderer>().sharedMaterial =
+            materialPasilloSuperior != null ? materialPasilloSuperior : MaterialMuro;
+    }
+
+    Vector3 PuntoCoronamiento(float angulo, float offsetRadial)
+    {
+        float filasFloat = FilasEnAnguloFloat(angulo);
+        int filaBase = (int)filasFloat;
+        float fraccion = filasFloat % 1f;
+
+        float yBase = CalcularAlturaAcumulada(filaBase)
+                    + fraccion * altoEscalon * ObtenerFactorParaFila(filaBase)
+                    + altoEscalon * ObtenerFactorParaFila(filaBase);
+
+        float radio = radioInferior + filasFloat * anchoEscalon + offsetRadial;
+        float rad = angulo * Mathf.Deg2Rad;
+
+        return transform.TransformPoint(
+            new Vector3(radio * Mathf.Cos(rad), yBase, radio * Mathf.Sin(rad)));
     }
 
 }

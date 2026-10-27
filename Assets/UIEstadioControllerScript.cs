@@ -50,6 +50,10 @@ public class UIEstadioController : MonoBehaviour
     public string nombreOtraEscena;
     public string textoBotonCambiarEstadio = "Ver otro estadio";
 
+    [Header("Referencias Detalle Capacidad")]
+    public Button buttonDetalleCapacidad;
+    public DetalleCapacidadController detalleCapacidadController;
+
 
     void Start()
     {
@@ -97,6 +101,9 @@ public class UIEstadioController : MonoBehaviour
 
         if (buttonOcultarFrente != null)
             buttonOcultarFrente.onClick.AddListener(OcultarFrente);
+
+        if (buttonDetalleCapacidad != null)
+            buttonDetalleCapacidad.onClick.AddListener(OnDetalleCapacidadClick);
 
 
         if (buttonCambiarEstadio != null) {             
@@ -256,6 +263,12 @@ public class UIEstadioController : MonoBehaviour
     {
         if (string.IsNullOrEmpty(nombreOtraEscena)) return;
         UnityEngine.SceneManagement.SceneManager.LoadScene(nombreOtraEscena);
+    }
+
+    void OnDetalleCapacidadClick()
+    {
+        if (detalleCapacidadController == null) return;
+        detalleCapacidadController.MostrarPantalla();
     }
 
 }

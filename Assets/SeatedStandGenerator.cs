@@ -85,6 +85,13 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public bool generarMuroSuperior = true;
     public float alturaMuroSuperior = 2.0f;
 
+
+    [Header("Pasillo Superior")]
+    public bool generarPasilloSuperior = false;
+    public float anchoPasilloSuperior = 2f;
+    public Material materialPasilloSuperior;
+
+
     [Header("Muros Platea")]
     public bool generarMuroFrontal = true;
     public bool generarMurosLateralesPlatea = true;
@@ -384,11 +391,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
                                            (tieneSegundaFilaVomitos && f >= filaInicioBoca2 - 1 && f <= filaInicioBoca2 + altoBoca);
                     bool esLadoVomito = (colAsiento == 0 || colAsiento == asientosEntrePasillos - 1);
                     bool esCaminable = esPasillo || (esFilaSeguridad && esLadoVomito);
-
-                    //Material matBloque = esCaminable ? GrisCemento : (Mathf.FloorToInt(xActual / anchoFranja) % 2 == 0 ? BlueColour : RedColour);
-                    //AplicarMaterialATodo(bloque, matBloque);
-                    //if (!esCaminable && !esSinAsientos) PonerAsientos(bloque.transform, matBloque);
-
+                    
                     bool esPasilloVerticalSuelto = EsPasilloSuelto(xActual);
 
                     bool enPasilloHorizontal = EsPasilloHorizontal(xActual, f);
@@ -439,6 +442,8 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             alturaAcumuladaFinal += altoEscalonBase * ObtenerFactorParaFila(i);
 
         if (tienePalcoVIP) GenerarEstructuraVIP(multZ, margenLateralPalco, contenedor.transform);
+
+        GenerarPasilloSuperior(multZ, contenedor.transform);
 
         if (generarMuroSuperior) CrearMuroCierreSuperior(multZ, contenedor.transform, alturaAcumuladaFinal);
 
@@ -591,14 +596,14 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
     void CrearMuroCierreSuperior(float mZ, Transform padre, float yFinal)
     {
+
+        float avancePasillo = generarPasilloSuperior ? anchoPasilloSuperior * mZ : 0f;
+
         if (!usarRecorteFilas)
         {
             float anchoTotal = largoMaximoTribuna;
-            //Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, (numFilas - 1) * profundidadEscalon * mZ);
-
-            //Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, numFilas * profundidadEscalon * mZ);
-
-            Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, ZBordeExteriorGrada(numFilas, mZ));
+            
+            Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, ZBordeExteriorGrada(numFilas, mZ) + avancePasillo);
 
             GameObject muro = GameObject.CreatePrimitive(PrimitiveType.Cube);
             muro.name = "Muro_Cierre_Superior";
@@ -620,14 +625,14 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             yIzq += altoEscalonBase * ObtenerFactorParaFila(i);
         
         //float zIzq = filasIzq * profundidadEscalon * mZ;
-        float zIzq = ZBordeExteriorGrada(filasIzq, mZ);
+        float zIzq = ZBordeExteriorGrada(filasIzq, mZ) + avancePasillo;
 
         float yDer = 0f;
         for (int i = 0; i < filasDir; i++)
             yDer += altoEscalonBase * ObtenerFactorParaFila(i);
         
         //float zDer = filasDir * profundidadEscalon * mZ;
-        float zDer = ZBordeExteriorGrada(filasDir, mZ);
+        float zDer = ZBordeExteriorGrada(filasDir, mZ) + avancePasillo;
 
 
         float grosor = 0.2f;
@@ -2328,6 +2333,68 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         if (FilaLlevaAsiento(filaInicioBoca)) alto++;
 
         return alto;
+    }
+
+    void GenerarPasilloSuperior(float mZ, Transform padre)
+    {
+        if (!generarPasilloSuperior) return;
+
+        float avance = anchoPasilloSuperior * mZ;
+
+        if (!usarRecorteFilas)
+        {
+            float yFinal = 0f;
+            for (int i = 0; i < numFilas; i++)
+                yFinal += altoEscalonBase * ObtenerFactorParaFila(i);
+
+            float zInterior = ZBordeExteriorGrada(numFilas, mZ);
+            float zExterior = zInterior + avance;
+
+            CrearPisoPasilloSuperior(padre,
+                new Vector3(0f, yFinal, zInterior),
+                new Vector3(largoMaximoTribuna, yFinal, zInterior),
+                new Vector3(0f, yFinal, zExterior),
+                new Vector3(largoMaximoTribuna, yFinal, zExterior));
+            return;
+        }
+
+        // Con recorte: el pasillo sigue la linea de coronamiento
+        int filasIzq = FilasEnX(0);
+        int filasDer = FilasEnX(largoMaximoTribuna);
+
+        float yIzq = 0f;
+        for (int i = 0; i < filasIzq; i++)
+            yIzq += altoEscalonBase * ObtenerFactorParaFila(i);
+
+        float yDer = 0f;
+        for (int i = 0; i < filasDer; i++)
+            yDer += altoEscalonBase * ObtenerFactorParaFila(i);
+
+        float zIzq = ZBordeExteriorGrada(filasIzq, mZ);
+        float zDer = ZBordeExteriorGrada(filasDer, mZ);
+
+        CrearPisoPasilloSuperior(padre,
+            new Vector3(0f, yIzq, zIzq),
+            new Vector3(largoMaximoTribuna, yDer, zDer),
+            new Vector3(0f, yIzq, zIzq + avance),
+            new Vector3(largoMaximoTribuna, yDer, zDer + avance));
+    }
+
+    void CrearPisoPasilloSuperior(Transform padre, Vector3 iA, Vector3 iB, Vector3 eA, Vector3 eB)
+    {
+        GameObject pisoGO = new GameObject("Pasillo_Superior");
+        pisoGO.transform.SetParent(padre);
+        pisoGO.transform.localPosition = Vector3.zero;
+        pisoGO.transform.localRotation = Quaternion.identity;
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = new Vector3[] { iA, iB, eA, eB };
+        mesh.triangles = new int[] { 0, 2, 1, 1, 2, 3 };
+        mesh.RecalculateNormals();
+
+        pisoGO.AddComponent<MeshFilter>().mesh = mesh;
+        pisoGO.AddComponent<MeshRenderer>().sharedMaterial =
+            materialPasilloSuperior != null ? materialPasilloSuperior : MaterialMuroPlatea;
     }
 
 }
