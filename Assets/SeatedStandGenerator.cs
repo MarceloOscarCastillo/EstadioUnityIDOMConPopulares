@@ -106,6 +106,21 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public Material Glass;
     public float anchoFranja = 20f;
 
+    [System.Serializable]
+    public struct FranjaColor
+    {
+        [Tooltip("Metros desde el inicio de la tribuna donde arranca esta franja")]
+        public float distanciaInicio;
+        public Material material;
+    }
+
+    [Header("Franjas de color por tramos")]
+    public bool usarFranjasPorTramos = false;
+    public List<FranjaColor> franjasPorTramos = new List<FranjaColor>();
+    [Tooltip("Material para los tramos no cubiertos por ninguna franja")]
+    public Material materialFranjaPorDefecto;
+
+
     [Header("Recorte de Filas")]
     public bool usarRecorteFilas = false;
     public int filasEnExtremoIzquierdo = 48;
@@ -397,12 +412,17 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
                     bool enPasilloHorizontal = EsPasilloHorizontal(xActual, f);
 
                     Material matBloque;
+
+                    Material matTramo = MaterialDeFranjaEnX(xActual);
+
                     if (esPasilloVertical && materialPasilloSuelto != null)
                         matBloque = materialPasilloSuelto;
                     else if (esCaminable || esPasilloVertical)
                         matBloque = GrisCemento;
                     else if (enPasilloHorizontal && materialPasilloHorizontal != null)
                         matBloque = materialPasilloHorizontal;
+                    else if (matTramo != null)
+                        matBloque = matTramo;
                     else
                         matBloque = (Mathf.FloorToInt(xActual / anchoFranja) % 2 == 0 ? BlueColour : RedColour);
 
@@ -2395,6 +2415,26 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         pisoGO.AddComponent<MeshFilter>().mesh = mesh;
         pisoGO.AddComponent<MeshRenderer>().sharedMaterial =
             materialPasilloSuperior != null ? materialPasilloSuperior : MaterialMuroPlatea;
+    }
+
+    Material MaterialDeFranjaEnX(float xActual)
+    {
+        if (!usarFranjasPorTramos) return null;
+        if (franjasPorTramos == null || franjasPorTramos.Count == 0) return null;
+
+        Material elegido = null;
+        float mejorInicio = float.MinValue;
+
+        foreach (FranjaColor f in franjasPorTramos)
+        {
+            if (f.distanciaInicio <= xActual && f.distanciaInicio > mejorInicio)
+            {
+                mejorInicio = f.distanciaInicio;
+                elegido = f.material;
+            }
+        }
+
+        return elegido != null ? elegido : materialFranjaPorDefecto;
     }
 
 }

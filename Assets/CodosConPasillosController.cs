@@ -78,7 +78,6 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     [Tooltip("Desplaza el inicio de las franjas, en metros de arco")]
     public float offsetFranja = 0f;
 
-    
     [Header("Es codo de platea")]
     public bool esCodoPlatea = true;
 
