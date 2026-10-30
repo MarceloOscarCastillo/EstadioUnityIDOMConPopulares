@@ -29,7 +29,9 @@ public static class NombresVariantes
         { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado, "Estadio Pedro Bidegain terminado" },
         { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena, "Pedro Bidegain Arena" },
         { EstadioConfigurator.TipoConfiguracion.Bidegain_Arena_Corto, "Pedro Bidegain Arena, version corta" },
-        { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado_Plus, "El Bidegain terminado, pero haciendo popular las plateas del codo sur de la popular local" }
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Terminado_Plus, "El Bidegain terminado, pero haciendo popular las plateas del codo sur de la popular local" },
+
+        { EstadioConfigurator.TipoConfiguracion.Bidegain_Ampliado, "El Bidegain terminado y con 20 filas más" }
     };
 
     public static string ObtenerNombre(EstadioConfigurator.TipoConfiguracion variante)

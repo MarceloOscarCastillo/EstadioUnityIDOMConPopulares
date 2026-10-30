@@ -32,7 +32,9 @@ public class EstadioConfigurator : MonoBehaviour
         Bidegain_Terminado = 101,
         Bidegain_Arena = 102,
         Bidegain_Arena_Corto = 103,
-        Bidegain_Terminado_Plus = 104
+        Bidegain_Terminado_Plus = 104,
+        Bidegain_Ampliado = 105
+
     }
 
     [System.Serializable]
