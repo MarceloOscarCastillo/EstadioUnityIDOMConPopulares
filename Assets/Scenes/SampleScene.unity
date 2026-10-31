@@ -712,7 +712,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7048192571770578554, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1463894162}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
 --- !u!4 &33234913 stripped
 Transform:
@@ -724,7 +727,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
   m_PrefabInstance: {fileID: 33234912}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1463894161}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
@@ -1461,6 +1464,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 46128814}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &47112441 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+  m_PrefabInstance: {fileID: 1790468699}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &48566541
 GameObject:
   m_ObjectHideFlags: 0
@@ -7136,7 +7144,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1966968154}
   m_SourcePrefab: {fileID: 100100000, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
 --- !u!4 &333435192 stripped
 Transform:
@@ -7148,7 +7159,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
   m_PrefabInstance: {fileID: 333435191}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1966968153}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
@@ -7534,6 +7545,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 343295036}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &348940560 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9031667451433880803, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+  m_PrefabInstance: {fileID: 734808178}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &351752533
 GameObject:
   m_ObjectHideFlags: 0
@@ -7995,6 +8011,7 @@ GameObject:
   m_Component:
   - component: {fileID: 368899983}
   - component: {fileID: 368899984}
+  - component: {fileID: 368899985}
   m_Layer: 0
   m_Name: SegundaBandejaCabecera1
   m_TagString: Untagged
@@ -8127,6 +8144,21 @@ MonoBehaviour:
   publicarAnclajesTecho: 1
   rolEnElTecho: 1
   idTribunaParaTecho: SegundaBandejaCabecera1
+--- !u!114 &368899985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 368899982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Cabecera Las Casas
+  subsector: Segunda bandeja cabecera Las Casas
+  orden: 6
 --- !u!43 &375613809
 Mesh:
   m_ObjectHideFlags: 0
@@ -8650,6 +8682,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 387905933}
   m_CullTransparentMesh: 1
+--- !u!1 &393875442 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9031667451433880803, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+  m_PrefabInstance: {fileID: 558008119}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &394308596
 GameObject:
   m_ObjectHideFlags: 0
@@ -10314,6 +10351,11 @@ MonoBehaviour:
   altoGateway: 5.4
   anchoGateway: 8
   medioPilar: 0.5
+--- !u!1 &447127373 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+  m_PrefabInstance: {fileID: 2136861133}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &448399518
 GameObject:
   m_ObjectHideFlags: 0
@@ -11361,7 +11403,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 491496195}
   m_SourcePrefab: {fileID: 100100000, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
 --- !u!4 &491496192 stripped
 Transform:
@@ -11373,12 +11418,32 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
   m_PrefabInstance: {fileID: 491496191}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 491496194}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca9a100b782a32942bf84470a7f7d7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StandGenerator
+--- !u!1 &491496194 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+  m_PrefabInstance: {fileID: 491496191}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &491496195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 491496194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Tribuna Lateral Baja Jos\xE9 M\xE1rmol"
+  subsector: "Tribuna Lateral Baja Jos\xE9 M\xE1rmol"
+  orden: 1
 --- !u!1 &493261569
 GameObject:
   m_ObjectHideFlags: 0
@@ -12226,16 +12291,16 @@ MonoBehaviour:
   modulos:
   - nombre: BlueBox
     prefab: {fileID: 3355740460470910537, guid: 367e6a397cf959949b615a4553b81350, type: 3}
-    peso: 0.35
+    peso: 0.1
   - nombre: RedBox
     prefab: {fileID: 7452928246096615146, guid: 17d0a51194f7ea54987f59e9e7caf958, type: 3}
-    peso: 0.35
+    peso: 0.1
   - nombre: GrayBox
     prefab: {fileID: 131820383512378909, guid: 1a824d4860193c440b66ea53381aec71, type: 3}
-    peso: 0.1
+    peso: 0.4
   - nombre: GlassBox
     prefab: {fileID: 3333193799671021365, guid: 2bd0a360ca7a0414aa83f416cde5a93e, type: 3}
-    peso: 0.1
+    peso: 0.2
   - nombre: GasometroBox
     prefab: {fileID: 3821258484941890382, guid: 566cfef631563f44f825a4d0f7e13300, type: 3}
     peso: 0.1
@@ -12603,7 +12668,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9031667451433880803, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 775588750}
   m_SourcePrefab: {fileID: 100100000, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
 --- !u!1 &560040430
 GameObject:
@@ -13308,6 +13376,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4824154939077010804, guid: 924d206ddad501348b2612147ee756e6, type: 3}
   m_PrefabInstance: {fileID: 585687941}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &587049896 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+  m_PrefabInstance: {fileID: 1094168573}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &595254700
 GameObject:
@@ -19423,7 +19496,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9031667451433880803, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1154753704}
   m_SourcePrefab: {fileID: 100100000, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
 --- !u!1 &736622167
 GameObject:
@@ -20199,12 +20275,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
   m_PrefabInstance: {fileID: 558008119}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 393875442}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d5ed90631a57e54f9a0da1745e96e46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpperCurveStandWithWalkpathScript
+--- !u!114 &775588750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393875442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Codos Superiores
+  subsector: "Codo Superior Popular Jos\xE9 M\xE1rmol y Las Casas"
+  orden: 2
 --- !u!43 &783606180
 Mesh:
   m_ObjectHideFlags: 0
@@ -20844,6 +20935,7 @@ GameObject:
   m_Component:
   - component: {fileID: 810869121}
   - component: {fileID: 810869122}
+  - component: {fileID: 810869123}
   m_Layer: 0
   m_Name: ProlongacionPopular3
   m_TagString: Untagged
@@ -20970,6 +21062,21 @@ MonoBehaviour:
   publicarAnclajesTecho: 0
   rolEnElTecho: 0
   idTribunaParaTecho: ProlongacionPopular3
+--- !u!114 &810869123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 810869120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Cabecera Incl\xE1n"
+  subsector: "Prolongaci\xF3n cabecera Incl\xE1n y Jos\xE9 M\xE1rmol"
+  orden: 4
 --- !u!1 &812305321
 GameObject:
   m_ObjectHideFlags: 0
@@ -21845,7 +21952,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9031667451433880803, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1778285681}
   m_SourcePrefab: {fileID: 100100000, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
 --- !u!4 &847958865 stripped
 Transform:
@@ -23641,7 +23751,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 926893383}
   m_SourcePrefab: {fileID: 100100000, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
 --- !u!4 &926893380 stripped
 Transform:
@@ -23653,12 +23766,32 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
   m_PrefabInstance: {fileID: 926893379}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 926893382}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca9a100b782a32942bf84470a7f7d7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StandGenerator
+--- !u!1 &926893382 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+  m_PrefabInstance: {fileID: 926893379}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &926893383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926893382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Tribuna Lateral Baja Avenida La Plata
+  subsector: Tribuna Lateral Baja Avenida La Plata
+  orden: 1
 --- !u!1 &927138445
 GameObject:
   m_ObjectHideFlags: 0
@@ -25333,6 +25466,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 984052211}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &993246699 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7048192571770578554, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+  m_PrefabInstance: {fileID: 1758782315}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &998391652
 GameObject:
   m_ObjectHideFlags: 0
@@ -25509,7 +25647,7 @@ MonoBehaviour:
     m_NormalColor: {r: 0.079476655, g: 0.2198786, b: 0.8867924, a: 1}
     m_HighlightedColor: {r: 0.13950695, g: 0.3535947, b: 0.8962264, a: 1}
     m_PressedColor: {r: 0.1760413, g: 0.49992606, b: 0.8679245, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.15690637, g: 0.3273267, b: 0.8113208, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -26240,6 +26378,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1034012069}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1035587934 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9031667451433880803, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+  m_PrefabInstance: {fileID: 847958864}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1041958987
 GameObject:
   m_ObjectHideFlags: 0
@@ -27598,7 +27741,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1274227707}
   m_SourcePrefab: {fileID: 100100000, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
 --- !u!4 &1094168574 stripped
 Transform:
@@ -30238,12 +30384,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
   m_PrefabInstance: {fileID: 734808178}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 348940560}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d5ed90631a57e54f9a0da1745e96e46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpperCurveStandWithWalkpathScript
+--- !u!114 &1154753704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348940560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Codos Superiores
+  subsector: Codo Superior Popular Avenida La Plata y Las Casas
+  orden: 1
 --- !u!1 &1159801705
 GameObject:
   m_ObjectHideFlags: 0
@@ -30254,6 +30415,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1159801706}
   - component: {fileID: 1159801707}
+  - component: {fileID: 1159801708}
   m_Layer: 0
   m_Name: ProlongacionPopular4
   m_TagString: Untagged
@@ -30380,6 +30542,21 @@ MonoBehaviour:
   publicarAnclajesTecho: 0
   rolEnElTecho: 0
   idTribunaParaTecho: ProlongacionPopular4
+--- !u!114 &1159801708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1159801705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Cabecera Incl\xE1n"
+  subsector: "Prolongaci\xF3n cabecera Incl\xE1n y Avenida La Plata"
+  orden: 5
 --- !u!1 &1160260970
 GameObject:
   m_ObjectHideFlags: 0
@@ -33270,12 +33447,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
   m_PrefabInstance: {fileID: 1094168573}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 587049896}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SeatedStandGenerator
+--- !u!114 &1274227707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587049896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Cabecera Las Casas
+  subsector: Bandeja baja Plateas Cabecera Las Casas
+  orden: 7
 --- !u!1 &1276161589
 GameObject:
   m_ObjectHideFlags: 0
@@ -35711,7 +35903,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1370166329}
   m_SourcePrefab: {fileID: 100100000, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
 --- !u!4 &1370166326 stripped
 Transform:
@@ -35723,12 +35918,32 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
   m_PrefabInstance: {fileID: 1370166325}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1370166328}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca9a100b782a32942bf84470a7f7d7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StandGenerator
+--- !u!1 &1370166328 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+  m_PrefabInstance: {fileID: 1370166325}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1370166329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370166328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Tribuna Lateral Alta Jos\xE9 M\xE1rmol"
+  subsector: "Tribuna Lateral Alta Jos\xE9 M\xE1rmol"
+  orden: 1
 --- !u!1 &1376730744
 GameObject:
   m_ObjectHideFlags: 0
@@ -37451,9 +37666,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
-  sector: "Codo Superior Platea Avenida La Plata e Incl\xE1n"
+  sector: Codos Superiores
   subsector: "Codo Superior Platea Avenida La Plata e Incl\xE1n"
-  orden: 1
+  orden: 4
 --- !u!1 &1444708772
 GameObject:
   m_ObjectHideFlags: 0
@@ -37632,6 +37847,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1455357532}
   m_CullTransparentMesh: 1
+--- !u!1 &1463894161 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7048192571770578554, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+  m_PrefabInstance: {fileID: 33234912}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1463894162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1463894161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Cabecera Incl\xE1n"
+  subsector: "Cabecera Incl\xE1n Platea Bandeja Superior"
+  orden: 9
 --- !u!1 &1466896915
 GameObject:
   m_ObjectHideFlags: 0
@@ -37904,9 +38139,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
-  sector: "Codo Superior Platea Jos\xE9 M\xE1rmol e Incl\xE1n"
+  sector: Codos Superiores
   subsector: "Codo Superior Platea Jos\xE9 M\xE1rmol e Incl\xE1n"
-  orden: 1
+  orden: 3
 --- !u!1 &1482435138
 GameObject:
   m_ObjectHideFlags: 0
@@ -38232,6 +38467,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1493460643}
   - component: {fileID: 1493460644}
+  - component: {fileID: 1493460645}
   m_Layer: 0
   m_Name: ProlongacionPopular1
   m_TagString: Untagged
@@ -38358,6 +38594,21 @@ MonoBehaviour:
   publicarAnclajesTecho: 0
   rolEnElTecho: 0
   idTribunaParaTecho: ProlongacionPopular1
+--- !u!114 &1493460645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493460642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Cabecera Las Casas
+  subsector: "Prolongaci\xF3n Cabecera Las Casas y Av. La Plata"
+  orden: 4
 --- !u!1 &1496178927
 GameObject:
   m_ObjectHideFlags: 0
@@ -42346,6 +42597,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1687611605}
   - component: {fileID: 1687611606}
+  - component: {fileID: 1687611607}
   m_Layer: 0
   m_Name: SegundaBandejaCabecera2
   m_TagString: Untagged
@@ -42472,6 +42724,21 @@ MonoBehaviour:
   publicarAnclajesTecho: 0
   rolEnElTecho: 1
   idTribunaParaTecho: SegundaBandejaCabecera2
+--- !u!114 &1687611607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687611604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Cabecera Incl\xE1n"
+  subsector: "Segunda Bandeja Cabecera Incl\xE1n"
+  orden: 6
 --- !u!43 &1696207875
 Mesh:
   m_ObjectHideFlags: 0
@@ -43062,7 +43329,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9031667451433880803, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1925848328}
   m_SourcePrefab: {fileID: 100100000, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
 --- !u!4 &1706160140 stripped
 Transform:
@@ -43074,7 +43344,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
   m_PrefabInstance: {fileID: 1706160139}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1925848327}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d5ed90631a57e54f9a0da1745e96e46, type: 3}
@@ -44432,7 +44702,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7048192571770578554, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1758782318}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
 --- !u!4 &1758782316 stripped
 Transform:
@@ -44444,12 +44717,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
   m_PrefabInstance: {fileID: 1758782315}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 993246699}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SeatedStandGenerator
+--- !u!114 &1758782318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 993246699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Cabecera Las Casas
+  subsector: Segunda Bandeja Plateas Cabecera Las Casas
+  orden: 8
 --- !u!1 &1765145115
 GameObject:
   m_ObjectHideFlags: 0
@@ -44747,12 +45035,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
   m_PrefabInstance: {fileID: 847958864}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1035587934}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d5ed90631a57e54f9a0da1745e96e46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpperCurveStandWithWalkpathScript
+--- !u!114 &1778285681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035587934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Codos Superiores
+  subsector: "Codo superior popular Incl\xE1n y Avenida La Plata"
+  orden: 4
 --- !u!1 &1789994701
 GameObject:
   m_ObjectHideFlags: 0
@@ -44973,7 +45276,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1790468702}
   m_SourcePrefab: {fileID: 100100000, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
 --- !u!4 &1790468700 stripped
 Transform:
@@ -44985,12 +45291,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
   m_PrefabInstance: {fileID: 1790468699}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 47112441}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SeatedStandGenerator
+--- !u!114 &1790468702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47112441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Platea Baja Corta Jos\xE9 M\xE1rmol"
+  subsector: "Platea Baja Corta Jos\xE9 M\xE1rmol"
+  orden: 1
 --- !u!1 &1790618676
 GameObject:
   m_ObjectHideFlags: 0
@@ -47141,9 +47462,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
-  sector: "Codo superior platea Jos\xE9 M\xE1rmol y Las Casas"
+  sector: Codos Superiores
   subsector: "Codo superior platea Jos\xE9 M\xE1rmol y Las Casas"
-  orden: 1
+  orden: 2
 --- !u!1 &1856797648
 GameObject:
   m_ObjectHideFlags: 0
@@ -47735,6 +48056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1885244544}
   - component: {fileID: 1885244545}
+  - component: {fileID: 1885244546}
   m_Layer: 0
   m_Name: ProlongacionPopular2
   m_TagString: Untagged
@@ -47861,6 +48183,21 @@ MonoBehaviour:
   publicarAnclajesTecho: 0
   rolEnElTecho: 0
   idTribunaParaTecho: ProlongacionPopular2
+--- !u!114 &1885244546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885244543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Cabecera Las Casas
+  subsector: "Prolongaci\xF3n Cabecera Las Casas y Jos\xE9 M\xE1rmol"
+  orden: 5
 --- !u!1 &1899172095
 GameObject:
   m_ObjectHideFlags: 0
@@ -48074,6 +48411,11 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!1 &1903823297 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+  m_PrefabInstance: {fileID: 1980784681}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1909846748 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 460512261434201233, guid: 04ecf2d54dc32ba44aae00ff6088bb1e, type: 3}
@@ -48826,6 +49168,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
   m_PrefabInstance: {fileID: 1920455100}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1925848327 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9031667451433880803, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
+  m_PrefabInstance: {fileID: 1706160139}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1925848328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925848327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Codos Superiores
+  subsector: "Codo Superior Popular Incl\xE1n y Jos\xE9 M\xE1rmol"
+  orden: 3
 --- !u!1 &1929409671 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7048192571770578554, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
@@ -49556,6 +49918,26 @@ Transform:
   - {fileID: 1950404618}
   m_Father: {fileID: 1550726501}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1966968153 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+  m_PrefabInstance: {fileID: 333435191}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1966968154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1966968153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Platea Baja Avenida La Plata
+  subsector: Platea Baja Corta Avenida La Plata
+  orden: 1
 --- !u!1 &1972008357
 GameObject:
   m_ObjectHideFlags: 0
@@ -49859,7 +50241,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6995922983615106974, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1980784684}
   m_SourcePrefab: {fileID: 100100000, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
 --- !u!4 &1980784682 stripped
 Transform:
@@ -49871,12 +50256,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -182046399266711782, guid: 2ccb9c2f3bf38924a95563b5e87a49b4, type: 3}
   m_PrefabInstance: {fileID: 1980784681}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1903823297}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a76bedad3768d34cb00a4d49f0185a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SeatedStandGenerator
+--- !u!114 &1980784684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903823297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Cabecera Incl\xE1n"
+  subsector: "Cabecera Incl\xE1n Platea Bandeja Inferior"
+  orden: 8
 --- !u!43 &1985654937
 Mesh:
   m_ObjectHideFlags: 0
@@ -52266,7 +52666,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 525, y: -257}
+  m_AnchoredPosition: {x: 760, y: -600}
   m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2092580034
@@ -53351,7 +53751,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2136861136}
   m_SourcePrefab: {fileID: 100100000, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
 --- !u!4 &2136861134 stripped
 Transform:
@@ -53363,12 +53766,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
   m_PrefabInstance: {fileID: 2136861133}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 447127373}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca9a100b782a32942bf84470a7f7d7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StandGenerator
+--- !u!114 &2136861136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447127373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: Cabecera Las Casas
+  subsector: Cabecera Las Casas Popular Bandeja inferior
+  orden: 9
 --- !u!43 &2146072103
 Mesh:
   m_ObjectHideFlags: 0
@@ -54499,7 +54917,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
-  sector: Codo superior Platea Avenida La Plata y Las Casas
+  sector: Codos Superiores
   subsector: Codo superior Platea Avenida La Plata y Las Casas
   orden: 1
 --- !u!1001 &5884176418225959733

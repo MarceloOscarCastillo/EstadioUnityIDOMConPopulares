@@ -653,7 +653,8 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
         if (generarMuroSuperior) GenerarMuroSuperior(contenedor, mapa);
 
-        if (generarMurosVomitos) GenerarMurosVomitos(contenedor, angulosVomitos);
+        //if (generarMurosVomitos) GenerarMurosVomitos(contenedor, angulosVomitos);
+        if (generarMurosVomitos) GenerarMurosVomitos(contenedor, angulosVomitos, mapa);
 
 
         GenerarVerjas(contenedor);
@@ -762,37 +763,52 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
     //{
     //    float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
     //    float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
+
     //    float gradosPasillo = (anchoPasilloVomito / circunferenciaMedia) * 360f;
+
     //    float gradosLibres = (metrosLibresAlrededor / circunferenciaMedia) * 360f;
 
     //    bool esFilaVomito1 = (fila >= filaInicioBocaVomito && fila < filaInicioBocaVomito + altoBocaVomito);
     //    bool esFilaVomito2 = tieneSegundaLinea && (fila >= filaInicioBoca2 && fila < filaInicioBoca2 + altoBocaVomito);
     //    bool esFilaVomito = esFilaVomito1 || esFilaVomito2;
 
+    //    int margen = filasSinAsientosArribaYAbajoDelVomito;
+
+    //    bool esFilaLibre1 = (fila >= filaInicioBocaVomito - margen
+    //                      && fila < filaInicioBocaVomito + altoBocaVomito + margen);
+    //    bool esFilaLibre2 = tieneSegundaLinea
+    //                      && (fila >= filaInicioBoca2 - margen
+    //                       && fila < filaInicioBoca2 + altoBocaVomito + margen);
+    //    bool esFilaLibre = esFilaLibre1 || esFilaLibre2;
+
     //    foreach (float anguloVomito in angulosVomitos)
     //    {
-    //        if (Mathf.Abs(anguloMedio - anguloVomito) <= gradosPasillo)
+    //        float distancia = Mathf.Abs(anguloMedio - anguloVomito);
+
+    //        if (distancia <= gradosPasillo)
     //        {
     //            if (esFilaVomito) return TipoCelda.Vacio;
+
+    //            if (!posicionVomitoDeterminaPosicionPasillo)
+    //            {
+    //                // El vomito no genera pasillo vertical: solo quedan libres
+    //                // las filas inmediatas arriba y abajo del hueco
+    //                return esFilaLibre ? TipoCelda.BloqueLibre : TipoCelda.Bloque;
+    //            }
+
     //            if (!esCodoPlatea) return TipoCelda.Bloque;
     //            return TipoCelda.Escalera;
     //        }
 
-    //        if (esFilaVomito && Mathf.Abs(anguloMedio - anguloVomito) <= gradosPasillo + gradosLibres)
+    //        if (esFilaVomito && distancia <= gradosPasillo + gradosLibres)
     //            return esCodoPlatea ? TipoCelda.BloqueLibre : TipoCelda.Bloque;
     //    }
 
     //    return TipoCelda.Bloque;
     //}
 
-
     TipoCelda DeterminarTipo(float anguloMedio, int fila, List<float> angulosVomitos)
     {
-        float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
-        float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
-        float gradosPasillo = (anchoPasilloVomito / circunferenciaMedia) * 360f;
-        float gradosLibres = (metrosLibresAlrededor / circunferenciaMedia) * 360f;
-
         bool esFilaVomito1 = (fila >= filaInicioBocaVomito && fila < filaInicioBocaVomito + altoBocaVomito);
         bool esFilaVomito2 = tieneSegundaLinea && (fila >= filaInicioBoca2 && fila < filaInicioBoca2 + altoBocaVomito);
         bool esFilaVomito = esFilaVomito1 || esFilaVomito2;
@@ -806,6 +822,15 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                            && fila < filaInicioBoca2 + altoBocaVomito + margen);
         bool esFilaLibre = esFilaLibre1 || esFilaLibre2;
 
+        // El ancho angular se fija con la fila de inicio de la linea a la que
+        // pertenece esta celda, no con la fila propia. Asi el hueco conserva
+        // la misma forma en toda su altura.
+        int filaReferencia = filaInicioBocaVomito;
+        if (esFilaVomito2 || esFilaLibre2) filaReferencia = filaInicioBoca2;
+
+        float gradosPasillo = GradosPasilloVomitoEnFila(filaReferencia);
+        float gradosLibres = GradosLibresVomitoEnFila(filaReferencia);
+
         foreach (float anguloVomito in angulosVomitos)
         {
             float distancia = Mathf.Abs(anguloMedio - anguloVomito);
@@ -815,11 +840,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
                 if (esFilaVomito) return TipoCelda.Vacio;
 
                 if (!posicionVomitoDeterminaPosicionPasillo)
-                {
-                    // El vomito no genera pasillo vertical: solo quedan libres
-                    // las filas inmediatas arriba y abajo del hueco
                     return esFilaLibre ? TipoCelda.BloqueLibre : TipoCelda.Bloque;
-                }
 
                 if (!esCodoPlatea) return TipoCelda.Bloque;
                 return TipoCelda.Escalera;
@@ -830,6 +851,14 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         }
 
         return TipoCelda.Bloque;
+    }
+
+    float GradosLibresVomitoEnFila(int fila)
+    {
+        float radio = radioInferior + fila * anchoEscalon;
+        float circunferencia = 2f * Mathf.PI * radio;
+        if (circunferencia <= 0f) return 0f;
+        return (metrosLibresAlrededor / circunferencia) * 360f;
     }
 
 
@@ -1402,41 +1431,78 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         muroGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialMuro;
     }
 
+    //void GenerarMurosVomitos(GameObject contenedor, List<float> angulosVomitos)
+    //{
+    //    if (!generarMurosVomitos) return;
 
-    void GenerarMurosVomitos(GameObject contenedor, List<float> angulosVomitos)
+    //    foreach (float anguloVomito in angulosVomitos)
+    //    {
+    //        // Primera linea de vomitos
+    //        float gradosLinea1 = GradosPasilloVomitoEnFila(filaInicioBocaVomito);
+    //        float anguloIzq1 = anguloVomito - gradosLinea1;
+    //        float anguloDer1 = anguloVomito + gradosLinea1;
+
+    //        GenerarMurosVomitoEnAngulos(contenedor, anguloIzq1, anguloDer1,
+    //            filaInicioBocaVomito, altoBocaVomito);
+
+    //        if (generarEscaleraVomito)
+    //            GenerarEscaleraDescendenteVomitoCodo(anguloIzq1, anguloDer1, filaInicioBocaVomito, contenedor);
+
+    //        // Segunda linea
+    //        if (tieneSegundaLinea && FilasEnAngulo(anguloVomito) > filaInicioBoca2)
+    //        {
+    //            float gradosLinea2 = GradosPasilloVomitoEnFila(filaInicioBoca2);
+    //            float anguloIzq2 = anguloVomito - gradosLinea2;
+    //            float anguloDer2 = anguloVomito + gradosLinea2;
+
+    //            GenerarMurosVomitoEnAngulos(contenedor, anguloIzq2, anguloDer2,
+    //                filaInicioBoca2, altoBocaVomito);
+
+    //            if (generarEscaleraVomito)
+    //                GenerarEscaleraDescendenteVomitoCodo(anguloIzq2, anguloDer2, filaInicioBoca2, contenedor);
+    //        }
+    //    }
+    //}
+
+    void GenerarMurosVomitos(GameObject contenedor, List<float> angulosVomitos, List<Celda> mapa)
     {
         if (!generarMurosVomitos) return;
 
         foreach (float anguloVomito in angulosVomitos)
         {
-                       
-            float radioMedio = radioInferior + (filasMaximas / 2f) * anchoEscalon;
-            float circunferenciaMedia = 2f * Mathf.PI * radioMedio;
-            float gradosPasillo = (anchoPasilloVomito / circunferenciaMedia) * 360f;
+            float izq, der;
 
-            float anguloIzq = anguloVomito - gradosPasillo;
-            float anguloDer = anguloVomito + gradosPasillo;
-
-            // Para cada linea de vomitos
-            GenerarMurosVomitoEnAngulos(contenedor, anguloIzq, anguloDer,
-                filaInicioBocaVomito, altoBocaVomito);
-
-            if (tieneSegundaLinea)
+            if (BordesRealesDelVomito(mapa, anguloVomito, filaInicioBocaVomito, out izq, out der))
             {
-                // Verificar que la fila existe en ese angulo
-                if (FilasEnAngulo(anguloVomito) > filaInicioBoca2)
-                    GenerarMurosVomitoEnAngulos(contenedor, anguloIzq, anguloDer,
-                        filaInicioBoca2, altoBocaVomito);
+                GenerarMurosVomitoEnAngulos(contenedor, izq, der,
+                    filaInicioBocaVomito, altoBocaVomito);
+
+                if (generarEscaleraVomito)
+                    GenerarEscaleraDescendenteVomitoCodo(izq, der, filaInicioBocaVomito, contenedor);
             }
 
-            if (generarEscaleraVomito)
+            if (tieneSegundaLinea && FilasEnAngulo(anguloVomito) > filaInicioBoca2)
             {
-                GenerarEscaleraDescendenteVomitoCodo(anguloIzq, anguloDer, filaInicioBocaVomito, contenedor);
-                if (tieneSegundaLinea && FilasEnAngulo(anguloVomito) > filaInicioBoca2)
-                    GenerarEscaleraDescendenteVomitoCodo(anguloIzq, anguloDer, filaInicioBoca2, contenedor);
+                if (BordesRealesDelVomito(mapa, anguloVomito, filaInicioBoca2, out izq, out der))
+                {
+                    GenerarMurosVomitoEnAngulos(contenedor, izq, der,
+                        filaInicioBoca2, altoBocaVomito);
+
+                    if (generarEscaleraVomito)
+                        GenerarEscaleraDescendenteVomitoCodo(izq, der, filaInicioBoca2, contenedor);
+                }
             }
         }
     }
+
+    float GradosPasilloVomitoEnFila(int fila)
+    {
+        float radio = radioInferior + fila * anchoEscalon;
+        float circunferencia = 2f * Mathf.PI * radio;
+        if (circunferencia <= 0f) return 0f;
+        return (anchoPasilloVomito / circunferencia) * 360f / 2f;
+    }
+
 
     void GenerarMurosVomitoEnAngulos(GameObject contenedor, float anguloIzq, float anguloDer,
         int filaInicio, int altoVomito)
@@ -2877,6 +2943,38 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
 
         return transform.TransformPoint(
             new Vector3(radio * Mathf.Cos(rad), yBase, radio * Mathf.Sin(rad)));
+    }
+
+    bool BordesRealesDelVomito(List<Celda> mapa, float anguloVomito, int filaReferencia,
+    out float anguloIzq, out float anguloDer)
+    {
+        anguloIzq = 0f;
+        anguloDer = 0f;
+        bool encontrado = false;
+
+        foreach (Celda c in mapa)
+        {
+            if (c.fila != filaReferencia) continue;
+            if (c.tipo != TipoCelda.Vacio) continue;
+
+            // Solo las celdas vacias que pertenecen a este vomito
+            float centro = (c.angStart + c.angEnd) / 2f;
+            if (Mathf.Abs(centro - anguloVomito) > anguloTotal / 4f) continue;
+
+            if (!encontrado)
+            {
+                anguloIzq = c.angStart;
+                anguloDer = c.angEnd;
+                encontrado = true;
+            }
+            else
+            {
+                if (c.angStart < anguloIzq) anguloIzq = c.angStart;
+                if (c.angEnd > anguloDer) anguloDer = c.angEnd;
+            }
+        }
+
+        return encontrado;
     }
 
 }

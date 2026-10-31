@@ -135,7 +135,7 @@ public class ContadorDeCapacidad : MonoBehaviour
 
                 if (generador != null)
                 {
-                    generador.CalcularMetrosLinealesInternos();
+                    //generador.CalcularMetrosLinealesInternos();
                     metrosDeEsteContenedor = generador.metrosLinealesCalculados;
                 }
                 else

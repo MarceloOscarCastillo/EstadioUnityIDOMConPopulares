@@ -80,6 +80,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public int altoBoca = 4;
     public bool tieneSegundaFilaVomitos = false;
     public int filaInicioBoca2 = 25;
+    public Material MaterialMuroVomito;
 
     [Header("Muro Superior")]
     public bool generarMuroSuperior = true;
@@ -103,7 +104,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public Material RedColour;
     public Material BlueColour;
     public Material GrisCemento;
-    public Material Glass;
+    public Material Glass;    
     public float anchoFranja = 20f;
 
     [System.Serializable]
@@ -495,6 +496,24 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             }
         }
 
+        else
+        {
+            foreach (float xCentro in _centrosVomitosCache)
+            {
+                GenerarMurosVomitoCompleto(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca, multZ, contenedor.transform);
+                if (generarEscaleraVomito)
+                    GenerarEscaleraDescendenteVomito(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca, multZ, contenedor.transform);
+
+                if (tieneSegundaFilaVomitos)
+                {
+                    GenerarMurosVomitoCompleto(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                    if (generarEscaleraVomito)
+                        GenerarEscaleraDescendenteVomito(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                }
+            }
+        }
+
+
         List<float> xSoportes = new List<float>();
 
         if (generarSoportes)
@@ -586,7 +605,10 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             muroGO.transform.localPosition = Vector3.zero;
             muroGO.transform.localRotation = Quaternion.identity;
             muroGO.AddComponent<MeshFilter>().mesh = CrearMeshMuro(x, yInicio, zInicio, yFin, zFin);
-            muroGO.AddComponent<MeshRenderer>().sharedMaterial = BlueColour;
+            //muroGO.AddComponent<MeshRenderer>().sharedMaterial = BlueColour;
+            muroGO.AddComponent<MeshRenderer>().sharedMaterial =
+    MaterialMuroVomito != null ? MaterialMuroVomito : BlueColour;
+
         }
 
         GameObject dintel = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -595,7 +617,11 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         dintel.transform.localScale = new Vector3(anchoPasilloEscalera, 1.0f, 0.1f);
         dintel.transform.localPosition = new Vector3(xAjustado + (anchoPasilloEscalera / 2f), yFin + 0.5f, zFin);
         dintel.transform.localRotation = Quaternion.identity;
-        dintel.GetComponent<Renderer>().sharedMaterial = BlueColour;
+        //dintel.GetComponent<Renderer>().sharedMaterial = BlueColour;
+
+        dintel.GetComponent<Renderer>().sharedMaterial =
+    MaterialMuroVomito != null ? MaterialMuroVomito : BlueColour;
+
         DestroyImmediate(dintel.GetComponent<BoxCollider>());
     }
 
@@ -2288,7 +2314,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             muroGO.transform.localPosition = Vector3.zero;
             muroGO.transform.localRotation = Quaternion.identity;
             muroGO.AddComponent<MeshFilter>().mesh = CrearMeshMuro(x, yInicio, zInicio, yFin, zFin);
-            muroGO.AddComponent<MeshRenderer>().sharedMaterial = BlueColour;
+            muroGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialMuroVomito != null ? MaterialMuroVomito : BlueColour;
         }
 
         GameObject dintel = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -2297,7 +2323,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         dintel.transform.localScale = new Vector3(anchoHuecoVomito, 1.0f, 0.1f);
         dintel.transform.localPosition = new Vector3(xCentro, yFin + 0.5f, zFin);
         dintel.transform.localRotation = Quaternion.identity;
-        dintel.GetComponent<Renderer>().sharedMaterial = BlueColour;
+        dintel.GetComponent<Renderer>().sharedMaterial = MaterialMuroVomito != null ? MaterialMuroVomito : BlueColour;
         DestroyImmediate(dintel.GetComponent<BoxCollider>());
     }
 
