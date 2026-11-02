@@ -15,7 +15,7 @@ public class PalcosBuilderScript : MonoBehaviour
 
     void Start()
     {
-        //GenerarPalcos();
+        GenerarPalcos();
     }
 
     [ContextMenu("Generar Palcos")]
@@ -75,4 +75,10 @@ public class PalcosBuilderScript : MonoBehaviour
             StaticBatchingUtility.Combine(contenedor);
 
     }
+
+    void OnDestroy()
+    {
+        Debug.Log($"Destruyendo palcos: {gameObject.name}", gameObject);
+    }
+
 }

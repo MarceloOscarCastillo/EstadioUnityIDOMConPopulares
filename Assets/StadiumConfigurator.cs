@@ -208,13 +208,18 @@ public void AplicarConfiguracionEstadio()
 
     // 2. Juntamos una lista maestra de TODOS los controladores que existen en tu estadio
     HashSet<MonoBehaviour> todosLosSectoresDelEstadio = ObtenerTodosLosSectores();
-    
 
-    // 3. Prendemos o apagamos cada objeto de la escena según corresponda
-    foreach (MonoBehaviour sector in todosLosSectoresDelEstadio)
+
+        // 3. Prendemos o apagamos cada objeto de la escena según corresponda
+        SharedComponentsController compartidos = Object.FindFirstObjectByType<SharedComponentsController>();
+
+        foreach (MonoBehaviour sector in todosLosSectoresDelEstadio)
     {
         if (sector == null) continue;
-        bool debeActivarse = perfilElegido.sectoresActivos.Contains(sector);
+
+            if (compartidos != null && compartidos.componentesCompartidos.Contains(sector)) continue;
+
+            bool debeActivarse = perfilElegido.sectoresActivos.Contains(sector);
         
         SetearEstadoSector(sector, debeActivarse);
     }
@@ -248,7 +253,6 @@ public void AplicarConfiguracionEstadio()
 
         Debug.Log($"[EstadioConfigurator] Se aplicó la variante '{varianteAActivar}'. Se encendieron {perfilElegido.sectoresActivos.Count} controladores.");
 }
-
 
     private HashSet<MonoBehaviour> ObtenerTodosLosSectores()
     {
@@ -354,8 +358,12 @@ public void AplicarConfiguracionEstadio()
                     // Destruir contenedor
                     foreach (Transform hijo in sectorEnPerfilAnterior.transform)
                     {
-                        if (hijo.CompareTag("SectorEstadio"))
+                        if (hijo.CompareTag("SectorEstadio")) 
+                        {
+                            Debug.Log($"Destruyendo contenedor de {sectorEnPerfilAnterior.gameObject.name}");
                             Destroy(hijo.gameObject);
+                        }
+                            
                     }
 
                     yield return null; // esperar que se destruyan
@@ -472,6 +480,11 @@ public void AplicarConfiguracionEstadio()
         }
         else if (sector is PalcosBuilderScript pb) pb.GenerarPalcos();
         else if (sector is SharedComponentsController sc) sc.GenerarComponentesCompartidos();
+
+        else if (sector is GeneradorTorresTechoBidegain torres)
+        {
+            torres.GenerarTorres();
+        }
     }
 
     [ContextMenu("Limpiar Escena")]

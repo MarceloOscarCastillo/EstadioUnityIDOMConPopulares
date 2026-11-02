@@ -53,11 +53,11 @@ public class GeneradorTorresTechoBidegain : MonoBehaviour
     public Vector2 offsetXZSeccion = Vector2.zero;
     public Vector2 offsetXZCodo = Vector2.zero;
 
-
-
-
-
     private const string NOMBRE_CONTENEDOR = "Contenedor_Torres";
+
+    public float AlturaInferiorVigas =>
+    alturaBase + cantidadSecciones * alturaSeccion + alturaCodo + offsetYViga;
+
 
     [ContextMenu("Generar Torres")]
     public void GenerarTorres()
@@ -79,6 +79,9 @@ public class GeneradorTorresTechoBidegain : MonoBehaviour
 
         if (Application.isPlaying)
             StaticBatchingUtility.Combine(contenedor);
+
+        TechoBidegain techo = GetComponentInChildren<TechoBidegain>();
+        if (techo != null) techo.GenerarTecho();
     }
 
     void GenerarUnaTorre(float xTorre, Transform padre)

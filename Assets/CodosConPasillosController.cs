@@ -315,7 +315,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
     void Start()
     {
         //if (Application.isPlaying)
-        GenerarCodo();
+        //GenerarCodo();
     }
 
     public void GenerarCodo()
