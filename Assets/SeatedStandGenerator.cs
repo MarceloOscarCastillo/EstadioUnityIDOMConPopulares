@@ -292,7 +292,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     void Start()
     {
         //if (Application.isPlaying)
-        //GenerarSector();
+        GenerarSector();
     }
 
     public void GenerarSector()
