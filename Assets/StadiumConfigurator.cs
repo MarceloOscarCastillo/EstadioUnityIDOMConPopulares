@@ -202,6 +202,9 @@ public void AplicarConfiguracionEstadio()
                 }
                 else if (sector is PalcosBuilderScript pb) pb.GenerarPalcos();
 
+                else if (sector is FrenteVidriadoGenerator fvg)
+                    fvg.GenerarFrenteVidriado();
+
                 else if (sector is SharedComponentsController sc) sc.GenerarComponentesCompartidos();
             }
     }
