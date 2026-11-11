@@ -247,7 +247,7 @@ public class ContadorDeCapacidad : MonoBehaviour
     {
         int granTotal = aforoMetros + aforoAsientos + aforoPalcos + capacidadPisoEventos -descuentoParaavalanchas;
 
-        capacidadPopulares = aforoMetros;
+        capacidadPopulares = aforoMetros - descuentoParaavalanchas;
         capacidadPlateas = aforoAsientos;
         capacidadPalcos = aforoPalcos;
         capacidadTotal = granTotal;

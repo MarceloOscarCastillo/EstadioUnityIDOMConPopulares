@@ -8,7 +8,8 @@ public class SportsFieldsGenerator : MonoBehaviour
         Futsal,
         Voley,
         Basket,
-        Tenis
+        Tenis,
+        PracticaPenales
     }
 
     [Header("Configuracion de la tira")]
@@ -33,6 +34,10 @@ public class SportsFieldsGenerator : MonoBehaviour
     public float margenSuperficie = 1f;
     public float alturaSuperficie = 0.005f;
 
+    [Header("Arco")]
+    public GameObject prefabArco;
+    public Vector3 offsetArco = Vector3.zero;
+    public Vector3 rotacionArco = Vector3.zero;
 
     private const string NOMBRE_CONTENEDOR = "Contenedor_Canchas";
 
@@ -65,6 +70,7 @@ public class SportsFieldsGenerator : MonoBehaviour
                 case Deporte.Voley: GenerarVoley(cancha.transform); break;
                 case Deporte.Basket: GenerarBasket(cancha.transform); break;
                 case Deporte.Tenis: GenerarTenis(cancha.transform); break;
+                case Deporte.PracticaPenales: GenerarPracticaPenales(cancha.transform); break;
             }
         }
     }
@@ -77,6 +83,7 @@ public class SportsFieldsGenerator : MonoBehaviour
             case Deporte.Voley: return new Vector2(18f, 9f);
             case Deporte.Basket: return new Vector2(28f, 15f);
             case Deporte.Tenis: return new Vector2(23.77f, 10.97f);
+            case Deporte.PracticaPenales: return new Vector2(30f, 20f);
         }
         return new Vector2(20f, 10f);
     }
@@ -218,7 +225,7 @@ public class SportsFieldsGenerator : MonoBehaviour
                        new Vector2(0.10f, anchoLinea));
     }
 
-
+    
     void Perimetro(Transform padre, float largo, float ancho)
     {
         float ml = largo / 2f, ma = ancho / 2f;
@@ -304,6 +311,63 @@ public class SportsFieldsGenerator : MonoBehaviour
 
         DestroyImmediate(piso.GetComponent<MeshCollider>());
     }
+
+    void GenerarPracticaPenales(Transform padre)
+    {
+        float largo = 30f, ancho = 20f;
+        float ml = largo / 2f, ma = ancho / 2f;
+
+        GenerarSuperficie(padre, largo, ancho);
+        Perimetro(padre, largo, ancho);
+
+        float xFondo = -ml;
+
+        // Area chica: 18.32 de ancho, 5.5 de profundidad
+        float anchoAreaChica = 18.32f;
+        float profAreaChica = 5.5f;
+
+        LineaRecta(padre, "AreaChica_Lat_1",
+            new Vector3(xFondo + profAreaChica / 2f, 0f, anchoAreaChica / 2f),
+            new Vector2(profAreaChica, anchoLinea));
+        LineaRecta(padre, "AreaChica_Lat_2",
+            new Vector3(xFondo + profAreaChica / 2f, 0f, -anchoAreaChica / 2f),
+            new Vector2(profAreaChica, anchoLinea));
+        LineaRecta(padre, "AreaChica_Frontal",
+            new Vector3(xFondo + profAreaChica, 0f, 0f),
+            new Vector2(anchoLinea, anchoAreaChica));
+
+        // Linea del area grande, cruzando todo el ancho
+        LineaRecta(padre, "Linea_Area_Grande",
+            new Vector3(xFondo + 16.5f, 0f, 0f),
+            new Vector2(anchoLinea, ancho));
+
+        // Punto penal y medialuna
+        float xPenal = xFondo + 11f;
+        Punto(padre, "Punto_Penal", new Vector3(xPenal, 0f, 0f));
+
+        // El arco que sobresale del area grande, mirando hacia el fondo del campo
+        //Circulo(padre, "Medialuna", new Vector3(xPenal, 0f, 0f), 9.15f, 106, 37);
+
+        Circulo(padre, "Medialuna", new Vector3(xPenal, 0f, 0f), 9.15f, 106, -53);
+
+        // Lineas de referencia a 20 y 25 metros
+        LineaRecta(padre, "Linea_20m",
+            new Vector3(xFondo + 20f, 0f, 0f),
+            new Vector2(anchoLinea, ancho));
+        LineaRecta(padre, "Linea_25m",
+            new Vector3(xFondo + 25f, 0f, 0f),
+            new Vector2(anchoLinea, ancho));
+
+        // Arco
+        if (prefabArco != null)
+        {
+            GameObject arco = Instantiate(prefabArco, padre);
+            arco.name = "Arco";
+            arco.transform.localPosition = new Vector3(xFondo, 0f, 0f) + offsetArco;
+            arco.transform.localRotation = Quaternion.Euler(rotacionArco);
+        }
+    }
+
 
 
     [ContextMenu("Limpiar Canchas")]

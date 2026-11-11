@@ -26,6 +26,7 @@ public class SharedComponentsController : MonoBehaviour
             else if (componente is ShopsLineGenerator slg) slg.GenerarComercios();
             else if (componente is PalcosBuilderScript gp) gp.GenerarPalcos();
             else if (componente is FrenteVidriadoGenerator fvg) fvg.GenerarFrenteVidriado();
+            else if (componente is PuentePeatonalGenerator ppg) ppg.GenerarPuente();
         }
     }
 }

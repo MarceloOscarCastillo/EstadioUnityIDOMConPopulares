@@ -29,6 +29,11 @@ public class PisoOperativoController : MonoBehaviour
     public GameObject pisoZonaPublicoCorta;
     public List<GameObject> elementosZonaPublicoCorta = new List<GameObject>();
 
+    [Header("Escenario de recitales")]
+    public GameObject escenario;
+    public Vector3 posicionEscenarioArenaLarga;
+    public Vector3 posicionEscenarioArenaCorta;
+
 
     [Header("Capacidad")]
     [Tooltip("Solo la zona de publico suma espectadores de pie")]
@@ -71,6 +76,14 @@ public class PisoOperativoController : MonoBehaviour
         if (pisoZonaPublicoCorta != null) pisoZonaPublicoCorta.SetActive(esCorta);
         foreach (GameObject go in elementosZonaPublicoCorta)
             if (go != null) go.SetActive(esCorta);
+
+        if (escenario != null)
+        {
+            escenario.SetActive(!esFutbol);
+
+            if (esLarga) escenario.transform.localPosition = posicionEscenarioArenaLarga;
+            else if (esCorta) escenario.transform.localPosition = posicionEscenarioArenaCorta;
+        }
 
         Debug.Log($"AplicarPiso fin: piso activo={pisoZonaPublico?.activeSelf}");
 

@@ -2066,7 +2066,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3311921514456162355, guid: 501f3a07c7dc6ce4bb23336d53e8c4d1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 79.8
+      value: 84.7
       objectReference: {fileID: 0}
     - target: {fileID: 3311921514456162355, guid: 501f3a07c7dc6ce4bb23336d53e8c4d1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17147,8 +17147,8 @@ MonoBehaviour:
   anchoDelPar: 1.8
   ajusteAlturaParaavalancha: 0.45
   generarMuroDelantero: 1
-  generarMuroLateralInicio: 1
-  generarMuroLateralFin: 1
+  generarMuroLateralInicio: 0
+  generarMuroLateralFin: 0
   generarMuroSuperior: 0
   alturaMuro: 1
   alturaMuroSuperior: 2
@@ -24592,6 +24592,7 @@ Transform:
   - {fileID: 6750404414539606034}
   - {fileID: 1920455101}
   - {fileID: 2136861134}
+  - {fileID: 1807665549}
   - {fileID: 368899983}
   - {fileID: 1687611605}
   - {fileID: 1758782316}
@@ -31867,8 +31868,8 @@ MonoBehaviour:
   anchoDelPar: 1.8
   ajusteAlturaParaavalancha: 0.45
   generarMuroDelantero: 1
-  generarMuroLateralInicio: 1
-  generarMuroLateralFin: 1
+  generarMuroLateralInicio: 0
+  generarMuroLateralFin: 0
   generarMuroSuperior: 0
   alturaMuro: 1
   alturaMuroSuperior: 2
@@ -42614,7 +42615,7 @@ Transform:
   m_GameObject: {fileID: 1687611604}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
-  m_LocalPosition: {x: 173.8, y: 70.3, z: -580.91}
+  m_LocalPosition: {x: 173.8, y: 69, z: -578.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42636,14 +42637,14 @@ MonoBehaviour:
   altoEscalon: 0.25
   profundidadEscalon: 0.4
   anchoDeUnaPieza: 1
-  numFilas: 25
+  numFilas: 35
   piezasPorFila: 75
   inverter: 0
-  distribuirVomitosHomogeneamente: 1
+  distribuirVomitosHomogeneamente: 0
   offsetInicioVomitos: 0
   piezasEntreBocas: 20
   anchoBoca: 3
-  filaInicioBoca: 1
+  filaInicioBoca: 5
   altoBoca: 4
   tieneSegundaFilaVomitos: 0
   filaInicioBoca2: 25
@@ -42709,7 +42710,7 @@ MonoBehaviour:
   generarBarandillaEscalera: 1
   materialBarandilla: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
   materialEscaleraVomito: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
-  generarCirculacion: 0
+  generarCirculacion: 1
   largoCirculacion: 75
   profundidadCirculacion: 11
   yCirculacion: 1
@@ -45624,6 +45625,330 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1798843311}
   m_CullTransparentMesh: 1
+--- !u!1001 &1807665548
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 941235794}
+    m_Modifications:
+    - target: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_Name
+      value: "CabeceraBajaPeque\xF1a2Controller"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: altoViga
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: inverter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: numFilas
+      value: 42
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: RedColour
+      value: 
+      objectReference: {fileID: 2100000, guid: f876460aebf6637408eb2d440cd23ba2, type: 2}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: anchoViga
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: BlueColour
+      value: 
+      objectReference: {fileID: 2100000, guid: 4cfd9a76b3633be46ab1644cd35f7a7d, type: 2}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: altoEscalon
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: anchoDelPar
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: anchoFranja
+      value: 19.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: mordidaViga
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: ground0Level
+      value: 
+      objectReference: {fileID: 1730792205}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: MaterialVigas
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: piezasPorFila
+      value: 74
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: prefabEscalon
+      value: 
+      objectReference: {fileID: 8726906690476736078, guid: 6b152c4135651f546ad69b04cfc63865, type: 3}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: puntoInicio.x
+      value: -25.44959
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: puntoInicio.y
+      value: -0.00001
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: puntoInicio.z
+      value: -126.21776
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: filaInicioBoca
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: anchoDeUnaPieza
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: generarSoportes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: prefabAlambrado
+      value: 
+      objectReference: {fileID: 5989225943275860562, guid: b9b6eb1838d44ac46a076eb87948f1f6, type: 3}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: altoVigaDiagonal
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: generarAlambrado
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: anchoVigaDiagonal
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: grosorSoporteTecho
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: idTribunaParaTecho
+      value: CabeceraPopularesBaja1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: materialBarandilla
+      value: 
+      objectReference: {fileID: 2100000, guid: 58fffccf93008374d9cc02836156c056, type: 2}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: separacionSoportes
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: altoVigaTransversal
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: alturaTramoVertical
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: alturasSoporteTecho
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: generarMuroSuperior
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: anchoVigaTransversal
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: filaArranqueDiagonal
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: metrajeExtraDiagonal
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: prefabParaavalanchas
+      value: 
+      objectReference: {fileID: 7271585269424130416, guid: 93c276b57e6878e4a9fe0490b110614d, type: 3}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: anchoSeccionAlambrado
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: filaInicioMuroLateral
+      value: 42
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: generarEscaleraVomito
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: generarMurosLaterales
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: alturaMuroSobreEscalon
+      value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: materialEscaleraVomito
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: filaVigaVerticalExterior
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: filaVigaVerticalInterior
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: ajusteAlturaParaavalancha
+      value: 0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: generarBarandillaEscalera
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: publicarCoronamientoTecho
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: rangosDeAlzada.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: alturaVigaVerticalExterior
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: alturaVigaVerticalInterior
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: generarVigaLongitudinalTensores
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: vigaDiagonalTerminaConSoportesDeTecho
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: rangosDeAlzada.Array.data[0].filaInicio
+      value: 42
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: rangosDeAlzada.Array.data[1].filaInicio
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: rangosDeAlzada.Array.data[0].multiplicador
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: rangosDeAlzada.Array.data[1].multiplicador
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 173.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 58.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -565.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1807665551}
+  m_SourcePrefab: {fileID: 100100000, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+--- !u!4 &1807665549 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+  m_PrefabInstance: {fileID: 1807665548}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1807665550 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2571690326028103260, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+  m_PrefabInstance: {fileID: 1807665548}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1807665551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807665550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f809210a0459df4480e958fd779347b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdentidadSector
+  sector: "Cabecera Incl\xE1n"
+  subsector: "Cabecera Incl\xE1n Popular Bandeja inferior"
+  orden: 9
+--- !u!114 &1807665552 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
+  m_PrefabInstance: {fileID: 1807665548}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807665550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca9a100b782a32942bf84470a7f7d7eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StandGenerator
 --- !u!43 &1810042000
 Mesh:
   m_ObjectHideFlags: 0
@@ -51198,7 +51523,6 @@ MonoBehaviour:
     pisoOperativo: 0
   - nombreVariante: 17
     sectoresActivos:
-    - {fileID: 1934296944}
     - {fileID: 1247668223}
     - {fileID: 1827543779}
     - {fileID: 676101160}
@@ -51216,10 +51540,11 @@ MonoBehaviour:
     - {fileID: 1855783872}
     - {fileID: 1706160141}
     - {fileID: 1778285680}
+    - {fileID: 1687611606}
+    - {fileID: 1807665552}
     pisoOperativo: 0
   - nombreVariante: 18
     sectoresActivos:
-    - {fileID: 1934296944}
     - {fileID: 1258516825}
     - {fileID: 1827543779}
     - {fileID: 676101160}
@@ -51237,6 +51562,8 @@ MonoBehaviour:
     - {fileID: 775588749}
     - {fileID: 1706160141}
     - {fileID: 1279435204}
+    - {fileID: 1687611606}
+    - {fileID: 1807665552}
     pisoOperativo: 0
   - nombreVariante: 19
     sectoresActivos:
