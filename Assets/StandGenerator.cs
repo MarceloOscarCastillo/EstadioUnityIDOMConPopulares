@@ -67,6 +67,12 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public float anchoSeccionAlambrado = 2.0f;
     public float grosorMuroAlambrado = 0.1f; // ancho del muro en Z
 
+    [Header("Pasillo Frontal")]
+    public bool generarPasilloFrontal = false;
+    public float profundidadPasilloFrontal = 2f;
+    public Material materialPasilloFrontal;
+
+
     [System.Serializable]
     public struct RangoAlzada
     {
@@ -359,16 +365,13 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             }
         }
 
+        if (generarPasilloFrontal) GenerarPasilloFrontal(multiplicadorZ, contenedor);
+
         if (generarAlambrado) GenerarAlambrado(multiplicadorZ, contenedor);
 
         if (!generarAlambrado) CrearMuroCierreFrontal(multiplicadorZ, contenedor);
 
-        //if (generarSoportes)
-        //{
-        //    GenerarSoportes(multiplicadorZ, contenedor);
-        //    //cambio para prueba
-        //    GenerarVigasTransversales(multiplicadorZ, contenedor);
-        //}
+        
 
         List<float> xSoportes = new List<float>();
 
@@ -561,8 +564,10 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
         float yBase = 0f; // altura del primer escalon
 
-        float zMuroFrontal = (-profundidadEscalon / 2f - grosorMuroAlambrado) * mZ;
+        float avancePasillo = generarPasilloFrontal ? profundidadPasilloFrontal : 0f;
+        float zMuroFrontal = (-profundidadEscalon / 2f - grosorMuroAlambrado - avancePasillo) * mZ;
 
+        
         Vector3 posLocal = new Vector3(
             (anchoTotalMetros / 2f) - (anchoDeUnaPieza / 2f),
             yBase,
@@ -614,7 +619,10 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
         float yBase = 0f; // altura del primer escalon
 
-        float zAlambrado = (-profundidadEscalon / 2f - grosorMuroAlambrado) * mZ;
+        //float zAlambrado = (-profundidadEscalon / 2f - grosorMuroAlambrado) * mZ;
+
+        float avancePasillo = generarPasilloFrontal ? profundidadPasilloFrontal : 0f;
+        float zAlambrado = (-profundidadEscalon / 2f - grosorMuroAlambrado - avancePasillo) * mZ;
 
         float xActual = anchoSeccionAlambrado / 2f;
 
@@ -1150,6 +1158,34 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             DestroyImmediate(muroGO.GetComponent<BoxCollider>());
         }
     }
+
+    void GenerarPasilloFrontal(float mZ, Transform padre)
+    {
+        if (!generarPasilloFrontal) return;
+
+        float anchoTotalMetros = piezasPorFila * anchoDeUnaPieza;
+
+        // Arranca en el borde frontal del primer escalon y avanza hacia el campo
+        float zBordeFrontal = (-profundidadEscalon / 2f) * mZ;
+        float zCentroPasillo = zBordeFrontal - (profundidadPasilloFrontal / 2f) * mZ;
+
+        GameObject pisoGO = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        pisoGO.name = "Pasillo_Frontal";
+        pisoGO.transform.SetParent(padre);
+        pisoGO.transform.localScale =
+            new Vector3(anchoTotalMetros, 0.1f, profundidadPasilloFrontal);
+        pisoGO.transform.position = transform.TransformPoint(
+            new Vector3((anchoTotalMetros / 2f) - (anchoDeUnaPieza / 2f), 0f, zCentroPasillo));
+        pisoGO.transform.rotation = transform.rotation;
+
+        if (materialPasilloFrontal != null)
+            pisoGO.GetComponent<Renderer>().sharedMaterial = materialPasilloFrontal;
+        else if (BlueColour != null)
+            pisoGO.GetComponent<Renderer>().sharedMaterial = BlueColour;
+
+        DestroyImmediate(pisoGO.GetComponent<BoxCollider>());
+    }
+
 
     bool EsHuecoVomito(float posicionXMetros, List<float> posicionesVomitos)
     {

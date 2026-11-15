@@ -176,7 +176,8 @@ public class UpperCurveStandWithWalkpathScript : MonoBehaviour, IProveedorAnclaj
     public bool generarPisoFrontal = false;
     public float profundidadPisoFrontal = 0.8f;
     public Material materialPisoFrontal;
-    
+    public float grosor = 0.2f;
+
     [Header("Baranda Frontal")]
     public bool generarBarandaFrontal = false;
     public GameObject prefabBaranda;
@@ -968,9 +969,8 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
     }
 
 
-    void GenerarMuroDelantero(GameObject contenedor, int pasos)
-    {
-        float grosor = 0.2f;
+    void GenerarMuroDelantero(GameObject contenedor, int pasos, float grosor = 0.2f)
+    {        
         int segmentos = cantidadPiezas;
         float anguloPorSegmento = anguloTotal / segmentos;
 
@@ -981,12 +981,14 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         for (int s = 0; s <= segmentos; s++)
         {
             float angulo = s * anguloPorSegmento;
+            
             float rad = angulo * Mathf.Deg2Rad;
+            
             Vector3 dirRadial = new Vector3(Mathf.Cos(rad), 0f, Mathf.Sin(rad));
 
-            Vector3 pOuter = new Vector3((radioInferior - profundidadPisoFrontal) * Mathf.Cos(rad), 0f, (radioInferior - profundidadPisoFrontal) * Mathf.Sin(rad));
-            Vector3 pInner = new Vector3((radioInferior - profundidadPisoFrontal + grosor) * Mathf.Cos(rad), 0f, (radioInferior - profundidadPisoFrontal + grosor) * Mathf.Sin(rad));
-
+            Vector3 pOuter = new Vector3((radioInferior - profundidadPisoFrontal - grosor) * Mathf.Cos(rad), 0f, (radioInferior - profundidadPisoFrontal) * Mathf.Sin(rad));
+            
+            Vector3 pInner = new Vector3((radioInferior - profundidadPisoFrontal) * Mathf.Cos(rad), 0f, (radioInferior - profundidadPisoFrontal + grosor) * Mathf.Sin(rad));
 
             sOuter[s] = contenedor.transform.InverseTransformPoint(transform.TransformPoint(pOuter));
             sInner[s] = contenedor.transform.InverseTransformPoint(transform.TransformPoint(pInner));
@@ -2627,6 +2629,7 @@ publicarCoronamientoTecho ? (IReadOnlyList<Vector3>)coronamiento : System.Array.
         float valorFin = d[idx];
 
         return Mathf.Lerp(valorInicio, valorFin, frac);
+
     }
 
     bool FilaLlevaAsiento(int fila)
