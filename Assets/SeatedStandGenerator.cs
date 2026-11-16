@@ -76,6 +76,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public Material BlackVIPMaterial;
 
     [Header("Seguridad (Vómitos)")]
+    public bool generarVomitos = true;
     public int filaInicioBoca = 5;
     public int altoBoca = 4;
     public bool tieneSegundaFilaVomitos = false;
@@ -98,6 +99,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     public bool generarMurosLateralesPlatea = true;
     public float alturaMuroPlatea = 1.0f;
     public float profundidadPisoFrontal = 0.5f;
+    public Material materialPisoFrontal;
     public Material MaterialMuroPlatea;
 
     [Header("Materiales")]
@@ -253,6 +255,9 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
     private List<float> _centrosVomitosCache;
 
+    private float _bordeIzqReal;
+    private float _bordeDerReal;
+
     public GeometriaSoporte GeometriaDelSoporte
     {
         get
@@ -307,10 +312,18 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         _centrosVomitosCache = CentrosVomitos();
 
         float multZ = invertir ? -1f : 1f;
-        float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f;
+
+        //float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f;
+
+        float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f - anchoDeUnaPieza / 2f;
+
 
         float xActual = 0;
         int colAsiento = 0;
+
+        float xPrimerBloque = float.MaxValue;
+        float xUltimoBloque = float.MinValue;
+
 
         while (xActual < largoMaximoTribuna)
         {
@@ -330,10 +343,13 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
                 bool dentroDeFilaPalco = (f < filasQueOcupaPalco);
                 bool zonaOcupadaPorPalco = tienePalcoVIP && dentroDeXPalco && dentroDeFilaPalco;
 
-                bool esFilaVomito = (f >= filaInicioBoca && f < filaInicioBoca + altoBoca) ||
-                                   (tieneSegundaFilaVomitos && f >= filaInicioBoca2 && f < filaInicioBoca2 + altoBoca);
+                //bool esFilaVomito = (f >= filaInicioBoca && f < filaInicioBoca + altoBoca) ||
+                //                   (tieneSegundaFilaVomitos && f >= filaInicioBoca2 && f < filaInicioBoca2 + altoBoca);
 
-                //bool esHuecoVomito = esPasillo && esFilaVomito;
+                bool esFilaVomito = generarVomitos && (
+    (f >= filaInicioBoca && f < filaInicioBoca + altoBoca) ||
+    (tieneSegundaFilaVomitos && f >= filaInicioBoca2 && f < filaInicioBoca2 + altoBoca));
+
 
                 ZonaVomito zona = ClasificarZonaVomito(xActual);
 
@@ -389,6 +405,9 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
                     GameObject bloque = Instantiate(esPasillo ? Escalera : SeatersStandBlock, transform.TransformPoint(posLocal), transform.rotation, contenedor.transform);
 
+                    //if (xActual < xPrimerBloque) xPrimerBloque = xActual;
+                    //if (xActual > xUltimoBloque) xUltimoBloque = xActual;
+
                     if (esPasillo)
                         bloque.transform.localScale = new Vector3(1, factorEscalaY, 1); // igual que antes
                     else
@@ -439,21 +458,18 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
 
                 }
-
-                //OJO CON ESTO
-                //if (esHuecoVomito && (f == filaInicioBoca || (tieneSegundaFilaVomitos && f == filaInicioBoca2)))
-                //{
-                //    GenerarMurosVomitoCompleto(xActual, f, multZ, contenedor.transform);
-
-                //    if (generarEscaleraVomito) 
-                //    {
-                //        GenerarEscaleraDescendenteVomito(xActual, f, multZ, contenedor.transform);
-                //    }                        
-                //}
-
+                
                 alturaAcumulada += altoRealFila;
             }
 
+            if (xActual < xPrimerBloque) xPrimerBloque = xActual;
+           
+            float bordeDerColumna = esPasillo
+                ? xActual + anchoPasilloEscalera
+                : xActual + anchoDeUnaPieza / 2f;
+
+            if (bordeDerColumna > xUltimoBloque) xUltimoBloque = bordeDerColumna;
+          
             xActual += esPasillo ? anchoPasilloEscalera : anchoDeUnaPieza;
             colAsiento = esPasillo ? 0 : colAsiento + 1;
         }
@@ -463,6 +479,13 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             alturaAcumuladaFinal += altoEscalonBase * ObtenerFactorParaFila(i);
 
         if (tienePalcoVIP) GenerarEstructuraVIP(multZ, margenLateralPalco, contenedor.transform);
+
+        Debug.Log($"izq={_bordeIzqReal:F2}, der={_bordeDerReal:F2}, largoMax={largoMaximoTribuna}, margenPalco={margenLateralPalco:F2}");
+
+
+        _bordeIzqReal = xPrimerBloque - anchoDeUnaPieza / 2f;
+        //_bordeDerReal = xUltimoBloque + anchoDeUnaPieza / 2f;
+        _bordeDerReal = xUltimoBloque - anchoDeUnaPieza / 2f;
 
         GenerarPasilloSuperior(multZ, contenedor.transform);
 
@@ -479,40 +502,43 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             GenerarTunelJugadores(multZ, contenedor.transform);
         }
 
-        if (vomitosConPasilloLateral)
+        if (generarVomitos)
         {
-            foreach (float xCentro in _centrosVomitosCache)
+            if (vomitosConPasilloLateral)
             {
-                GenerarMurosVomitoLateral(xCentro, filaInicioBoca, multZ, contenedor.transform);
-                if (generarEscaleraVomito)
-                    GenerarEscaleraDescendenteVomito(xCentro - anchoHuecoVomito / 2f, filaInicioBoca, multZ, contenedor.transform);
-
-                if (tieneSegundaFilaVomitos)
+                foreach (float xCentro in _centrosVomitosCache)
                 {
-                    GenerarMurosVomitoLateral(xCentro, filaInicioBoca2, multZ, contenedor.transform);
+                    GenerarMurosVomitoLateral(xCentro, filaInicioBoca, multZ, contenedor.transform);
                     if (generarEscaleraVomito)
-                        GenerarEscaleraDescendenteVomito(xCentro - anchoHuecoVomito / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                        GenerarEscaleraDescendenteVomito(xCentro - anchoHuecoVomito / 2f, filaInicioBoca, multZ, contenedor.transform);
+
+                    if (tieneSegundaFilaVomitos)
+                    {
+                        GenerarMurosVomitoLateral(xCentro, filaInicioBoca2, multZ, contenedor.transform);
+                        if (generarEscaleraVomito)
+                            GenerarEscaleraDescendenteVomito(xCentro - anchoHuecoVomito / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                    }
                 }
             }
-        }
 
-        else
-        {
-            foreach (float xCentro in _centrosVomitosCache)
+            else
             {
-                GenerarMurosVomitoCompleto(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca, multZ, contenedor.transform);
-                if (generarEscaleraVomito)
-                    GenerarEscaleraDescendenteVomito(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca, multZ, contenedor.transform);
-
-                if (tieneSegundaFilaVomitos)
+                foreach (float xCentro in _centrosVomitosCache)
                 {
-                    GenerarMurosVomitoCompleto(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                    GenerarMurosVomitoCompleto(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca, multZ, contenedor.transform);
                     if (generarEscaleraVomito)
-                        GenerarEscaleraDescendenteVomito(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                        GenerarEscaleraDescendenteVomito(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca, multZ, contenedor.transform);
+
+                    if (tieneSegundaFilaVomitos)
+                    {
+                        GenerarMurosVomitoCompleto(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                        if (generarEscaleraVomito)
+                            GenerarEscaleraDescendenteVomito(xCentro - anchoPasilloEscalera / 2f, filaInicioBoca2, multZ, contenedor.transform);
+                    }
                 }
             }
-        }
 
+        }
 
         List<float> xSoportes = new List<float>();
 
@@ -645,11 +671,30 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
         float avancePasillo = generarPasilloSuperior ? anchoPasilloSuperior * mZ : 0f;
 
+        //if (!usarRecorteFilas)
+        //{
+        //    float anchoTotal = largoMaximoTribuna;
+
+        //    Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, ZBordeExteriorGrada(numFilas, mZ) + avancePasillo);
+
+        //    GameObject muro = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //    muro.name = "Muro_Cierre_Superior";
+        //    muro.transform.SetParent(padre);
+        //    muro.transform.localScale = new Vector3(anchoTotal, alturaMuroSuperior, 0.2f);
+        //    muro.transform.localPosition = posLocal + new Vector3(0, alturaMuroSuperior / 2f, 0);
+        //    muro.transform.localRotation = Quaternion.identity;
+        //    muro.GetComponent<Renderer>().sharedMaterial = BlueColour;
+        //    DestroyImmediate(muro.GetComponent<BoxCollider>());
+        //    return;
+        //}
+
         if (!usarRecorteFilas)
         {
-            float anchoTotal = largoMaximoTribuna;
-            
-            Vector3 posLocal = new Vector3(anchoTotal / 2f, yFinal, ZBordeExteriorGrada(numFilas, mZ) + avancePasillo);
+            float anchoTotal = _bordeDerReal - _bordeIzqReal;
+            float xCentro = (_bordeIzqReal + _bordeDerReal) / 2f;
+
+            Vector3 posLocal = new Vector3(xCentro, yFinal,
+                ZBordeExteriorGrada(numFilas, mZ) + avancePasillo);
 
             GameObject muro = GameObject.CreatePrimitive(PrimitiveType.Cube);
             muro.name = "Muro_Cierre_Superior";
@@ -662,9 +707,14 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             return;
         }
 
+
+
         // Calcular los dos extremos del muro
-        int filasIzq = FilasEnX(0);
-        int filasDir = FilasEnX(largoMaximoTribuna);
+        //int filasIzq = FilasEnX(0);
+        //int filasDir = FilasEnX(largoMaximoTribuna);
+
+        int filasIzq = FilasEnX(_bordeIzqReal);
+        int filasDir = FilasEnX(_bordeDerReal);
 
         float yIzq = 0f;
         for (int i = 0; i < filasIzq; i++)
@@ -691,14 +741,25 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
         Mesh mesh = new Mesh();
         Vector3[] v = new Vector3[8];
-        v[0] = new Vector3(0, yIzq, zIzq - g);
-        v[1] = new Vector3(0, yIzq + alturaMuroSuperior, zIzq - g);
-        v[2] = new Vector3(largoMaximoTribuna, yDer, zDer - g);
-        v[3] = new Vector3(largoMaximoTribuna, yDer + alturaMuroSuperior, zDer - g);
-        v[4] = new Vector3(0, yIzq, zIzq + g);
-        v[5] = new Vector3(0, yIzq + alturaMuroSuperior, zIzq + g);
-        v[6] = new Vector3(largoMaximoTribuna, yDer, zDer + g);
-        v[7] = new Vector3(largoMaximoTribuna, yDer + alturaMuroSuperior, zDer + g);
+
+        //v[0] = new Vector3(0, yIzq, zIzq - g);
+        //v[1] = new Vector3(0, yIzq + alturaMuroSuperior, zIzq - g);
+        //v[2] = new Vector3(largoMaximoTribuna, yDer, zDer - g);
+        //v[3] = new Vector3(largoMaximoTribuna, yDer + alturaMuroSuperior, zDer - g);
+        //v[4] = new Vector3(0, yIzq, zIzq + g);
+        //v[5] = new Vector3(0, yIzq + alturaMuroSuperior, zIzq + g);
+        //v[6] = new Vector3(largoMaximoTribuna, yDer, zDer + g);
+        //v[7] = new Vector3(largoMaximoTribuna, yDer + alturaMuroSuperior, zDer + g);
+
+        v[0] = new Vector3(_bordeIzqReal, yIzq, zIzq - g);
+        v[1] = new Vector3(_bordeIzqReal, yIzq + alturaMuroSuperior, zIzq - g);
+        v[2] = new Vector3(_bordeDerReal, yDer, zDer - g);
+        v[3] = new Vector3(_bordeDerReal, yDer + alturaMuroSuperior, zDer - g);
+        v[4] = new Vector3(_bordeIzqReal, yIzq, zIzq + g);
+        v[5] = new Vector3(_bordeIzqReal, yIzq + alturaMuroSuperior, zIzq + g);
+        v[6] = new Vector3(_bordeDerReal, yDer, zDer + g);
+        v[7] = new Vector3(_bordeDerReal, yDer + alturaMuroSuperior, zDer + g);
+
 
         mesh.vertices = v;
         mesh.triangles = new int[] {
@@ -712,7 +773,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         mesh.RecalculateNormals();
 
         muroGO.AddComponent<MeshFilter>().mesh = mesh;
-        muroGO.AddComponent<MeshRenderer>().sharedMaterial = BlueColour;
+        muroGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialMuroPlatea != null ? MaterialMuroPlatea : BlueColour; ;
     }
 
     void PonerAsientos(Transform padre, Material mat)
@@ -754,7 +815,9 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     {
         if (!generarMuroFrontal) return;
 
-        float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f;
+        //float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f;
+
+        float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f - anchoDeUnaPieza / 2f;
 
         float ySegmentoBajo = 0f;
         float ySegmentoAlto = 0f;
@@ -766,7 +829,10 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         {
             if (!generarTunel)
             {
-                CrearSegmentoMuroFrontal(padre, 0, largoMaximoTribuna, ySegmentoBajo, 0f, mZ);
+                //CrearSegmentoMuroFrontal(padre, 0, largoMaximoTribuna, ySegmentoBajo, 0f, mZ);
+
+                CrearSegmentoMuroFrontal(padre, _bordeIzqReal, _bordeDerReal, ySegmentoBajo, 0f, mZ);
+
             }
             else
             {
@@ -782,11 +848,18 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
                 float zBancas = (filasQuitadasBancas * profundidadEscalon - profundidadEscalon / 2f) * mZ;
                 float zTunel = (filasQuitadasTunel * profundidadEscalon - profundidadEscalon / 2f) * mZ;
 
-                CrearSegmentoMuroFrontal(padre, 0, inicioBancaIzq, ySegmentoBajo, 0f, mZ);
+                //CrearSegmentoMuroFrontal(padre, 0, inicioBancaIzq, ySegmentoBajo, 0f, mZ);
+
+                CrearSegmentoMuroFrontal(padre, _bordeIzqReal, inicioBancaIzq, ySegmentoBajo, 0f, mZ);
+
                 CrearSegmentoMuroFrontal(padre, inicioBancaIzq, inicioTunel, yBancas, zBancas, mZ);
                 CrearSegmentoMuroFrontal(padre, inicioTunel, finTunel, yTunel, zTunel, mZ);
                 CrearSegmentoMuroFrontal(padre, finTunel, finBancaDer, yBancas, zBancas, mZ);
-                CrearSegmentoMuroFrontal(padre, finBancaDer, largoMaximoTribuna, ySegmentoBajo, 0f, mZ);
+
+                //CrearSegmentoMuroFrontal(padre, finBancaDer, largoMaximoTribuna, ySegmentoBajo, 0f, mZ);
+
+                CrearSegmentoMuroFrontal(padre, finBancaDer, _bordeDerReal, ySegmentoBajo, 0f, mZ);
+
 
                 // Transicion normal -> bancas izquierda
                 CrearTransicionMuroFrontal(padre, inicioBancaIzq, ySegmentoBajo, 0f, yBancas, zBancas, mZ);
@@ -804,7 +877,11 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         else
         {
             // Segmento izquierdo (fila 0)
-            CrearSegmentoMuroFrontal(padre, 0, margenLateralPalco, ySegmentoBajo, 0f, mZ);
+            //CrearSegmentoMuroFrontal(padre, 0, margenLateralPalco, ySegmentoBajo, 0f, mZ);
+
+
+            CrearSegmentoMuroFrontal(padre, _bordeIzqReal, margenLateralPalco, ySegmentoBajo, 0f, mZ);
+
 
             // Triangulo de transicion izquierdo
             CrearTrianguloTransicion(padre, margenLateralPalco, ySegmentoBajo, ySegmentoAlto, 0f, mZ, true);
@@ -817,7 +894,11 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
             CrearTrianguloTransicion(padre, largoMaximoTribuna - margenLateralPalco, ySegmentoBajo, ySegmentoAlto, 0f, mZ, false);
 
             // Segmento derecho (fila 0)
-            CrearSegmentoMuroFrontal(padre, largoMaximoTribuna - margenLateralPalco, largoMaximoTribuna, ySegmentoBajo, 0f, mZ);
+            //CrearSegmentoMuroFrontal(padre, largoMaximoTribuna - margenLateralPalco, largoMaximoTribuna, ySegmentoBajo, 0f, mZ);
+
+
+            CrearSegmentoMuroFrontal(padre, largoMaximoTribuna - margenLateralPalco, _bordeDerReal, ySegmentoBajo, 0f, mZ);
+
 
             // Pared triangular izquierda
             CrearParedTriangularPalco(padre, margenLateralPalco, ySegmentoAlto, mZ, true);
@@ -861,7 +942,7 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
         meshPiso.triangles = new int[] { 0, 2, 1, 1, 2, 3 };
         meshPiso.RecalculateNormals();
         pisoGO.AddComponent<MeshFilter>().mesh = meshPiso;
-        pisoGO.AddComponent<MeshRenderer>().sharedMaterial = MaterialMuroPlatea;
+        pisoGO.AddComponent<MeshRenderer>().sharedMaterial = materialPisoFrontal != null ? materialPisoFrontal : MaterialMuroPlatea;
 
         // Muro
         GameObject muroGO = new GameObject("Muro_Frontal");
@@ -1020,11 +1101,22 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     {
         if (!generarMurosLateralesPlatea) return;
 
-        float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f;
+        //float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f;
+
+        float margenLateralPalco = (largoMaximoTribuna - largoPalcoVIP) / 2f - anchoDeUnaPieza / 2f;
 
         // Muros laterales extremos
-        CrearMuroLateralPlatea(padre, 0f, mZ, false);
-        CrearMuroLateralPlatea(padre, largoMaximoTribuna, mZ, true);
+        //CrearMuroLateralPlatea(padre, 0f, mZ, false);
+        //CrearMuroLateralPlatea(padre, largoMaximoTribuna, mZ, true);
+
+        float medioBloquePlatea = anchoDeUnaPieza / 2f;
+
+        CrearMuroLateralPlatea(padre, -medioBloquePlatea, mZ, false);
+        CrearMuroLateralPlatea(padre, largoMaximoTribuna - medioBloquePlatea, mZ, true);
+
+
+
+
 
         // Muros laterales internos (solo si hay palcos VIP)
         if (tienePalcoVIP)
@@ -1036,21 +1128,25 @@ public class SeatedStandGenerator : MonoBehaviour, IProveedorAnclajesTecho
 
     void CrearMuroLateralPlatea(Transform padre, float x, float mZ, bool esIzquierdo)
     {
+        int filasAqui = FilasEnX(x);
+
         float grosor = 0.1f;
         float g = grosor / 2f;
 
         // Calcular altura acumulada total
         float yFinal = 0f;
-        for (int i = 0; i < numFilas; i++)
+        for (int i = 0; i < filasAqui; i++)
             yFinal += altoEscalonBase * ObtenerFactorParaFila(i);
 
         float zInicio = -profundidadEscalon / 2f * mZ; // borde frontal primer escalon
-        float zFin = (numFilas - 1) * profundidadEscalon * mZ + profundidadEscalon / 2f * mZ;
+        float zFin = (filasAqui - 1) * profundidadEscalon * mZ + profundidadEscalon / 2f * mZ;
 
         // Pendiente del ultimo tramo
         int filaUltimoRango = 0;
+       
         if (rangosDeAlzada != null && rangosDeAlzada.Length > 0)
-            filaUltimoRango = rangosDeAlzada[rangosDeAlzada.Length - 1].filaInicio;
+            filaUltimoRango = Mathf.Min(rangosDeAlzada[rangosDeAlzada.Length - 1].filaInicio, filasAqui - 1);
+
 
         float yUltimoRangoInicio = CalcularAlturaAcumuladaPlatea(filaUltimoRango);
         float zUltimoRangoInicio = (filaUltimoRango * profundidadEscalon - profundidadEscalon / 2f) * mZ;
