@@ -165,7 +165,7 @@ public class StandGenerator : MonoBehaviour, IProveedorAnclajesTecho
     void Start()
     {
         //if (Application.isPlaying)
-        //GenerarSector();
+        GenerarSector();
     }
 
     [System.Serializable]
