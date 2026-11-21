@@ -447,7 +447,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 173.46
+      value: 174.13
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.y
@@ -455,7 +455,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -578.39
+      value: -579.103
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.w
@@ -591,7 +591,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: largoMaximoTribuna
-      value: 76
+      value: 77
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: materialBarandilla
@@ -2562,7 +2562,7 @@ Transform:
   m_GameObject: {fileID: 94452774}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 109.7, y: 58.42, z: -561.74}
+  m_LocalPosition: {x: 109.7, y: 68.77, z: -561.74}
   m_LocalScale: {x: 52.5, y: 1, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8613,7 +8613,7 @@ Transform:
   m_GameObject: {fileID: 368899982}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 172.9, y: 69, z: -432.79}
+  m_LocalPosition: {x: 174.16, y: 69, z: -432.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8636,7 +8636,7 @@ MonoBehaviour:
   profundidadEscalon: 0.4
   anchoDeUnaPieza: 1
   numFilas: 35
-  piezasPorFila: 76
+  piezasPorFila: 77
   inverter: 1
   distribuirVomitosHomogeneamente: 0
   offsetInicioVomitos: 0
@@ -10829,7 +10829,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 97.77
+      value: 97.48
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -10837,7 +10837,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -563.38
+      value: -564.1
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -13529,7 +13529,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
-      value: 1808.5403
+      value: 1808.5421
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarBarandillaEscalera
@@ -13613,7 +13613,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 97.77
+      value: 97.48
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -13621,7 +13621,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -448.32
+      value: -447.77
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -20691,7 +20691,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filasMaximas
-      value: 96
+      value: 94
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filasMinimas
@@ -20827,7 +20827,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
-      value: 2796.6316
+      value: 2731.2073
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarBarandillaEscalera
@@ -20919,7 +20919,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 174.065
+      value: 175.02
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -20927,7 +20927,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -448.32
+      value: -447.77
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -23403,7 +23403,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
-      value: 3543.127
+      value: 3468.3154
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarBarandillaEscalera
@@ -23519,7 +23519,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 174.065
+      value: 174.69
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -23527,7 +23527,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -563.38
+      value: -564.1
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -32983,11 +32983,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filasMaximas
-      value: 58
+      value: 56
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filasMinimas
-      value: 16
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: ground0Level
@@ -33159,7 +33159,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
-      value: 1696.3398
+      value: 1652.6172
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarBarandillaEscalera
@@ -33263,7 +33263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 174.065
+      value: 174.69
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -33271,7 +33271,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -563.38
+      value: -564.1
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -35034,7 +35034,7 @@ Transform:
   m_GameObject: {fileID: 1252300390}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 162.2, y: 58.42, z: -561.74}
+  m_LocalPosition: {x: 162.2, y: 68.77, z: -561.74}
   m_LocalScale: {x: 52.5, y: 1, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -37920,7 +37920,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9f4c267c1a0fc1240b27b4db331b3695, type: 2}
     - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: piezasPorFila
-      value: 115
+      value: 116
       objectReference: {fileID: 0}
     - target: {fileID: 5422715321319639456, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: prefabEscalon
@@ -38100,7 +38100,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 82.9
+      value: 82.62
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -38108,7 +38108,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -562.82
+      value: -563.48
       objectReference: {fileID: 0}
     - target: {fileID: 5494168445119660193, guid: c36a98935a7b5a742b817544ee6c12f0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -44425,7 +44425,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 189.105
+      value: 189.73
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.y
@@ -44433,7 +44433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -448.84
+      value: -448.45
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.w
@@ -44485,7 +44485,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: numFilas
-      value: 48
+      value: 47
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: RedColour
@@ -44609,7 +44609,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: largoMaximoTribuna
-      value: 115
+      value: 116
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: materialBarandilla
@@ -44649,7 +44649,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: filasEnExtremoDerecho
-      value: 57
+      value: 56
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: generarBarandaFrontal
@@ -44678,6 +44678,10 @@ PrefabInstance:
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: profundidadPisoFrontal
       value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
+      propertyPath: filasEnExtremoIzquierdo
+      value: 47
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: tieneSegundaFilaVomitos
@@ -45150,7 +45154,7 @@ Transform:
   m_GameObject: {fileID: 1701175123}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 172.92, y: 69, z: -578.91}
+  m_LocalPosition: {x: 174.05, y: 69, z: -578.941}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45188,7 +45192,7 @@ MonoBehaviour:
   profundidadEscalon: 0.4
   anchoDeUnaPieza: 1
   numFilas: 35
-  piezasPorFila: 76
+  piezasPorFila: 77
   inverter: 0
   distribuirVomitosHomogeneamente: 0
   offsetInicioVomitos: 0
@@ -45446,7 +45450,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
-      value: 1857.0577
+      value: 1807.0798
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarBarandillaEscalera
@@ -45562,7 +45566,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 97.77
+      value: 97.48
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -45570,7 +45574,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -563.38
+      value: -564.1
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -46445,7 +46449,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 98.38
+      value: 98.05
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.y
@@ -46453,7 +46457,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -433.28
+      value: -432.79
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.w
@@ -46593,7 +46597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: largoMaximoTribuna
-      value: 76
+      value: 77
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: materialBarandilla
@@ -49717,7 +49721,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
-      value: 909.5782
+      value: 884.8385
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarBarandillaEscalera
@@ -49801,7 +49805,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 97.77
+      value: 97.48
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -49809,7 +49813,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -448.32
+      value: -447.8
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -53443,13 +53447,15 @@ MonoBehaviour:
     - {fileID: 1772243456}
     - {fileID: 3915447271960441972}
     - {fileID: 1750532139}
-    - {fileID: 0}
+    - {fileID: 333435193}
     - {fileID: 491496193}
     - {fileID: 5867286881551284366}
     - {fileID: 1855783872}
     - {fileID: 1471331676}
     - {fileID: 1279435204}
     - {fileID: 122323991}
+    - {fileID: 1493460644}
+    - {fileID: 1159801707}
     pisoOperativo: 0
   - nombreVariante: 10
     sectoresActivos:
@@ -57397,7 +57403,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filasMaximas
-      value: 48
+      value: 47
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: filasMinimas
@@ -57549,7 +57555,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: metrosLinealesCalculados
-      value: 1406.3541
+      value: 1341.2635
       objectReference: {fileID: 0}
     - target: {fileID: 1752414187685110769, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: generarBarandillaEscalera
@@ -57673,7 +57679,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 174.065
+      value: 174.69
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -57681,7 +57687,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -448.32
+      value: -447.8
       objectReference: {fileID: 0}
     - target: {fileID: 5450990870969726641, guid: 2c9fef4f280d8454bb07c81abacb0ee5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -58729,7 +58735,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 82.734
+      value: 82.42
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.y
@@ -58737,7 +58743,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -562.82
+      value: -563.33
       objectReference: {fileID: 0}
     - target: {fileID: 2895284823907029614, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: m_LocalRotation.w
@@ -58885,7 +58891,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: largoMaximoTribuna
-      value: 115
+      value: 116
       objectReference: {fileID: 0}
     - target: {fileID: 8975940616394135281, guid: 6bf7b5c4b344aff40818d4ff00720e12, type: 3}
       propertyPath: materialBarandilla
